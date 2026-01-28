@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import com.bettafish.flarent.ui.pages.TagsPage
 import com.bettafish.flarent.ui.theme.FlarentTheme
 
 class MainActivity : ComponentActivity() {
+    @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,6 +41,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+@ExperimentalMaterial3Api
 fun FlarentApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
 

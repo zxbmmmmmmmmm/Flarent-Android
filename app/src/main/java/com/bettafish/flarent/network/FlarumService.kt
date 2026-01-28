@@ -10,7 +10,7 @@ interface FlarumService {
     // GET /api/discussions
     @GET("api/discussions")
     suspend fun getDiscussions(
-        @Query("page") page: Int = 1,
+        @Query("page[offset]") page: Int = 0,
         @Query("include") include: String? = "user,lastPostedUser,tags"
     ): List<Discussion>
 
