@@ -1,0 +1,24 @@
+package com.bettafish.flarent.models
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.github.jasminb.jsonapi.annotations.Id
+import com.github.jasminb.jsonapi.annotations.Type
+
+@Type("users")
+class User {
+    @Id
+    var id: String? = null
+
+    @JsonProperty("username")
+    var username: String? = null
+
+    @JsonProperty("displayName")
+    var displayName: String? = null
+
+    @JsonProperty("avatarUrl")
+    var avatarUrl: String? = null
+
+    @JsonProperty("slug")
+    var slug: String? = null
+
+}

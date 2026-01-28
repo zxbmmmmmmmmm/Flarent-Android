@@ -1,0 +1,42 @@
+package com.bettafish.flarent.models
+
+import com.github.jasminb.jsonapi.annotations.Id
+import com.github.jasminb.jsonapi.annotations.Type
+import com.github.jasminb.jsonapi.annotations.Relationship
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.ZonedDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+@Type("discussions")
+class Discussion {
+    @Id
+    var id: String? = null
+
+    @JsonProperty("title")
+    var title: String? = null
+
+    @JsonProperty("slug")
+    var slug: String? = null
+
+    @JsonProperty("commentCount")
+    var commentCount: Int? = null
+
+    @JsonProperty("participantCount")
+    var participantCount: Int? = null
+
+    @JsonProperty("createdAt")
+    var createdAt: ZonedDateTime? = null
+
+    @JsonProperty("lastPostedAt")
+    var lastPostedAt: ZonedDateTime? = null
+
+    @Relationship("user")
+    var user: User? = null
+
+    @Relationship("lastPostedUser")
+    var lastPostedUser: User? = null
+
+    @Relationship("tags")
+    var tags: List<Tag>? = null
+}
