@@ -72,7 +72,10 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("androidx.paging:paging-runtime:3.3.6")
     implementation("androidx.paging:paging-compose:3.3.6")
-    implementation("androidx.navigation:navigation-compose:2.9.6")
+
+    implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
+    ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
+    implementation("io.github.raamcosta.compose-destinations:bottom-sheet:2.2.0")
 
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

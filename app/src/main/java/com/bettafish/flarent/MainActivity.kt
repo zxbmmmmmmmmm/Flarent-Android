@@ -4,11 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,6 +16,8 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -28,14 +29,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.bettafish.flarent.ui.pages.MainPage
+import com.bettafish.flarent.ui.pages.DiscussionsPage
 import com.bettafish.flarent.ui.pages.TagsPage
 import com.bettafish.flarent.ui.theme.FlarentTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
+import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import com.ramcosta.composedestinations.utils.startDestination
+import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 
 class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
@@ -54,90 +68,53 @@ class MainActivity : ComponentActivity() {
 @ExperimentalMaterial3Api
 fun FlarentApp() {
     val navController = rememberNavController()
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-
-    NavigationSuiteScaffold(
-        navigationSuiteItems = {
-            AppDestinations.entries.forEach { dest ->
-                item(
-                    icon = {
-                        Icon(dest.icon, contentDescription = dest.label)
-                    },
-                    label = { Text(dest.label) },
-                    selected = currentRoute == dest.name,
-                    onClick = {
-                        navController.navigate(dest.name) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                )
-            }
-        }
-    ) {
-        Scaffold { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = AppDestinations.HOME.name,
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
-                enterTransition = {
-                    val initialStateOrder = initialState.destination.route?.let { AppDestinations.valueOf(it).ordinal } ?: 0
-                    val targetStateOrder = targetState.destination.route?.let { AppDestinations.valueOf(it).ordinal } ?: 0
-                    val direction = if (targetStateOrder > initialStateOrder)
-                        AnimatedContentTransitionScope.SlideDirection.Left
-                    else
-                        AnimatedContentTransitionScope.SlideDirection.Right
-
-                    slideIntoContainer(towards = direction, animationSpec = tween(400, easing = FastOutSlowInEasing))
-                },
-                exitTransition = {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(200, easing = FastOutSlowInEasing)
-                    )
-                },
-                popEnterTransition = {
-                    slideIntoContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(200, easing = FastOutSlowInEasing)
-                    )
-                },
-                popExitTransition = {
-                    slideOutOfContainer(
-                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(200, easing = FastOutSlowInEasing)
-                    )
-                }
-            ) {
-                composable(AppDestinations.HOME.name) {
-                    MainPage(Modifier)
-                }
-                composable(AppDestinations.TAGS.name) {
-                    TagsPage(Modifier)
-                }
-                composable(AppDestinations.PROFILE.name) {
-                    ProfileScreen(Modifier)
-                }
-            }
-        }
-
+    Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
+        DestinationsNavHost(
+            navController = navController,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            navGraph = NavGraphs.root)
     }
 }
 
-enum class AppDestinations(
-    val label: String,
-    val icon: ImageVector,
+@Composable
+@ExperimentalMaterial3Api
+fun BottomBar(
+    navController: NavController
 ) {
-    HOME("Home", Icons.Default.Home),
-    TAGS("Tags", Icons.Default.Category),
-    PROFILE("Profile", Icons.Default.AccountBox),
+    val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
+        ?: NavGraphs.root.startDestination
+    val destinationsNavigator = navController.toDestinationsNavigator()
+    NavigationBar () {
+        BottomBarDestination.entries.forEach { destination ->
+            NavigationBarItem(
+                selected = currentDestination == destination.direction,
+                onClick = {
+                    destinationsNavigator.navigate(destination.direction) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(NavGraphs.root.startDestination) {
+                            saveState = true
+                        }
+                    }
+                },
+                icon = { Icon(destination.icon, contentDescription = destination.label)},
+                label = { destination.label },
+            )
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+enum class BottomBarDestination(
+    val direction: DirectionDestinationSpec,
+    val icon: ImageVector,
+    val label: String,
+) {
+    Home(DiscussionsPageDestination, Icons.Default.Home, "Home"),
+    Tags(TagsPageDestination, Icons.Default.Category, "Tags"),
 }
 
 @Composable

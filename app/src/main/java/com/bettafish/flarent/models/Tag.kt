@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.jasminb.jsonapi.annotations.Id
 import com.github.jasminb.jsonapi.annotations.Relationship
 import com.github.jasminb.jsonapi.annotations.Type
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
 
+@Serializable
 @Type("tags")
 class Tag {
     @Id
@@ -27,6 +30,7 @@ class Tag {
     var color: String? = null
 
     @JsonProperty("lastPostedAt")
+    @Contextual
     var lastPostedAt: ZonedDateTime? = null
 
     @JsonProperty("discussionCount")

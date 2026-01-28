@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,19 +32,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
-import com.bettafish.flarent.ui.widgets.DiscussionItem
 import com.bettafish.flarent.utils.relativeTime
 import com.bettafish.flarent.utils.toFaIcon
 import com.bettafish.flarent.viewModels.TagsViewModel
 import com.guru.fontawesomecomposelib.FaIcon
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.getViewModel
 import java.time.ZonedDateTime
 
 @Composable
+@Destination<RootGraph>
 @ExperimentalMaterial3Api
-fun TagsPage(modifier: Modifier = Modifier) {
+fun TagsPage(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel: TagsViewModel = getViewModel()
     val list by viewModel.tags.collectAsState()
     val typography = MaterialTheme.typography
@@ -68,7 +70,16 @@ fun TagsPage(modifier: Modifier = Modifier) {
         LazyColumn() {
             items(list) {
                 if(it.isChild == false){
-                    TagViewItem(it,modifier = Modifier.clickable{})
+                    TagViewItem(it,modifier = Modifier.clickable{},
+                    onClick = {
+                        navController.navigate("tag/${it.slug}")
+                    },
+                    onChildrenClick = {
+                        navController.navigate("tag/${it.slug}")
+                    },
+                    onDiscussionClick = {
+                        navController.navigate("discussion/${it.slug}")
+                    })
                 }
             }
         }
@@ -76,7 +87,11 @@ fun TagsPage(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TagViewItem(tag : Tag, modifier: Modifier = Modifier){
+fun TagViewItem(tag : Tag,
+                modifier: Modifier = Modifier,
+                onClick: (Tag) -> Unit = {},
+                onChildrenClick: (Tag) -> Unit = {},
+                onDiscussionClick: (Discussion) -> Unit = {}){
     Surface(modifier = modifier){
         Column(modifier = Modifier.padding(24.dp)) {
             Row() {
@@ -112,23 +127,25 @@ fun TagViewItem(tag : Tag, modifier: Modifier = Modifier){
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 )  {
                     children.forEach {
-                        ChildrenTagViewItem(it)
+                        ChildrenTagViewItem(it, onClick = onChildrenClick)
                     }
                 }
             }
 
 
             tag.lastPostedDiscussion?.let {
-                TagDiscussionPreview(it,
-                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth())
+                TagDiscussionItem(it,
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth(), onDiscussionClick)
             }
         }
     }
 }
 
 @Composable
-fun ChildrenTagViewItem(tag : Tag, modifier: Modifier = Modifier) {
-    Button(onClick = { /*TODO*/ }, modifier){
+fun ChildrenTagViewItem(tag : Tag, modifier: Modifier = Modifier, onClick: (Tag) -> Unit) {
+    Button(onClick = { onClick(tag) }, modifier){
         Row{
             val textStyle = MaterialTheme.typography.bodyMedium
             val density = LocalDensity.current
@@ -148,11 +165,11 @@ fun ChildrenTagViewItem(tag : Tag, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TagDiscussionPreview(discussion: Discussion,modifier: Modifier){
+fun TagDiscussionItem(discussion: Discussion, modifier: Modifier, onClick: (Discussion) -> Unit = {}){
     Card(modifier = modifier
-        .clickable { /* Navigate to detail */ }
+        .clickable { onClick(discussion) }
         .clip(RoundedCornerShape(8.dp)))
-        {
+    {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = discussion.title ?: "",
                 style = MaterialTheme.typography.titleMedium)
