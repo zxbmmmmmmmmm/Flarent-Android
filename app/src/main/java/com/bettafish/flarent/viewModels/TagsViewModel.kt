@@ -14,16 +14,12 @@ public class TagsViewModel (
     private val _tags = MutableStateFlow<List<Tag>>(emptyList())
     val tags: StateFlow<List<Tag>> = _tags
 
-    fun load(page: Int = 1) {
-        viewModelScope.launch {
-            try{
-                val result = repository.fetchTags()
-                val current = _tags.value
-                _tags.value = current + result
-            }
-            catch(e: Exception){
+    suspend fun refresh() {
+        try{
+            _tags.value = repository.fetchTags()
+        }
+        catch(e: Exception){
 
-            }
         }
     }
 }
