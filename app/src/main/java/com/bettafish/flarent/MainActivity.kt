@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -23,6 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.bettafish.flarent.ui.pages.MainPage
 import com.bettafish.flarent.ui.pages.TagsPage
 import com.bettafish.flarent.ui.theme.FlarentTheme
@@ -43,7 +53,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 @ExperimentalMaterial3Api
 fun FlarentApp() {
+    val navController = rememberNavController()
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -53,19 +68,66 @@ fun FlarentApp() {
                         Icon(dest.icon, contentDescription = dest.label)
                     },
                     label = { Text(dest.label) },
-                    selected = dest == currentDestination,
-                    onClick = { currentDestination = dest }
+                    selected = currentRoute == dest.name,
+                    onClick = {
+                        navController.navigate(dest.name) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            when (currentDestination) {
-                AppDestinations.HOME -> MainPage(Modifier.padding(innerPadding))
-                AppDestinations.TAGS -> TagsPage(Modifier.padding(innerPadding))
-                AppDestinations.PROFILE -> ProfileScreen(Modifier.padding(innerPadding))
+        Scaffold { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = AppDestinations.HOME.name,
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                enterTransition = {
+                    val initialStateOrder = initialState.destination.route?.let { AppDestinations.valueOf(it).ordinal } ?: 0
+                    val targetStateOrder = targetState.destination.route?.let { AppDestinations.valueOf(it).ordinal } ?: 0
+                    val direction = if (targetStateOrder > initialStateOrder)
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    else
+                        AnimatedContentTransitionScope.SlideDirection.Right
+
+                    slideIntoContainer(towards = direction, animationSpec = tween(400, easing = FastOutSlowInEasing))
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(200, easing = FastOutSlowInEasing)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(200, easing = FastOutSlowInEasing)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(200, easing = FastOutSlowInEasing)
+                    )
+                }
+            ) {
+                composable(AppDestinations.HOME.name) {
+                    MainPage(Modifier)
+                }
+                composable(AppDestinations.TAGS.name) {
+                    TagsPage(Modifier)
+                }
+                composable(AppDestinations.PROFILE.name) {
+                    ProfileScreen(Modifier)
+                }
             }
         }
+
     }
 }
 
