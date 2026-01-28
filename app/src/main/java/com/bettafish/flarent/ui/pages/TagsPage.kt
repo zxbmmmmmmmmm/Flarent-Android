@@ -41,13 +41,15 @@ import com.bettafish.flarent.viewModels.TagsViewModel
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
 import java.time.ZonedDateTime
 
 @Composable
 @Destination<RootGraph>
 @ExperimentalMaterial3Api
-fun TagsPage(modifier: Modifier = Modifier, navController: NavController) {
+fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
     val viewModel: TagsViewModel = getViewModel()
     val list by viewModel.tags.collectAsState()
     val typography = MaterialTheme.typography
@@ -72,13 +74,13 @@ fun TagsPage(modifier: Modifier = Modifier, navController: NavController) {
                 if(it.isChild == false){
                     TagViewItem(it,modifier = Modifier.clickable{},
                     onClick = {
-                        navController.navigate("tag/${it.slug}")
+                        navigator.navigate(DiscussionsPageDestination)
                     },
                     onChildrenClick = {
-                        navController.navigate("tag/${it.slug}")
+                        navigator.navigate(DiscussionsPageDestination)
                     },
                     onDiscussionClick = {
-                        navController.navigate("discussion/${it.slug}")
+                        navigator.navigate(DiscussionsPageDestination)
                     })
                 }
             }

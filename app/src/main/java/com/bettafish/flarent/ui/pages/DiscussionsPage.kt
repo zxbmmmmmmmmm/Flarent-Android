@@ -20,9 +20,9 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-@Destination<RootGraph>(start = true)
+@Destination<RootGraph>
 @ExperimentalMaterial3Api
-fun DiscussionsPage(modifier: Modifier = Modifier, navController: NavController) {
+fun DiscussionsPage(modifier: Modifier = Modifier) {
     val viewModel: DiscussionsViewModel = getViewModel()
     val pagingItems = viewModel.discussions.collectAsLazyPagingItems()
     val isRefreshing = pagingItems.loadState.refresh is LoadState.Loading

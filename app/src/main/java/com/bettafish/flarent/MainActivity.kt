@@ -6,8 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -29,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -39,10 +44,13 @@ import com.bettafish.flarent.ui.pages.DiscussionsPage
 import com.bettafish.flarent.ui.pages.TagsPage
 import com.bettafish.flarent.ui.theme.FlarentTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
+import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.MainPageDestination
 import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -68,14 +76,34 @@ class MainActivity : ComponentActivity() {
 @ExperimentalMaterial3Api
 fun FlarentApp() {
     val navController = rememberNavController()
+    val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
+        ?: NavGraphs.root.startDestination
+    val showBottomBar = currentDestination == MainPageDestination || currentDestination == TagsPageDestination
 
-    Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
+    Scaffold(bottomBar = { if (showBottomBar) BottomBar(navController) }) { innerPadding ->
         DestinationsNavHost(
             navController = navController,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            navGraph = NavGraphs.root)
+            navGraph = NavGraphs.root,
+            defaultTransitions = SlideTransitions)
+    }
+}
+
+object SlideTransitions : NavHostAnimatedDestinationStyle() {
+    override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+        slideInHorizontally(
+            initialOffsetX = { it },
+            animationSpec = tween(300)
+        )
+    }
+
+    override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+        slideOutHorizontally(
+            targetOffsetX = { -it },
+            animationSpec = tween(300)
+        )
     }
 }
 
@@ -113,7 +141,7 @@ enum class BottomBarDestination(
     val icon: ImageVector,
     val label: String,
 ) {
-    Home(DiscussionsPageDestination, Icons.Default.Home, "Home"),
+    Home(MainPageDestination, Icons.Default.Home, "Home"),
     Tags(TagsPageDestination, Icons.Default.Category, "Tags"),
 }
 
