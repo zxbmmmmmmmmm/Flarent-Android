@@ -62,6 +62,7 @@ import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDe
 import com.ramcosta.composedestinations.generated.destinations.MainPageDestination
 import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
@@ -93,10 +94,9 @@ fun FlarentApp() {
         DestinationsNavHost(
             navController = navController,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                .fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
             navGraph = NavGraphs.root,
-            defaultTransitions = SlideTransitions)
+            defaultTransitions = SlideTransitions,)
     }
 }
 

@@ -14,10 +14,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +41,7 @@ import androidx.navigation.NavController
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.TagNavArgs
+import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.utils.relativeTime
 import com.bettafish.flarent.utils.toFaIcon
 import com.bettafish.flarent.viewModels.TagsViewModel
@@ -56,6 +61,7 @@ fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
     val list by viewModel.tags.collectAsState()
     val typography = MaterialTheme.typography
     var isRefreshing by remember { mutableStateOf(list.isEmpty()) }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -70,22 +76,32 @@ fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
                 isRefreshing = false
             }
         }
-
-        LazyColumn() {
-            items(list) { tag ->
-                if(tag.isChild == false){
-                    TagViewItem(tag,
-                    onClick = {
-                        navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
-                    },
-                    onChildrenClick = {
-                        navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
-                    },
-                    onDiscussionClick = {
-                    })
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                LargeTopAppBar(
+                    title = { Text("标签") },
+                    scrollBehavior = scrollBehavior
+                )
+            }
+        ){ padding ->
+            LazyColumn(Modifier.padding(padding)) {
+                items(list) { tag ->
+                    if(tag.isChild == false){
+                        TagViewItem(tag,
+                            onClick = {
+                                navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
+                            },
+                            onChildrenClick = {
+                                navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
+                            },
+                            onDiscussionClick = {
+                            })
+                    }
                 }
             }
         }
+
     }
 }
 
