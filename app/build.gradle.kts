@@ -76,6 +76,9 @@ dependencies {
     implementation("androidx.paging:paging-runtime:3.3.6")
     implementation("androidx.paging:paging-compose:3.3.6")
 
+    implementation("com.mikepenz:multiplatform-markdown-renderer:0.39.1")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.39.1")
+
     implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
     ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
     implementation("io.github.raamcosta.compose-destinations:bottom-sheet:2.2.0")
@@ -93,8 +96,7 @@ dependencies {
     // Coroutines (upgrade)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("io.coil-kt:coil-compose:2.4.0")
-
+    implementation("io.coil-kt:coil-compose:2.7.0")
     //Navigation
     val nav_version = "2.9.6"
 

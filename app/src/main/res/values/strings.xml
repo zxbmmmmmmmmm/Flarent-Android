@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Flarent</string>
+    <string name="op_badge">楼主</string>
+    <string name="reply">回复</string>
 </resources>
