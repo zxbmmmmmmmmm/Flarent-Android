@@ -32,9 +32,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavArgs
 import androidx.navigation.NavController
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
+import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.utils.relativeTime
 import com.bettafish.flarent.utils.toFaIcon
 import com.bettafish.flarent.viewModels.TagsViewModel
@@ -70,17 +72,16 @@ fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
         }
 
         LazyColumn() {
-            items(list) {
-                if(it.isChild == false){
-                    TagViewItem(it,modifier = Modifier.clickable{},
+            items(list) { tag ->
+                if(tag.isChild == false){
+                    TagViewItem(tag,
                     onClick = {
-                        navigator.navigate(DiscussionsPageDestination)
+                        navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
                     },
                     onChildrenClick = {
-                        navigator.navigate(DiscussionsPageDestination)
+                        navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
                     },
                     onDiscussionClick = {
-                        navigator.navigate(DiscussionsPageDestination)
                     })
                 }
             }
@@ -94,7 +95,7 @@ fun TagViewItem(tag : Tag,
                 onClick: (Tag) -> Unit = {},
                 onChildrenClick: (Tag) -> Unit = {},
                 onDiscussionClick: (Discussion) -> Unit = {}){
-    Surface(modifier = modifier){
+    Surface(modifier = modifier.clickable{ onClick(tag) }){
         Column(modifier = Modifier.padding(24.dp)) {
             Row() {
                 val textStyle = MaterialTheme.typography.headlineLarge

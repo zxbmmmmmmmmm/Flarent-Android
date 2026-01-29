@@ -10,13 +10,15 @@ import androidx.paging.PagingState
 import androidx.paging.cachedIn
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.models.Discussion
+import com.bettafish.flarent.models.navigation.TagNavArgs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class DiscussionsViewModel(
-    private val repository: DiscussionsRepository
+    private val repository: DiscussionsRepository,
+    val navArgs: TagNavArgs? = null
 ) : ViewModel() {
     companion object{
         private const val LOAD_COUNT = 20;
@@ -24,7 +26,8 @@ class DiscussionsViewModel(
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
         pagingSourceFactory = { DiscussionDataSource(repository,
-            LOAD_COUNT
+            LOAD_COUNT,
+            navArgs?.slug
         ) }
     ).flow.cachedIn(viewModelScope)
 }
@@ -32,7 +35,8 @@ class DiscussionsViewModel(
 
 class DiscussionDataSource(
     private val repository: DiscussionsRepository,
-    private val pageSize: Int
+    private val pageSize: Int,
+    private val tag: String? = null
 ) : PagingSource<Int, Discussion>(){
     override fun getRefreshKey(state: PagingState<Int, Discussion>): Int? {
         val anchor = state.anchorPosition ?: return null
@@ -43,7 +47,7 @@ class DiscussionDataSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Discussion> {
         return try {
             val offset = params.key ?: 0
-            val items = repository.fetchDiscussions(offset)
+            val items = repository.fetchDiscussions(offset, tag)
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
             LoadResult.Page(

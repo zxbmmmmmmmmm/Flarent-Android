@@ -38,7 +38,9 @@ import java.time.ZonedDateTime
 
 private val imageWidth = 40.dp
 @Composable
-fun DiscussionItem(discussion: Discussion, modifier: Modifier = Modifier){
+fun DiscussionItem(discussion: Discussion,
+                   modifier: Modifier = Modifier,
+                   tagClick : (Tag) -> Unit = {}){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,7 +115,7 @@ fun DiscussionItem(discussion: Discussion, modifier: Modifier = Modifier){
                             .wrapContentWidth().align(Alignment.CenterVertically)
                             .height(IntrinsicSize.Min)
                     ) {
-                        TagList(it)
+                        TagList(it, click = tagClick)
                     }
                 }
             }

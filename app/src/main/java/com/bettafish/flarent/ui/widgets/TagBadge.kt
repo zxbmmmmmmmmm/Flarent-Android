@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.widgets
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,13 +28,16 @@ import com.guru.fontawesomecomposelib.FaIconType
 import com.guru.fontawesomecomposelib.FaIcons
 
 @Composable
-fun TagBadge(tag: Tag, modifier: Modifier = Modifier, shape: Shape = RoundedCornerShape(4.dp)) {
+fun TagBadge(tag: Tag,
+             modifier: Modifier = Modifier,
+             shape: Shape = RoundedCornerShape(4.dp),
+             click: (Tag) -> Unit = {}) {
 
     val bgColor = remember { tag.color?.toComposeColor() } ?: colorScheme.secondaryContainer
     Surface(
         color = bgColor,
         shape = shape,
-        modifier = modifier
+        modifier = modifier.clickable{ click(tag) }
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),

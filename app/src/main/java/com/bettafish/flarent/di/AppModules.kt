@@ -8,6 +8,7 @@ import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.viewModels.DiscussionsViewModel
 import com.bettafish.flarent.viewModels.TagsViewModel
@@ -68,6 +69,7 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { DiscussionsViewModel(get()) }
+    viewModel { (navArgs: TagNavArgs?) ->
+        DiscussionsViewModel(get(), navArgs) }
     viewModel { TagsViewModel(get()) }
 }

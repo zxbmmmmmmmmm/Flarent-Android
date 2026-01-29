@@ -6,13 +6,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -30,9 +36,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -58,6 +67,7 @@ import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
+import kotlin.unaryMinus
 
 class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
@@ -78,9 +88,8 @@ fun FlarentApp() {
     val navController = rememberNavController()
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
         ?: NavGraphs.root.startDestination
-    val showBottomBar = currentDestination == MainPageDestination || currentDestination == TagsPageDestination
 
-    Scaffold(bottomBar = { if (showBottomBar) BottomBar(navController) }) { innerPadding ->
+    Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
         DestinationsNavHost(
             navController = navController,
             modifier = Modifier
@@ -92,47 +101,79 @@ fun FlarentApp() {
 }
 
 object SlideTransitions : NavHostAnimatedDestinationStyle() {
+    private val AnimationSpec = tween<IntOffset>(durationMillis = 300, easing = FastOutSlowInEasing)
+
     override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
-        slideInHorizontally(
-            initialOffsetX = { it },
-            animationSpec = tween(300)
+        slideIntoContainer(
+            AnimatedContentTransitionScope.SlideDirection.Start,
+            animationSpec = AnimationSpec,
+            initialOffset = { it }
         )
     }
 
     override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
-        slideOutHorizontally(
-            targetOffsetX = { -it },
-            animationSpec = tween(300)
+        slideOutOfContainer(
+            AnimatedContentTransitionScope.SlideDirection.End,
+            animationSpec = AnimationSpec,
+            targetOffset = { -it }
+        )
+    }
+
+    override val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+        slideIntoContainer(
+            AnimatedContentTransitionScope.SlideDirection.Start,
+            animationSpec = AnimationSpec,
+            initialOffset = { -it }
+        )
+    }
+
+    override val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+        slideOutOfContainer(
+            AnimatedContentTransitionScope.SlideDirection.End,
+            animationSpec = AnimationSpec,
+            targetOffset = { it }
         )
     }
 }
 
+
 @Composable
 @ExperimentalMaterial3Api
 fun BottomBar(
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
         ?: NavGraphs.root.startDestination
     val destinationsNavigator = navController.toDestinationsNavigator()
-    NavigationBar () {
-        BottomBarDestination.entries.forEach { destination ->
-            NavigationBarItem(
-                selected = currentDestination == destination.direction,
-                onClick = {
-                    destinationsNavigator.navigate(destination.direction) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(NavGraphs.root.startDestination) {
-                            saveState = true
+    val shouldShowBottomBar = currentDestination.route == MainPageDestination.route || currentDestination.route == TagsPageDestination.route
+
+    AnimatedVisibility(
+        modifier = modifier.fillMaxWidth(),
+        visible = shouldShowBottomBar,
+        enter = expandIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+        exit = shrinkOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
+    ) {
+        NavigationBar () {
+            BottomBarDestination.entries.fastForEach { destination ->
+                NavigationBarItem(
+                    selected = currentDestination == destination.direction,
+                    onClick = {
+                        destinationsNavigator.navigate(destination.direction) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(NavGraphs.root.startDestination) {
+                                saveState = true
+                            }
                         }
-                    }
-                },
-                icon = { Icon(destination.icon, contentDescription = destination.label)},
-                label = { destination.label },
-            )
+                    },
+                    icon = { Icon(destination.icon, contentDescription = destination.label)},
+                    label = { destination.label },
+                )
+            }
         }
     }
+
 }
 
 @ExperimentalMaterial3Api

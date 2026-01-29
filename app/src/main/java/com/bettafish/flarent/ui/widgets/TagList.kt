@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.Tag
 
 @Composable
-fun TagList(tags: List<Tag>, modifier: Modifier = Modifier) {
+fun TagList(tags: List<Tag>, modifier: Modifier = Modifier, click: (Tag) -> Unit = {}) {
     Row(modifier = modifier.height(IntrinsicSize.Min)) {
         tags.forEachIndexed { index, tag ->
             val shape = when {
@@ -26,7 +26,7 @@ fun TagList(tags: List<Tag>, modifier: Modifier = Modifier) {
                 index == tags.lastIndex -> RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp)
                 else -> RoundedCornerShape(0.dp)
             }
-            TagBadge(tag, shape = shape, modifier = Modifier.fillMaxHeight())
+            TagBadge(tag, shape = shape, modifier = Modifier.fillMaxHeight(), click = click)
         }
     }
 }
