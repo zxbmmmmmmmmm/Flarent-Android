@@ -1,6 +1,7 @@
 package com.bettafish.flarent.network
 
 import com.bettafish.flarent.models.Discussion
+import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -18,12 +19,16 @@ interface FlarumService {
     // GET /api/discussions/{id}
     @GET("api/discussions/{id}")
     suspend fun getDiscussion(
-        @Path("id") id: String,
-        @Query("include") include: String? = "user,lastPostedUser,tags"
+        @Path("id") id: Int,
+        @Query("page[near]") near:Int = 0,
     ): Discussion
 
     @GET("api/tags")
     suspend fun getTags(
         @Query("include") include: String? = "children,lastPostedDiscussion,parent"
     ): List<Tag>
+
+    @GET("api/posts")
+    fun getPostsById (
+        @Query("filter[id]") id: List<Int>):List<Post>
 }

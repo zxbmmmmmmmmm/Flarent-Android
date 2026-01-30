@@ -2,6 +2,7 @@ package com.bettafish.flarent.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.jasminb.jsonapi.annotations.Id
+import com.github.jasminb.jsonapi.annotations.Relationship
 import com.github.jasminb.jsonapi.annotations.Type
 import kotlinx.serialization.Serializable
 
@@ -23,4 +24,6 @@ class User {
     @JsonProperty("slug")
     var slug: String? = null
 
+    @Relationship("groups")
+    var groups: List<Group>? = null
 }

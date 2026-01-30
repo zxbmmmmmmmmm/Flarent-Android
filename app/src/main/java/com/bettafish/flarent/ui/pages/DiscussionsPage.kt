@@ -110,6 +110,7 @@ fun TagHeader(tag: TagNavArgs){
     Surface(color = colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
         Column() {
             Row() {
+                intArrayOf()
                 val textStyle = MaterialTheme.typography.displayMedium
                 val density = LocalDensity.current
                 val textHeightDp = with(density) { textStyle.lineHeight.toDp() }

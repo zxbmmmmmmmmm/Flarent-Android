@@ -2,6 +2,8 @@ package com.bettafish.flarent.di
 
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
+import com.bettafish.flarent.data.PostsRepository
+import com.bettafish.flarent.data.PostsRepositoryImpl
 import com.bettafish.flarent.data.TagsRepository
 import com.bettafish.flarent.data.TagsRepositoryImpl
 import com.bettafish.flarent.models.Discussion
@@ -45,7 +47,7 @@ val networkModule = module {
     single {
         val objectMapper = ObjectMapper()
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        objectMapper.registerModule(JavaTimeModule()) // This is the fix
+        objectMapper.registerModule(JavaTimeModule())
         Retrofit.Builder()
             .baseUrl(com.bettafish.flarent.BuildConfig.FLARUM_BASE_URL)
             .addConverterFactory(
@@ -66,6 +68,7 @@ val networkModule = module {
 val repositoryModule = module {
     single<DiscussionsRepository> { DiscussionsRepositoryImpl(get()) }
     single<TagsRepository> { TagsRepositoryImpl(get()) }
+    single<PostsRepository> { PostsRepositoryImpl(get()) }
 }
 
 val viewModelModule = module {

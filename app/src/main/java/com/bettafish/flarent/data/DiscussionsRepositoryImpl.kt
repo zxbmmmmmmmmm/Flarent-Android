@@ -10,6 +10,6 @@ class DiscussionsRepositoryImpl(
 
 
 
-    override suspend fun fetchDiscussionById(id: String) = service.getDiscussion(id)
+    override suspend fun fetchDiscussionById(id: Int, near: Int) = service.getDiscussion(id)
 
 }

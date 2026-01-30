@@ -44,4 +44,7 @@ class Discussion {
 
     @Relationship("tags")
     var tags: List<Tag>? = null
+
+    @Relationship("posts")
+    var posts: List<Post>? = null
 }
