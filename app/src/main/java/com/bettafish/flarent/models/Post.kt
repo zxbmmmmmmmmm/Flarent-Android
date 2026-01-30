@@ -13,7 +13,7 @@ import java.time.ZonedDateTime
 class Post
 {
     @Id
-    var id: String? = null
+    var id: Int = 0
 
     @JsonProperty("contentType")
     var contentType: String? = null

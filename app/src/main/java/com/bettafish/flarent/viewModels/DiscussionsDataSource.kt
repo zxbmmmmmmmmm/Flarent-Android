@@ -20,8 +20,6 @@ class DiscussionsDataSource(
         return try {
             val offset = params.key ?: 0
             val items = repository.fetchDiscussions(offset, tag)
-            val dis = repository.fetchDiscussionById(2724)
-
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
             LoadResult.Page(
