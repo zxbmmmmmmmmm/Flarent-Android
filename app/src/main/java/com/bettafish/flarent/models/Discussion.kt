@@ -14,7 +14,7 @@ import kotlin.time.Instant
 @Type("discussions")
 class Discussion {
     @Id
-    var id: String? = null
+    lateinit var id: String
 
     @JsonProperty("title")
     var title: String? = null

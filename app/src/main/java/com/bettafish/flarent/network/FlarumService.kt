@@ -19,8 +19,9 @@ interface FlarumService {
     // GET /api/discussions/{id}
     @GET("api/discussions/{id}")
     suspend fun getDiscussion(
-        @Path("id") id: Int,
+        @Path("id") id: String,
         @Query("page[near]") near:Int = 0,
+        @Query("page[limit]") limit:Int = 20,
     ): Discussion
 
     @GET("api/tags")
@@ -29,6 +30,6 @@ interface FlarumService {
     ): List<Tag>
 
     @GET("api/posts")
-    fun getPostsById (
-        @Query("filter[id]") id: List<Int>):List<Post>
+    suspend fun getPostsById (
+        @Query("filter[id][]") id: List<String>):List<Post>
 }

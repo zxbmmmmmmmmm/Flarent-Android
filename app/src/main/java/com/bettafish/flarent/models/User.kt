@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Type("users")
 class User {
     @Id
-    var id: String? = null
+    lateinit var id: String
 
     @JsonProperty("username")
     var username: String? = null

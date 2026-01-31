@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 @Type("tags")
 class Tag {
     @Id
-    var id: String? = null
+    lateinit var id: String
 
     @JsonProperty("name")
     var name: String? = null

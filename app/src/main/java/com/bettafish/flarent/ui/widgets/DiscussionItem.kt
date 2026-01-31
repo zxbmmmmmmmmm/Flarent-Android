@@ -40,11 +40,12 @@ private val imageWidth = 40.dp
 @Composable
 fun DiscussionItem(discussion: Discussion,
                    modifier: Modifier = Modifier,
+                   click : (Discussion) -> Unit = {},
                    tagClick : (Tag) -> Unit = {}){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Navigate to detail */ }
+            .clickable { click(discussion) }
             .padding(16.dp),) {
         Box{
             Avatar(

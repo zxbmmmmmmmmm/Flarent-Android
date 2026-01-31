@@ -49,14 +49,17 @@ import com.bettafish.flarent.viewModels.TagsViewModel
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.getViewModel
 import java.time.ZonedDateTime
 
 @Composable
 @Destination<RootGraph>
 @ExperimentalMaterial3Api
+@ExperimentalCoroutinesApi
 fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
     val viewModel: TagsViewModel = getViewModel()
     val list by viewModel.tags.collectAsState()
@@ -97,6 +100,7 @@ fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
                                 navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
                             },
                             onDiscussionClick = {
+                                navigator.navigate(DiscussionDetailPageDestination(it.id))
                             })
                     }
                 }

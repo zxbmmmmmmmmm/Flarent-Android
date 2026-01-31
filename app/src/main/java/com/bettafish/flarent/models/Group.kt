@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Type("groups")
 class Group {
     @Id
-    var id: String? = null
+    lateinit var id: String
 
     @JsonProperty("nameSingular")
     var nameSingular: String? = null

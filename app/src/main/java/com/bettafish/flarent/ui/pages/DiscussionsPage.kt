@@ -40,8 +40,10 @@ import com.bettafish.flarent.viewModels.DiscussionsViewModel
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -86,7 +88,9 @@ fun DiscussionsPage(
                 items(count = pagingItems.itemCount) { index ->
                     val discussion = pagingItems[index]
                     discussion?.let { item ->
-                        DiscussionItem(item, tagClick = {
+                        DiscussionItem(item, click = {
+                            navigator.navigate(DiscussionDetailPageDestination(it.id))
+                        }, tagClick = {
                             navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
                         })
                     }

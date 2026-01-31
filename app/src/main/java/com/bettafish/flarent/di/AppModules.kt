@@ -12,6 +12,7 @@ import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
+import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
 import com.bettafish.flarent.viewModels.DiscussionsViewModel
 import com.bettafish.flarent.viewModels.TagsViewModel
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -75,4 +76,5 @@ val viewModelModule = module {
     viewModel { (navArgs: TagNavArgs?) ->
         DiscussionsViewModel(get(), navArgs) }
     viewModel { TagsViewModel(get()) }
+    viewModel { (id : String) -> DiscussionDetailViewModel(get(),get(),id) }
 }
