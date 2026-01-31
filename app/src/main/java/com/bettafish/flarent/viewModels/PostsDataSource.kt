@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 import kotlin.math.min
 
 class PostsDataSource(
@@ -11,6 +12,7 @@ class PostsDataSource(
     val posts: List<Post>,
     val startingPosition: Int,
     val pageSize : Int) : PagingSource<Int, Post>(){
+    private val converter = FlexmarkHtmlConverter.builder().build()
 
     override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         val anchor = state.anchorPosition ?: return null
@@ -28,6 +30,11 @@ class PostsDataSource(
             else{
                 val postIds = posts.subList(offset, offset + pageSize).map(Post::id)
                 postsRepository.fetchPostsById(postIds);
+            }
+            items.forEach { item ->
+                if(item.content == null&& item.contentHtml != null){
+                    item.content = converter.convert(item.contentHtml)
+                }
             }
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)

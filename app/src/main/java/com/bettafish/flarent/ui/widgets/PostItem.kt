@@ -112,9 +112,7 @@ fun PostItem(
                 )
             }
         }
-        post.contentHtml?.let {
-            val converter = FlexmarkHtmlConverter.builder().build()
-            val markdown = converter.convert(it)
+        (post.content as? String?)?.let { markdown ->
             val isDarkTheme = isSystemInDarkTheme()
             val highlightsBuilder = remember(isDarkTheme) {
                 Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
@@ -126,7 +124,7 @@ fun PostItem(
                             content = it.content,
                             node = it.node,
                             highlightsBuilder = highlightsBuilder,
-                            showHeader = true, // optional enable header with code language + copy button
+                            showHeader = true,
                         )
                     },
                     codeFence = {
@@ -134,9 +132,9 @@ fun PostItem(
                             content = it.content,
                             node = it.node,
                             highlightsBuilder = highlightsBuilder,
-                            showHeader = true, // optional enable header with code language + copy button
+                            showHeader = true,
                         )
-                    },))
+                    }),modifier = Modifier.padding(vertical = 12.dp))
         }
 
         // Footer Actions
@@ -178,15 +176,16 @@ fun PostItemPreview() {
         user = sampleUser
         createdAt = ZonedDateTime.now().minusHours(1)
         number = 2
-        contentHtml =  """
-<h3>Hello Markdown</h3>
-<p>This is a simple markdown example with:</p>
-<ul>
-<li>Bullet points</li>
-<li><strong>Bold text</strong></li>
-<li><em>Italic text</em></li>
-</ul>
-<p><a href="https://github.com/mikepenz/multiplatform-markdown-renderer">Check out this link</a></p>
+        content =  """
+### Hello Markdown
+
+This is a simple markdown example with:
+
+- Bullet points
+- **Bold text**
+- *Italic text*
+
+[Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
 """
     }
 
