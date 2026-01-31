@@ -8,6 +8,7 @@ plugins {
 
 android {
     namespace = "com.bettafish.flarent"
+
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -44,6 +45,12 @@ android {
         compose = true
         buildConfig = true
     }
+    packaging {
+        exclude ("META-INF/LICENSE-LGPL-2.1.txt")
+        exclude ("META-INF/LICENSE-LGPL-3.txt")
+        exclude ("META-INF/LICENSE-W3C-TEST")
+        exclude ("META-INF/DEPENDENCIES")
+    }
 }
 
 dependencies {
@@ -75,9 +82,13 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("androidx.paging:paging-runtime:3.3.6")
     implementation("androidx.paging:paging-compose:3.3.6")
+    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
 
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.39.1")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.39.1")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.39.1")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-code:0.39.1")
+    implementation("dev.snipme:highlights:1.1.0")
 
     implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
     ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
@@ -115,4 +126,5 @@ dependencies {
 
     // JSON serialization library, works with the Kotlin serialization plugin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
 }

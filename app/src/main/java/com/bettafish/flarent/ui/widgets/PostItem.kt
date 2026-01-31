@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.widgets
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Reply
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -24,24 +24,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.fromHtml
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.utils.relativeTime
-import com.guru.fontawesomecomposelib.FaIcon
-import com.guru.fontawesomecomposelib.FaIcons
+import com.mikepenz.markdown.coil2.Coil2ImageTransformerImpl
+import com.mikepenz.markdown.compose.components.markdownComponents
+import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
+import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.vladsch.flexmark.html.HtmlRenderer
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.data.MutableDataSet
+import dev.snipme.highlights.Highlights
+import dev.snipme.highlights.model.SyntaxThemes
 import java.time.ZonedDateTime
+
 
 @Composable
 fun PostItem(
@@ -110,22 +112,32 @@ fun PostItem(
                 )
             }
         }
-
-        // Content
-        Text(
-            AnnotatedString.fromHtml(htmlString = post.contentHtml ?: "",
-                linkStyles = TextLinkStyles(
-                    style = SpanStyle(
-                        textDecoration = TextDecoration.Underline,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorScheme.primary
-                    )
-                )),
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth()
-        )
-
+        post.contentHtml?.let {
+            val converter = FlexmarkHtmlConverter.builder().build()
+            val markdown = converter.convert(it)
+            val isDarkTheme = isSystemInDarkTheme()
+            val highlightsBuilder = remember(isDarkTheme) {
+                Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
+            }
+            Markdown(markdown,imageTransformer = Coil2ImageTransformerImpl,
+                components = markdownComponents(
+                    codeBlock = {
+                        MarkdownHighlightedCodeBlock(
+                            content = it.content,
+                            node = it.node,
+                            highlightsBuilder = highlightsBuilder,
+                            showHeader = true, // optional enable header with code language + copy button
+                        )
+                    },
+                    codeFence = {
+                        MarkdownHighlightedCodeFence(
+                            content = it.content,
+                            node = it.node,
+                            highlightsBuilder = highlightsBuilder,
+                            showHeader = true, // optional enable header with code language + copy button
+                        )
+                    },))
+        }
 
         // Footer Actions
         Row(
@@ -167,15 +179,14 @@ fun PostItemPreview() {
         createdAt = ZonedDateTime.now().minusHours(1)
         number = 2
         contentHtml =  """
-### Hello Markdown
-
-This is a simple markdown example with:
-
-- Bullet points
-- **Bold text**
-- *Italic text*
-
-[Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
+<h3>Hello Markdown</h3>
+<p>This is a simple markdown example with:</p>
+<ul>
+<li>Bullet points</li>
+<li><strong>Bold text</strong></li>
+<li><em>Italic text</em></li>
+</ul>
+<p><a href="https://github.com/mikepenz/multiplatform-markdown-renderer">Check out this link</a></p>
 """
     }
 

@@ -30,7 +30,7 @@ class DiscussionDetailViewModel(
 ) : ViewModel() {
     private val _discussion = MutableStateFlow<Discussion?>(null)
     val discussion: StateFlow<Discussion?> = _discussion.asStateFlow()
-    val startingPosition = 50
+    val startingPosition = 0
 
     init {
         loadDiscussion()
