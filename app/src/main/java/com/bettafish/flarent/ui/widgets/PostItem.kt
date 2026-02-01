@@ -74,48 +74,52 @@ fun PostItem(
                     .clip(CircleShape)
             )
 
-            Text(
-                text = post.user?.displayName ?: post.user?.username ?: "",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 12.dp)
-            )
-
-            if (isOp) {
-                Surface(
-                    color = colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
+            Column(modifier = Modifier.padding(start = 12.dp)) {
+                Row{
                     Text(
-                        text = stringResource(R.string.op_badge),
-                        color = colorScheme.onPrimary,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                        text = post.user?.displayName ?: post.user?.username ?: "",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
                     )
+                    if (isOp) {
+                        Surface(
+                            color = colorScheme.primary,
+                            shape = RoundedCornerShape(4.dp),
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.op_badge),
+                                color = colorScheme.onPrimary,
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+
+
+                }
+
+                Row{
+                    post.createdAt?.let {
+                        val displayTime = remember(it) { it.relativeTime }
+                        Text(
+                            text = displayTime,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colorScheme.outline,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                    post.number?.let {
+                        Text(
+                            text = "#$it",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colorScheme.outline,
+                        )
+                    }
                 }
             }
-
-            post.createdAt?.let {
-                val displayTime = remember(it) { it.relativeTime }
-                Text(
-                    text = displayTime,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colorScheme.outline,
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            post.number?.let {
-                Text(
-                    text = "#$it",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colorScheme.outline
-                )
-            }
         }
+
         (post.content as? String?)?.let { markdown ->
             val isDarkTheme = isSystemInDarkTheme()
             val markdownState = rememberMarkdownState(retainState = true) {
