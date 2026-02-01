@@ -17,15 +17,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 
 @Composable
 fun Avatar(avatarUrl: String? = null, name: String? = null, modifier: Modifier = Modifier) {
     if(avatarUrl != null){
         return AsyncImage(
-            model = avatarUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(avatarUrl)
+                .crossfade(true)
+                .build(),
             contentDescription = "Avatar",
             contentScale = ContentScale.Crop,
             modifier = modifier

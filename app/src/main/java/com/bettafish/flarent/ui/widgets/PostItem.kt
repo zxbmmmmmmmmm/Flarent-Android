@@ -23,19 +23,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.utils.relativeTime
-import com.mikepenz.markdown.coil2.Coil2ImageTransformerImpl
+import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.model.rememberMarkdownState
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 import com.vladsch.flexmark.parser.Parser
@@ -43,6 +46,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 import java.time.ZonedDateTime
+import kotlin.comparisons.then
 
 
 @Composable
@@ -114,11 +118,12 @@ fun PostItem(
         }
         (post.content as? String?)?.let { markdown ->
             val isDarkTheme = isSystemInDarkTheme()
-            val highlightsBuilder = remember(isDarkTheme) {
-                Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
+            val markdownState = rememberMarkdownState(retainState = true) {
+                markdown
             }
-            Markdown(markdown,imageTransformer = Coil2ImageTransformerImpl,
-                components = markdownComponents(
+            val markdownComponents = remember(isDarkTheme) {
+                val highlightsBuilder = Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
+                markdownComponents(
                     codeBlock = {
                         MarkdownHighlightedCodeBlock(
                             content = it.content,
@@ -134,7 +139,16 @@ fun PostItem(
                             highlightsBuilder = highlightsBuilder,
                             showHeader = true,
                         )
-                    }),modifier = Modifier.padding(vertical = 12.dp))
+                    },
+                    image = {
+                        AsyncImage(model = it.content, null,modifier = Modifier.fillMaxWidth())
+                    }
+                )
+            }
+            Markdown(markdownState,
+                imageTransformer = Coil3ImageTransformerImpl,
+                components = markdownComponents,
+                modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth())
         }
 
         // Footer Actions

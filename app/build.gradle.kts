@@ -86,7 +86,7 @@ dependencies {
 
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.39.1")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.39.1")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-coil2:0.39.1")
+    implementation("com.mikepenz:multiplatform-markdown-renderer-coil3:0.39.1")
     implementation("com.mikepenz:multiplatform-markdown-renderer-code:0.39.1")
     implementation("dev.snipme:highlights:1.1.0")
 
@@ -107,8 +107,8 @@ dependencies {
     // Coroutines (upgrade)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("io.coil-kt:coil-compose:2.7.0")
-    //Navigation
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
     val nav_version = "2.9.6"
 
     // Jetpack Compose integration
