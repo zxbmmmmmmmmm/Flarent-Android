@@ -15,6 +15,7 @@ import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
 import com.bettafish.flarent.viewModels.DiscussionsViewModel
 import com.bettafish.flarent.viewModels.TagsViewModel
+import com.bettafish.flarent.viewModels.UserProfileViewModel
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -77,4 +78,5 @@ val viewModelModule = module {
         DiscussionsViewModel(get(), navArgs) }
     viewModel { TagsViewModel(get()) }
     viewModel { (id : String) -> DiscussionDetailViewModel(get(),get(),id) }
+    viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
 }

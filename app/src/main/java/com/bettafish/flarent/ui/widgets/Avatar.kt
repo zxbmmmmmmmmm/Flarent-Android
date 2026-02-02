@@ -1,6 +1,7 @@
 package com.bettafish.flarent.ui.widgets
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,11 +39,23 @@ fun Avatar(avatarUrl: String? = null, name: String? = null, modifier: Modifier =
         )
     }
     if(name != null){
-        return Surface (shape=CircleShape,
+        return Surface (
+            shape=CircleShape,
             color = colorScheme.primaryContainer,
-            modifier = modifier){
-            Box(contentAlignment = Alignment.Center) {
-                Text(text = name.take(2))
+            modifier = modifier
+        ){
+            BoxWithConstraints(
+                contentAlignment = Alignment.Center
+            ) {
+                val fontSize = (maxHeight.value * 0.4f).dp
+                val density = androidx.compose.ui.platform.LocalDensity.current
+                val fontSizeSp = with(density) { fontSize.toSp() }
+
+                Text(
+                    text = name.take(2).uppercase(),
+                    fontSize = fontSizeSp,
+                    color = colorScheme.onPrimaryContainer
+                )
             }
         }
     }

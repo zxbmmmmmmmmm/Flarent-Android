@@ -37,4 +37,7 @@ class Post
 
     @Relationship("user")
     var user: User? = null
+
+    @Relationship("discussion")
+    var discussion: Discussion? = null
 }

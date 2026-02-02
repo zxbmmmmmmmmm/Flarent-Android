@@ -11,8 +11,9 @@ interface FlarumService {
     // GET /api/discussions
     @GET("api/discussions")
     suspend fun getDiscussions(
-        @Query("page[offset]") page: Int = 0,
+        @Query("page[offset]") offset: Int = 0,
         @Query("filter[tag]") tag: String? = null,
+        @Query("filter[author]") author: String? = null,
         @Query("include") include: String? = "user,lastPostedUser,tags"
     ): List<Discussion>
 
@@ -30,6 +31,12 @@ interface FlarumService {
     ): List<Tag>
 
     @GET("api/posts")
-    suspend fun getPostsById (
-        @Query("filter[id][]") id: List<String>):List<Post>
+    suspend fun getPosts (
+        @Query("filter[id][]") id: List<String>? = null,
+        @Query("filter[author]") author:String? = null,
+        @Query("filter[type]") type: String? = null,
+        @Query("page[limit]") limit:Int? = null,
+        @Query("page[offset]") offset: Int? = null,
+        @Query("sort") string: String? = null,
+    ):List<Post>
 }

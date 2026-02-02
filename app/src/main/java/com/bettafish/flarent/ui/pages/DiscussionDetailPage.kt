@@ -36,6 +36,7 @@ import com.bettafish.flarent.ui.widgets.PostItem
 import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.getViewModel
@@ -83,7 +84,7 @@ fun DiscussionDetailPage(discussionId: String, navigator: DestinationsNavigator,
                         ) { index ->
                             val post = posts[index]
                             post?.let { item ->
-                                PostItem(item)
+                                PostItem(item,modifier = Modifier.padding(16.dp), userClick = { navigator.navigate(UserProfilePageDestination(it)) })
                             }
                         }
                     }

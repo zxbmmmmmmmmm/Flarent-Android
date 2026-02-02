@@ -42,6 +42,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.getViewModel
@@ -92,6 +93,8 @@ fun DiscussionsPage(
                             navigator.navigate(DiscussionDetailPageDestination(it.id))
                         }, tagClick = {
                             navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
+                        }, userClick = {
+                            navigator.navigate(UserProfilePageDestination(it.username!!))
                         })
                     }
                 }

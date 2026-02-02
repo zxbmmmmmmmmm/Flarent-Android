@@ -20,7 +20,8 @@ class DiscussionsViewModel(
     }
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
-        pagingSourceFactory = { DiscussionsDataSource(repository,
+        pagingSourceFactory = { DiscussionsDataSource(
+            repository,
             LOAD_COUNT,
             navArgs?.slug
         ) }

@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.widgets
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,16 +55,17 @@ fun PostItem(
     post: Post,
     modifier: Modifier = Modifier,
     isOp: Boolean = false,
-    onReplyClick: () -> Unit = {}
+    userClick: (String) -> Unit = {  }
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         // Header
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { post.user?.username?.let{ username -> userClick(username) } },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Avatar(
@@ -79,7 +81,7 @@ fun PostItem(
                     Text(
                         text = post.user?.displayName ?: post.user?.username ?: "",
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                     )
                     if (isOp) {
                         Surface(
@@ -120,6 +122,7 @@ fun PostItem(
             }
         }
 
+        // Content
         (post.content as? String?)?.let { markdown ->
             val isDarkTheme = isSystemInDarkTheme()
             val markdownState = rememberMarkdownState(retainState = true) {
@@ -152,7 +155,9 @@ fun PostItem(
             Markdown(markdownState,
                 imageTransformer = Coil3ImageTransformerImpl,
                 components = markdownComponents,
-                modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth())
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth())
         }
 
         // Footer Actions
@@ -186,8 +191,8 @@ fun PostItem(
 @Composable
 fun PostItemPreview() {
     val sampleUser = User().apply {
-        displayName = "xkai"
-        username = "xkai"
+        displayName = "User"
+        username = "user"
         avatarUrl = null
     }
     val samplePost = Post().apply {

@@ -41,21 +41,26 @@ private val imageWidth = 40.dp
 fun DiscussionItem(discussion: Discussion,
                    modifier: Modifier = Modifier,
                    click : (Discussion) -> Unit = {},
-                   tagClick : (Tag) -> Unit = {}){
+                   tagClick : (Tag) -> Unit = {},
+                   userClick : (User) -> Unit = {}){
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { click(discussion) }
             .padding(16.dp),) {
         Box{
-            Avatar(
-                avatarUrl = discussion.user?.avatarUrl,
-                name = discussion.user?.displayName,
-                modifier = Modifier
-                    .padding(top = 4.dp,end = 4.dp)
-                    .size(imageWidth)
-                    .clip(CircleShape)
-            )
+            discussion.user?.let {
+                Avatar(
+                    avatarUrl = it.avatarUrl,
+                    name = it.displayName,
+                    modifier = Modifier
+                        .padding(top = 4.dp, end = 4.dp)
+                        .size(imageWidth)
+                        .clip(CircleShape)
+                        .clickable { userClick(it) }
+                )
+            }
+
             discussion.commentCount?.let{
                 Badge(
                     containerColor = colorScheme.primary,
@@ -85,7 +90,9 @@ fun DiscussionItem(discussion: Discussion,
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Reply,
                             contentDescription = null,
-                            modifier = Modifier.size(textHeightDp).padding(end = 4.dp),
+                            modifier = Modifier
+                                .size(textHeightDp)
+                                .padding(end = 4.dp),
                             tint = colorScheme.onSurfaceVariant,
                         )
                     }
@@ -93,7 +100,8 @@ fun DiscussionItem(discussion: Discussion,
                         Text(
                             text = it,
                             style = textStyle.copy(platformStyle = PlatformTextStyle(includeFontPadding = false)),
-                            color = colorScheme.onSurfaceVariant
+                            color = colorScheme.onSurfaceVariant,
+                            modifier = Modifier.clickable{ userClick(discussion.lastPostedUser!!) }
                         )
                     }
                     discussion.lastPostedAt?.let { lastPostedAt ->
@@ -113,7 +121,8 @@ fun DiscussionItem(discussion: Discussion,
                 discussion.tags?.let {
                     Box(
                         modifier = Modifier
-                            .wrapContentWidth().align(Alignment.CenterVertically)
+                            .wrapContentWidth()
+                            .align(Alignment.CenterVertically)
                             .height(IntrinsicSize.Min)
                     ) {
                         TagList(it, click = tagClick)

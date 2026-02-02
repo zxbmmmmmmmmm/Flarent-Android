@@ -23,13 +23,15 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-const val POST_PAGE_SIZE = 20
 
 class DiscussionDetailViewModel(
     private val postsRepository: PostsRepository,
     private val discussionsRepository: DiscussionsRepository,
     val discussionId: String
 ) : ViewModel() {
+    companion object{
+        const val POST_PAGE_SIZE = 20
+    }
     private val _discussion = MutableStateFlow<Discussion?>(null)
     val discussion: StateFlow<Discussion?> = _discussion.asStateFlow()
 
@@ -85,7 +87,7 @@ class DiscussionDetailViewModel(
                 ),
                 initialKey = startKey,
                 pagingSourceFactory = {
-                    PostsDataSource(
+                    DiscussionDetailPostsDataSource(
                         postsRepository = postsRepository,
                         posts = discussion.posts!!
                     )
