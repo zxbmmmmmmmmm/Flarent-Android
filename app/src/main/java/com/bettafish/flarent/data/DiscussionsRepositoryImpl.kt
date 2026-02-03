@@ -6,7 +6,7 @@ class DiscussionsRepositoryImpl(
     private val service: FlarumService
 ) : DiscussionsRepository {
 
-    override suspend fun fetchDiscussions(pageOffset: Int, tag:String?, author:String?) = service.getDiscussions(pageOffset, tag, author)
+    override suspend fun fetchDiscussions(pageOffset: Int, tag: String?, author: String?, sort: String?) = service.getDiscussions(pageOffset, tag, author, sort)
 
 
 

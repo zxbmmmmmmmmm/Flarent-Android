@@ -36,6 +36,12 @@ class Discussion {
     @Contextual
     var lastPostedAt: ZonedDateTime? = null
 
+    @JsonProperty("lastPostNumber")
+    var lastPostNumber: Int? = null
+
+    @JsonProperty("lastReadPostNumber")
+    var lastReadPostNumber: Int? = null
+
     @Relationship("user")
     var user: User? = null
 
@@ -47,4 +53,5 @@ class Discussion {
 
     @Relationship("posts")
     var posts: List<Post>? = null
+
 }

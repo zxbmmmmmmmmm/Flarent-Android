@@ -32,7 +32,8 @@ class UserProfileViewModel(
             discussionsRepository,
             LOAD_COUNT,
             null,
-            userName
+            userName,
+            "-createdAt"
         ) }
     ).flow.cachedIn(viewModelScope)
 
