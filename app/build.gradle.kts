@@ -83,6 +83,7 @@ dependencies {
     implementation("androidx.paging:paging-runtime:3.3.6")
     implementation("androidx.paging:paging-compose:3.3.6")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
 
     implementation("com.mikepenz:multiplatform-markdown-renderer:0.39.1")
     implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.39.1")
