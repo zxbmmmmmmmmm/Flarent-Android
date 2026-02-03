@@ -1,9 +1,13 @@
 package com.bettafish.flarent.ui.pages
 
 import android.R.attr.maxHeight
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.LocalOverscrollFactory
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -32,12 +36,16 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -45,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
@@ -75,29 +84,49 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
     val user by viewModel.user.collectAsState()
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val discussions = viewModel.discussions.collectAsLazyPagingItems()
+    val headerColor: Color = MaterialTheme.colorScheme.surfaceContainer
+    val scrollState = rememberScrollState()
+    var headerHeight by remember { mutableIntStateOf(0) }
 
+    val showTitle by remember {
+        derivedStateOf {
+            scrollState.value > headerHeight - 10 || headerHeight == 0
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {},
-                navigationIcon = { BackNavigationIcon { navigator.popBackStack() } }
+                title = {
+                    AnimatedVisibility(
+                        visible = showTitle,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    )  {
+                        Text(user?.displayName ?: userName)
+                    }
+                },
+                navigationIcon = { BackNavigationIcon { navigator.popBackStack() } },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = headerColor)
             )
 
         }
     ){  padding ->
-        BoxWithConstraints(modifier = Modifier.padding(padding)){
+        BoxWithConstraints(
+            modifier = Modifier.padding(padding)){
             val screenHeight = maxHeight
-            val scrollState = rememberScrollState()
             Column(modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(state = scrollState)){
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .onGloballyPositioned { coordinates ->
+                            headerHeight = coordinates.size.height
+                        }
                 ) {
                     user?.let {
-                        ProfileHeader(it)
+                        ProfileHeader(it, modifier = Modifier.background(headerColor).padding(16.dp))
                     }
                 }
                 Column(modifier = Modifier.height(screenHeight)){
@@ -114,7 +143,9 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                             TabRowDefaults.SecondaryIndicator(
                                 Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                             )
-                        }
+                        },
+                        containerColor = headerColor,
+                        divider = {}
                     ) {
                         tabs.forEachIndexed { index, title ->
                             Tab(
@@ -162,7 +193,6 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                             navigator.navigate(UserProfilePageDestination(it))
                                         }
                                     })
-                                HorizontalDivider(modifier = Modifier.padding(start = 16.dp, end = 16.dp , bottom = 8.dp))
                             }
                             1 -> PagingDataList(discussions) { discussion ->
                                 DiscussionItem(discussion,

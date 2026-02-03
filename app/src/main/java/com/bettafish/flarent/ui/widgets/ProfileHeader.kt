@@ -34,46 +34,60 @@ import java.time.ZonedDateTime
 
 @Composable
 fun ProfileHeader(user: User, modifier: Modifier = Modifier){
-    Column(modifier = modifier.padding(12.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)){
-        Avatar(avatarUrl = user.avatarUrl,
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Avatar(
+            avatarUrl = user.avatarUrl,
             name = user.displayName,
             modifier = Modifier
                 .width(64.dp)
                 .height(64.dp)
-                .clip(CircleShape))
+                .clip(CircleShape)
+        )
         Column() {
-            Text(text = user.displayName ?: user.username ?: "",
-                 style = MaterialTheme.typography.titleLarge)
-            if(user.displayName != null&&user.username != null){
-                Text(user.username!!,
+            Text(
+                text = user.displayName ?: user.username ?: "",
+                style = MaterialTheme.typography.titleLarge
+            )
+            if (user.displayName != null && user.username != null) {
+                Text(
+                    user.username!!,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.outline)
+                    color = MaterialTheme.colorScheme.outline
+                )
             }
-            Row(modifier = Modifier.padding(top = 2.dp)){
-                val isOnline = user.lastSeenAt?.isAfter(ZonedDateTime.now().minusMinutes(2)) ?: false
-                if(isOnline){
-                    Surface(shape = CircleShape,
-                        modifier = Modifier.padding(end = 4.dp).height(8.dp).width(8.dp).align(Alignment.CenterVertically),
-                        color = "#00E600".toComposeColor()!!) { }
+            Row(modifier = Modifier.padding(top = 2.dp)) {
+                val isOnline =
+                    user.lastSeenAt?.isAfter(ZonedDateTime.now().minusMinutes(2)) ?: false
+                if (isOnline) {
+                    Surface(
+                        shape = CircleShape,
+                        modifier = Modifier.padding(end = 4.dp).height(8.dp).width(8.dp)
+                            .align(Alignment.CenterVertically),
+                        color = "#00E600".toComposeColor()!!
+                    ) { }
                 }
-                user.lastSeenAt?.let{
-                    val text = if(isOnline) "在线" else "最后登录于 ${it.relativeTime}"
-                    Text(text,
+                user.lastSeenAt?.let {
+                    val text = if (isOnline) "在线" else "最后登录于 ${it.relativeTime}"
+                    Text(
+                        text,
                         modifier = Modifier.padding(end = 8.dp),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.outline)
+                        color = MaterialTheme.colorScheme.outline
+                    )
                 }
                 user.joinTime?.let {
-                    Text("注册于 ${it.relativeTime}",
+                    Text(
+                        "注册于 ${it.relativeTime}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.outline)
+                        color = MaterialTheme.colorScheme.outline
+                    )
                 }
             }
         }
 
-        user.groups?.let{ groups ->
+        if(user.groups?.size != 0){
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                groups.forEach {
+                user.groups!!.forEach {
                     GroupBadge(it)
                 }
             }
@@ -120,11 +134,9 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
 
             StatItem("获赞", user.points.toString())
         }
-        user.bio?.let {
-            Text(it)
-
+        if(!user.bio.isNullOrEmpty()){
+            Text(user.bio!!)
         }
-
     }
 }
 
