@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.bettafish.flarent.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,12 +22,12 @@ import java.lang.ref.WeakReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-open class AppPreferencesUtils private constructor(ctx: Context) {
+open class AppSettingsUtils private constructor(ctx: Context) {
     companion object {
-        private var instance: AppPreferencesUtils? = null
+        private var instance: AppSettingsUtils? = null
 
-        fun getInstance(context: Context): AppPreferencesUtils {
-            return instance ?: AppPreferencesUtils(context).also {
+        fun getInstance(context: Context): AppSettingsUtils {
+            return instance ?: AppSettingsUtils(context).also {
                 instance = it
             }
         }
@@ -44,15 +45,19 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
 
     var token by DataStoreDelegates.string(key = "token")
 
+    var userId by DataStoreDelegates.string(key = "userId")
+
+    var user by DataStoreDelegates.any<User>(key = "user")
+
     private object DataStoreDelegates {
         fun int(
             defaultValue: Int = 0,
             key: String? = null
-        ) = object : ReadWriteProperty<AppPreferencesUtils, Int> {
+        ) = object : ReadWriteProperty<AppSettingsUtils, Int> {
             private var prefValue = defaultValue
             private var initialized = false
 
-            override fun getValue(thisRef: AppPreferencesUtils, property: KProperty<*>): Int {
+            override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): Int {
                 val finalKey = key ?: property.name
                 if (!initialized) {
                     initialized = true
@@ -70,7 +75,7 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
             }
 
             override fun setValue(
-                thisRef: AppPreferencesUtils,
+                thisRef: AppSettingsUtils,
                 property: KProperty<*>,
                 value: Int
             ) {
@@ -86,11 +91,11 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
         fun string(
             defaultValue: String? = null,
             key: String? = null
-        ) = object : ReadWriteProperty<AppPreferencesUtils, String?> {
+        ) = object : ReadWriteProperty<AppSettingsUtils, String?> {
             private var prefValue = defaultValue
             private var initialized = false
 
-            override fun getValue(thisRef: AppPreferencesUtils, property: KProperty<*>): String? {
+            override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): String? {
                 val finalKey = key ?: property.name
                 if (!initialized) {
                     initialized = true
@@ -109,7 +114,7 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
             }
 
             override fun setValue(
-                thisRef: AppPreferencesUtils,
+                thisRef: AppSettingsUtils,
                 property: KProperty<*>,
                 value: String?
             ) {
@@ -129,11 +134,11 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
         fun float(
             defaultValue: Float = 0F,
             key: String? = null
-        ) = object : ReadWriteProperty<AppPreferencesUtils, Float> {
+        ) = object : ReadWriteProperty<AppSettingsUtils, Float> {
             private var prefValue = defaultValue
             private var initialized = false
 
-            override fun getValue(thisRef: AppPreferencesUtils, property: KProperty<*>): Float {
+            override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): Float {
                 val finalKey = key ?: property.name
                 if (!initialized) {
                     initialized = true
@@ -152,7 +157,7 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
             }
 
             override fun setValue(
-                thisRef: AppPreferencesUtils,
+                thisRef: AppSettingsUtils,
                 property: KProperty<*>,
                 value: Float
             ) {
@@ -168,11 +173,11 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
         fun long(
             defaultValue: Long = 0L,
             key: String? = null
-        ) = object : ReadWriteProperty<AppPreferencesUtils, Long> {
+        ) = object : ReadWriteProperty<AppSettingsUtils, Long> {
             private var prefValue = defaultValue
             private var initialized = false
 
-            override fun getValue(thisRef: AppPreferencesUtils, property: KProperty<*>): Long {
+            override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): Long {
                 val finalKey = key ?: property.name
                 if (!initialized) {
                     initialized = true
@@ -191,7 +196,7 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
             }
 
             override fun setValue(
-                thisRef: AppPreferencesUtils,
+                thisRef: AppSettingsUtils,
                 property: KProperty<*>,
                 value: Long
             ) {
@@ -207,11 +212,11 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
         fun boolean(
             defaultValue: Boolean = false,
             key: String? = null
-        ) = object : ReadWriteProperty<AppPreferencesUtils, Boolean> {
+        ) = object : ReadWriteProperty<AppSettingsUtils, Boolean> {
             private var prefValue = defaultValue
             private var initialized = false
 
-            override fun getValue(thisRef: AppPreferencesUtils, property: KProperty<*>): Boolean {
+            override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): Boolean {
                 val finalKey = key ?: property.name
                 if (!initialized) {
                     initialized = true
@@ -230,7 +235,7 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
             }
 
             override fun setValue(
-                thisRef: AppPreferencesUtils,
+                thisRef: AppSettingsUtils,
                 property: KProperty<*>,
                 value: Boolean
             ) {
@@ -247,11 +252,11 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
         inline fun <reified T> any(
                 defaultValue: T? = null,
                 key: String? = null
-        ) = object : ReadWriteProperty<AppPreferencesUtils, T?> {
+        ) = object : ReadWriteProperty<AppSettingsUtils, T?> {
             private var prefValue = defaultValue
             private var initialized = false
 
-            override fun getValue(thisRef: AppPreferencesUtils, property: KProperty<*>): T? {
+            override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): T? {
                 val finalKey = key ?: property.name
                 if (!initialized) {
                     initialized = true
@@ -270,7 +275,7 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
             }
 
             override fun setValue(
-                thisRef: AppPreferencesUtils,
+                thisRef: AppSettingsUtils,
                 property: KProperty<*>,
                 value: T?
             ) {
@@ -285,5 +290,5 @@ open class AppPreferencesUtils private constructor(ctx: Context) {
     }
 }
 
-val Context.appPreferences: AppPreferencesUtils
-    get() = AppPreferencesUtils.getInstance(this)
+val Context.appSettings: AppSettingsUtils
+    get() = AppSettingsUtils.getInstance(this)

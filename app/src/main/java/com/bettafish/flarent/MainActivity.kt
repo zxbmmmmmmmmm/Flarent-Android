@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +59,7 @@ import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransit
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.AccountPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.MainPageDestination
 import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
@@ -146,7 +148,9 @@ fun BottomBar(
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
         ?: NavGraphs.root.startDestination
     val destinationsNavigator = navController.toDestinationsNavigator()
-    val shouldShowBottomBar = currentDestination.route == MainPageDestination.route || currentDestination.route == TagsPageDestination.route
+    val shouldShowBottomBar = currentDestination.route == MainPageDestination.route ||
+            currentDestination.route == TagsPageDestination.route ||
+            currentDestination.route == AccountPageDestination.route
 
     AnimatedVisibility(
         modifier = modifier.fillMaxWidth(),
@@ -184,6 +188,7 @@ enum class BottomBarDestination(
 ) {
     Home(MainPageDestination, Icons.Default.Home, "Home"),
     Tags(TagsPageDestination, Icons.Default.Category, "Tags"),
+    Account(AccountPageDestination, Icons.Default.AccountCircle, "Account"),
 }
 
 @Composable

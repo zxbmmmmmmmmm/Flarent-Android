@@ -1,9 +1,14 @@
 package com.bettafish.flarent.network
 
 import com.bettafish.flarent.models.Discussion
+import com.bettafish.flarent.models.LoginRequest
+import com.bettafish.flarent.models.LoginResponse
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
+import com.bettafish.flarent.models.User
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -40,4 +45,14 @@ interface FlarumService {
         @Query("page[offset]") offset: Int? = null,
         @Query("sort") string: String? = null,
         ):List<Post>
+
+    @GET("api/users/{id}")
+    suspend fun getUser(
+        @Path("id") id: String
+    ): User
+
+    @POST("api/token")
+    suspend fun getToken(
+        @Body body: LoginRequest
+    ): LoginResponse
 }

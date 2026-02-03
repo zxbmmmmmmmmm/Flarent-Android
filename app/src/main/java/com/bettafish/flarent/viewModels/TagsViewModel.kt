@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-public class TagsViewModel (
+class TagsViewModel (
     private val repository: TagsRepository
 ): ViewModel(){
     private val _tags = MutableStateFlow<List<Tag>>(emptyList())
