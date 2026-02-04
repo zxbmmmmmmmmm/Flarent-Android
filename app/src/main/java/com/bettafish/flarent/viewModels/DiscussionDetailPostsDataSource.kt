@@ -46,8 +46,8 @@ class DiscussionDetailPostsDataSource(
             }
 
             items.forEach { item ->
-                if (item.content == null && item.contentHtml != null) {
-                    item.content = HtmlConverter.convert(item.contentHtml)
+                if (item.contentHtml != null) {
+                    item.contentMarkdown = HtmlConverter.convert(item.contentHtml)
                 }
             }
 

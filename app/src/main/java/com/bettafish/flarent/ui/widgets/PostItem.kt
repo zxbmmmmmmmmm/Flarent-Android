@@ -199,7 +199,7 @@ fun PostItemPreview() {
         user = sampleUser
         createdAt = ZonedDateTime.now().minusHours(1)
         number = 2
-        content =  """
+        contentMarkdown =  """
 ### Hello Markdown
 
 This is a simple markdown example with:
