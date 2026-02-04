@@ -91,6 +91,27 @@ dependencies {
     implementation("com.mikepenz:multiplatform-markdown-renderer-code:0.39.1")
     implementation("dev.snipme:highlights:1.1.0")
 
+    val markwonVersion = "4.6.2"
+    implementation("io.noties.markwon:core:${markwonVersion}")
+    implementation("io.noties.markwon:ext-latex:${markwonVersion}")
+    implementation("io.noties.markwon:ext-strikethrough:${markwonVersion}")
+    implementation("io.noties.markwon:ext-tables:${markwonVersion}")
+    implementation("io.noties.markwon:ext-tasklist:${markwonVersion}")
+    implementation("io.noties.markwon:html:${markwonVersion}")
+    implementation("io.noties.markwon:image:${markwonVersion}")
+    implementation("io.noties.markwon:inline-parser:${markwonVersion}")
+    implementation("io.noties.markwon:linkify:${markwonVersion}")
+    implementation("io.noties.markwon:recycler:${markwonVersion}")
+    implementation("io.noties.markwon:recycler-table:${markwonVersion}")
+    implementation("io.noties.markwon:simple-ext:${markwonVersion}")
+    implementation("io.noties.markwon:syntax-highlight:${markwonVersion}")
+
+    modules {
+        module("org.jetbrains:annotations-java5") {
+            replacedBy("org.jetbrains:annotations", "annotations-java5 已经过时并导致冲突")
+        }
+    }
+
     implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
     ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
     implementation("io.github.raamcosta.compose-destinations:bottom-sheet:2.2.0")
