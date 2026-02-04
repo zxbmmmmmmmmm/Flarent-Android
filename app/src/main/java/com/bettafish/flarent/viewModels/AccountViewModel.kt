@@ -27,4 +27,11 @@ class AccountViewModel(
             }
         }
     }
+
+    fun logout(){
+        _user.value = null
+        App.INSTANCE.appSettings.user = null
+        App.INSTANCE.appSettings.token = null
+        App.INSTANCE.appSettings.userId = null
+    }
 }

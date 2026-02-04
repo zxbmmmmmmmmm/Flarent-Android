@@ -1,5 +1,6 @@
 package com.bettafish.flarent.models
 
+import com.bettafish.flarent.utils.ZonedDateTimeSerializer
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.jasminb.jsonapi.annotations.Id
 import com.github.jasminb.jsonapi.annotations.Relationship
@@ -8,8 +9,8 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.time.ZonedDateTime
 
-@Serializable
 @Type("users")
+@Serializable
 class User {
     @Id
     lateinit var id: String
@@ -43,10 +44,12 @@ class User {
 
     @JsonProperty("joinTime")
     @Contextual
+    @Serializable(with = ZonedDateTimeSerializer::class)
     var joinTime: ZonedDateTime? = null
 
     @JsonProperty("lastSeenAt")
     @Contextual
+    @Serializable(with = ZonedDateTimeSerializer::class)
     var lastSeenAt: ZonedDateTime? = null
 
     @JsonProperty("bio")

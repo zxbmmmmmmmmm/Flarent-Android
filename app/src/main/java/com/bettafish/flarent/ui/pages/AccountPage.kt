@@ -1,8 +1,10 @@
 package com.bettafish.flarent.ui.pages
 
 import android.accounts.Account
+import android.widget.Button
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +18,8 @@ import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,9 +66,9 @@ fun AccountPage(modifier: Modifier = Modifier,
             viewModel.refreshUser(resultValue.id)
         }
     )
-    Column(modifier = modifier){
+    Column(modifier = modifier.fillMaxWidth()){
         AccountInfo(user = user,
-            modifier =Modifier.fillMaxWidth().clickable{
+            modifier = Modifier.clickable{
                 if(user != null){
                     navigator.navigate(UserProfilePageDestination(user!!.username!!))
                 }
@@ -73,7 +77,8 @@ fun AccountPage(modifier: Modifier = Modifier,
                 }
             }
                 .statusBarsPadding()
-                .padding(16.dp, 48.dp, 16.dp, 32.dp))
+                .padding(16.dp, 48.dp, 16.dp, 32.dp),
+            onLogoutClick = { viewModel.logout() })
         TextPref(
             title = "设置",
             leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) }
@@ -86,31 +91,42 @@ fun AccountPage(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun AccountInfo(modifier: Modifier = Modifier, user: User? = null){
-    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-        Avatar(user?.avatarUrl, user?.displayName, modifier = Modifier
-            .height(64.dp)
-            .width(64.dp)
-            .clip(CircleShape))
-        Column(modifier = Modifier.align(Alignment.CenterVertically),
-            verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(user?.displayName ?: user?.username?: "未登录", style = MaterialTheme.typography.titleLarge)
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                val textStyle = MaterialTheme.typography.titleSmall
-                val density = LocalDensity.current
-                val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
-                Text(if(user != null) "查看个人空间" else "点击登录",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.outline)
-                Icon(imageVector = Icons.Default.ChevronRight,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(textHeightDp)
-                        .align(Alignment.CenterVertically),
-                    tint = MaterialTheme.colorScheme.outline)
+fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick : () -> Unit  = {}){
+    Box(modifier = modifier.fillMaxWidth()){
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            Avatar(user?.avatarUrl, user?.displayName, modifier = Modifier
+                .height(64.dp)
+                .width(64.dp)
+                .clip(CircleShape))
+            Column(modifier = Modifier.align(Alignment.CenterVertically),
+                verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(user?.displayName ?: user?.username?: "未登录", style = MaterialTheme.typography.titleLarge)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    val textStyle = MaterialTheme.typography.titleSmall
+                    val density = LocalDensity.current
+                    val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
+                    Text(if(user != null) "查看个人空间" else "点击登录",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.outline)
+                    Icon(imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(textHeightDp)
+                            .align(Alignment.CenterVertically),
+                        tint = MaterialTheme.colorScheme.outline)
+                }
+            }
+        }
+        if(user != null){
+            Button(colors = ButtonDefaults.filledTonalButtonColors(),
+                modifier = Modifier.align(Alignment.CenterEnd),
+                onClick = { onLogoutClick() }){
+                Text("退出登录")
             }
         }
     }
+
+
 }
 
 @Composable

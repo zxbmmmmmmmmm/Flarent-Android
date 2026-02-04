@@ -282,7 +282,7 @@ open class AppSettingsUtils private constructor(ctx: Context) {
                 prefValue = value
                 thisRef.coroutineScope.launch {
                     thisRef.preferencesDataStore.edit {
-                        it[stringPreferencesKey(key ?: property.name)] = Json.encodeToString(defaultValue)
+                        it[stringPreferencesKey(key ?: property.name)] = Json.encodeToString(value)
                     }
                 }
             }
