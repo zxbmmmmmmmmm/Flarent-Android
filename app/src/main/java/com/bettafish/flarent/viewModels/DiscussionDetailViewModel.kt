@@ -27,7 +27,8 @@ import kotlin.math.min
 class DiscussionDetailViewModel(
     private val postsRepository: PostsRepository,
     private val discussionsRepository: DiscussionsRepository,
-    val discussionId: String
+    val discussionId: String,
+    val targetPosition: Int = 0
 ) : ViewModel() {
     companion object{
         const val POST_PAGE_SIZE = 20
@@ -37,8 +38,6 @@ class DiscussionDetailViewModel(
 
     private val _initialScrollIndex = MutableStateFlow<Int?>(null)
     val initialScrollIndex = _initialScrollIndex.asStateFlow()
-
-    val targetPosition = 0 //TODO: Update targetPosition when read from discussion.
 
     init {
         loadDiscussion()

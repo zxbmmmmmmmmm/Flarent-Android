@@ -47,8 +47,8 @@ import kotlin.text.get
 @Composable
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalCoroutinesApi::class)
-fun DiscussionDetailPage(discussionId: String, navigator: DestinationsNavigator, modifier: Modifier = Modifier){
-    val viewModel: DiscussionDetailViewModel = getViewModel() { parametersOf(discussionId) }
+fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigator: DestinationsNavigator, modifier: Modifier = Modifier){
+    val viewModel: DiscussionDetailViewModel = getViewModel() { parametersOf(discussionId, targetPosition) }
     val discussion by viewModel.discussion.collectAsState()
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val initialIndex by viewModel.initialScrollIndex.collectAsState()

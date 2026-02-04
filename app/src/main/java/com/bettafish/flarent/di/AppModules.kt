@@ -100,7 +100,7 @@ val viewModelModule = module {
         DiscussionsViewModel(get(), navArgs) }
     viewModel { TagsViewModel(get()) }
     viewModel { AccountViewModel(get()) }
-    viewModel { (id : String) -> DiscussionDetailViewModel(get(),get(),id) }
+    viewModel { (id : String, targetPosition:Int) -> DiscussionDetailViewModel(get(),get(),id, targetPosition) }
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
 }

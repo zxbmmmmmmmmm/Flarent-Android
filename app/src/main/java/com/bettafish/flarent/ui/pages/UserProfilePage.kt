@@ -183,7 +183,7 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                         color = MaterialTheme.colorScheme.secondary,
                                         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
                                             .clickable{
-                                                navigator.navigate(DiscussionDetailPageDestination(post.discussion!!.id))
+                                                navigator.navigate(DiscussionDetailPageDestination(post.discussion!!.id, post.discussion?.lastReadPostNumber?:0))
                                             })
                                 }
                                 PostItem(post,

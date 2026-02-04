@@ -90,7 +90,7 @@ fun DiscussionsPage(
                     val discussion = pagingItems[index]
                     discussion?.let { item ->
                         DiscussionItem(item, click = {
-                            navigator.navigate(DiscussionDetailPageDestination(it.id))
+                            navigator.navigate(DiscussionDetailPageDestination(it.id, it.lastReadPostNumber?:0))
                         }, tagClick = {
                             navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
                         }, userClick = {

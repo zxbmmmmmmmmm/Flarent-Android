@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,13 +47,14 @@ fun DiscussionItem(discussion: Discussion,
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .clickable { click(discussion) }
             .padding(16.dp),) {
         Box{
             discussion.user?.let {
                 Avatar(
                     avatarUrl = it.avatarUrl,
-                    name = it.displayName,
+                    name = it.displayName ?: it.username,
                     modifier = Modifier
                         .padding(top = 4.dp, end = 4.dp)
                         .size(imageWidth)
@@ -60,16 +62,21 @@ fun DiscussionItem(discussion: Discussion,
                         .clickable { userClick(it) }
                 )
             }
-
-            discussion.commentCount?.let{
+            var badgeColor = colorScheme.surfaceContainer
+            var badgeText = discussion.lastPostNumber
+            if(discussion.lastReadPostNumber != null && discussion.lastReadPostNumber!! - discussion.lastPostNumber!! > 0){
+                badgeColor = colorScheme.primary
+                badgeText = discussion.lastReadPostNumber!! - discussion.lastPostNumber!!
+            }
+            badgeText?.let{
                 Badge(
-                    containerColor = colorScheme.primary,
+                    containerColor = badgeColor,
                     modifier = Modifier.align(Alignment.TopEnd)){
                     Text(it.toString())
                 }
             }
         }
-        Column(modifier = Modifier.padding(start = 12.dp)) {
+        Column(modifier = Modifier.padding(start = 12.dp).fillMaxHeight(), verticalArrangement = Arrangement.SpaceEvenly) {
             discussion.title?.let { Text(text = it) }
 
             val textStyle = MaterialTheme.typography.bodyMedium
@@ -134,7 +141,7 @@ fun DiscussionItem(discussion: Discussion,
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DiscussionItemPreview() {
     val discussion: Discussion = Discussion().apply {
@@ -142,7 +149,13 @@ fun DiscussionItemPreview() {
         slug = "discussion-slug"
         commentCount = 10
         participantCount = 5
+        lastPostNumber = 24
         lastPostedUser = User().apply {
+            displayName = "John Doe"
+            username = "AA"
+            id = "1"
+        }
+        user = User().apply {
             displayName = "John Doe"
             username = "AA"
             id = "1"
