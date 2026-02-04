@@ -25,6 +25,8 @@ class Post
     @Contextual
     var content: Any? = null
 
+    internal var contentMarkdown: String? = null
+
     @JsonProperty("contentHtml")
     val contentHtml: String? = null
 
