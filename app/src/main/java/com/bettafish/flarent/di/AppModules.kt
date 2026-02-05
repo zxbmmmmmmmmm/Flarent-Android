@@ -1,6 +1,7 @@
 package com.bettafish.flarent.di
 
 import com.bettafish.flarent.App
+import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
 import com.bettafish.flarent.data.PostsRepository
@@ -77,7 +78,7 @@ val networkModule = module {
         resourceConverter.disableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.REQUIRE_RESOURCE_ID)
         Retrofit.Builder()
             .client(get())
-            .baseUrl(com.bettafish.flarent.BuildConfig.FLARUM_BASE_URL)
+            .baseUrl(BuildConfig.FLARUM_BASE_URL)
             .addConverterFactory(
                 JSONAPIConverterFactory(resourceConverter)
             )

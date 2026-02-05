@@ -20,16 +20,20 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
@@ -39,6 +43,7 @@ import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.rememberMarkdownState
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
@@ -46,6 +51,8 @@ import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.intellij.markdown.flavours.gfm.GFMElementTypes
 import java.time.ZonedDateTime
 import kotlin.comparisons.then
 
@@ -55,7 +62,9 @@ fun PostItem(
     post: Post,
     modifier: Modifier = Modifier,
     isOp: Boolean = false,
-    userClick: (String) -> Unit = {  }
+    userClick: (username: String) -> Unit = {  },
+    postClick: (id: String) -> Unit = {  },
+    discussionClick: (id: String) -> Unit = {  }
 ) {
     Column(
         modifier = modifier
@@ -125,7 +134,7 @@ fun PostItem(
         // Content
         post.contentMarkdown?.let { markdown ->
             val isDarkTheme = isSystemInDarkTheme()
-            val markdownState = rememberMarkdownState(retainState = true) {
+            val markdownState = rememberMarkdownState(post.id, retainState = true) {
                 markdown
             }
             val markdownComponents = remember(isDarkTheme) {
@@ -152,12 +161,46 @@ fun PostItem(
                     }
                 )
             }
-            Markdown(markdownState,
-                imageTransformer = Coil3ImageTransformerImpl,
-                components = markdownComponents,
-                modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .fillMaxWidth())
+            val defaultUriHandler = LocalUriHandler.current
+            CompositionLocalProvider(LocalUriHandler provides object : UriHandler {
+                override fun openUri(url: String) {
+                    if (url.contains(BuildConfig.FLARUM_BASE_URL)) {
+                        val httpUrl = url.toHttpUrl()
+                        val segments = httpUrl.pathSegments
+                        val queryMap = httpUrl.query?.split("&")?.associate {
+                            val (key, value) = it.split("=")
+                            key to value
+                        } ?: emptyMap()
+                        when (segments.getOrNull(0)) {
+                            "d" -> {
+                                val discussion = segments.getOrNull(1)
+                                val number = segments.getOrNull(2)
+                                val post = queryMap["post"]
+                            }
+                            "u" -> {
+                                val user = segments.getOrNull(1)
+                                user?.let { userClick(it) }
+                            }
+                        }
+                    } else {
+                        defaultUriHandler.openUri(url)
+                    }
+                }
+            }) {
+                Markdown(markdownState = markdownState,
+                    imageTransformer = Coil3ImageTransformerImpl,
+                    components = markdownComponents,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth(),
+                    annotator = markdownAnnotator { content, child ->
+                        if (child.type == GFMElementTypes.STRIKETHROUGH) {
+                            append("Replaced you :)")
+                            true // return true to consume this ASTNode child
+                        } else false
+                    })
+            }
+
         }
 
         // Footer Actions
@@ -196,6 +239,7 @@ fun PostItemPreview() {
         avatarUrl = null
     }
     val samplePost = Post().apply {
+        id = "1"
         user = sampleUser
         createdAt = ZonedDateTime.now().minusHours(1)
         number = 2
@@ -211,8 +255,7 @@ This is a simple markdown example with:
 [Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
 """
     }
-
     MaterialTheme {
-        PostItem(post = samplePost, isOp = true)
+        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }
