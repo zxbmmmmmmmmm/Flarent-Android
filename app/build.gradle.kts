@@ -92,8 +92,8 @@ dependencies {
     implementation("dev.snipme:highlights:1.1.0")
 
     implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
+    implementation("io.github.raamcosta.compose-destinations:bottom-sheet:2.3.0")
     ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
-    implementation("io.github.raamcosta.compose-destinations:bottom-sheet:2.2.0")
 
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

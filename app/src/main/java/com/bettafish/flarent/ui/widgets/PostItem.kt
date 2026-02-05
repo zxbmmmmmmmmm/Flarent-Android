@@ -64,7 +64,7 @@ fun PostItem(
     isOp: Boolean = false,
     userClick: (username: String) -> Unit = {  },
     postClick: (id: String) -> Unit = {  },
-    discussionClick: (id: String) -> Unit = {  }
+    discussionClick: (id: String, number: Int?) -> Unit = { _,_ -> }
 ) {
     Column(
         modifier = modifier
@@ -176,6 +176,12 @@ fun PostItem(
                                 val discussion = segments.getOrNull(1)
                                 val number = segments.getOrNull(2)
                                 val post = queryMap["post"]
+                                if(post != null){
+                                    postClick(post)
+                                }
+                                else if (discussion != null){
+                                    discussionClick(discussion, number?.toIntOrNull())
+                                }
                             }
                             "u" -> {
                                 val user = segments.getOrNull(1)

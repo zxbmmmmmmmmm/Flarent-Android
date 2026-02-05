@@ -69,6 +69,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -192,7 +193,12 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                         if(it != user?.username){
                                             navigator.navigate(UserProfilePageDestination(it))
                                         }
-                                    })
+                                    },
+                                    postClick = {
+                                        navigator.navigate(PostBottomSheetDestination(it))
+                                    },
+                                    discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) }
+                                )
                             }
                             1 -> PagingDataList(discussions) { discussion ->
                                 DiscussionItem(discussion,

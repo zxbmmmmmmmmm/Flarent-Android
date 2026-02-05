@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
@@ -25,16 +26,22 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.navigation.BottomSheetNavigator
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,6 +57,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.plusAssign
 import com.bettafish.flarent.ui.pages.DiscussionsPage
 import com.bettafish.flarent.ui.pages.TagsPage
 import com.bettafish.flarent.ui.theme.FlarentTheme
@@ -89,19 +97,27 @@ class MainActivity : ComponentActivity() {
 @ExperimentalMaterial3Api
 fun FlarentApp() {
     val navController = rememberNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    navController.navigatorProvider += bottomSheetNavigator
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
         ?: NavGraphs.root.startDestination
 
     Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
-        DestinationsNavHost(
-            navController = navController,
-            modifier = Modifier
-                .fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
-            navGraph = NavGraphs.root,
-            defaultTransitions = SlideTransitions,)
+        ModalBottomSheetLayout(
+            bottomSheetNavigator = bottomSheetNavigator,
+            sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+            modifier = Modifier.fillMaxSize()
+        ){
+            DestinationsNavHost(
+                navController = navController,
+                modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
+                navGraph = NavGraphs.root,
+                defaultTransitions = SlideTransitions,)
+        }
+
+
     }
 }
-
 object SlideTransitions : NavHostAnimatedDestinationStyle() {
     private val AnimationSpec = tween<IntOffset>(durationMillis = 300, easing = FastOutSlowInEasing)
 
