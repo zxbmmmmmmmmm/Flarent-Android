@@ -176,7 +176,7 @@ fun GlobalImagePreviewerProvider(
             }
         }
 
-        BackHandler(enabled = previewerState.visible || showSheet) {
+        BackHandler(enabled = previewerState.canClose || previewerState.animating || showSheet) {
             if (showSheet) {
                 showSheet = false
             } else {
