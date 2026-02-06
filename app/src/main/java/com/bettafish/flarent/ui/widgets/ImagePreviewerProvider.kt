@@ -1,6 +1,12 @@
 package com.bettafish.flarent.ui.widgets
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,31 +46,52 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
+import com.bettafish.flarent.utils.ImageHelper
 import com.jvziyaoyao.scale.image.previewer.ImagePreviewer
 import com.jvziyaoyao.scale.zoomable.pager.PagerGestureScope
 import com.jvziyaoyao.scale.zoomable.previewer.rememberPreviewerState
 import kotlinx.coroutines.launch
 
+
+
 val LocalImagePreviewer = compositionLocalOf<(List<String>, Int) -> Unit> {
     error("LocalImagePreviewer not provided")
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GlobalImagePreviewerProvider(
     content: @Composable () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    var images by remember { mutableStateOf(emptyList<String>()) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
+    val imageHelper = remember { ImageHelper(context) }
+
+    var images by remember { mutableStateOf(emptyList<String>()) }
     val previewerState = rememberPreviewerState(pageCount = { images.size })
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
     var currentMenuUrl by remember { mutableStateOf<String?>(null) }
+
+    // 用于 Android 9 及以下处理权限请求后的回调
+    var pendingSaveUrl by remember { mutableStateOf<String?>(null) }
+
+    // 权限启动器 (Android 9-)
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted && pendingSaveUrl != null) {
+            scope.launch {
+                val result = imageHelper.saveImageToDownloads(pendingSaveUrl!!)
+                showResultToast(context, result, "已保存到下载目录")
+            }
+        } else if (!isGranted) {
+            Toast.makeText(context, "需要存储权限才能保存图片", Toast.LENGTH_SHORT).show()
+        }
+        pendingSaveUrl = null
+    }
 
     val showPreview: (List<String>, Int) -> Unit = { urls, index ->
         images = urls
@@ -109,13 +136,23 @@ fun GlobalImagePreviewerProvider(
                         .padding(top = 8.dp, bottom = 48.dp, start = 24.dp, end = 24.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    val context = LocalContext.current
-                    val scope = rememberCoroutineScope()
                     SheetIconButton(
                         text = "保存",
                         icon = Icons.Default.Download,
                         onClick = {
-                            currentMenuUrl?.let { }
+                            currentMenuUrl?.let { url ->
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                    // Android 9-: 申请权限
+                                    pendingSaveUrl = url
+                                    permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                } else {
+                                    // Android 10+: 直接保存
+                                    scope.launch {
+                                        val result = imageHelper.saveImageToDownloads(url)
+                                        showResultToast(context, result, "已保存到下载目录")
+                                    }
+                                }
+                            }
                             showSheet = false
                         }
                     )
@@ -124,7 +161,14 @@ fun GlobalImagePreviewerProvider(
                         text = "分享",
                         icon = Icons.Default.Share,
                         onClick = {
-                            currentMenuUrl?.let {  }
+                            currentMenuUrl?.let { url ->
+                                scope.launch {
+                                    val result = imageHelper.shareImage(url)
+                                    if (result.isFailure) {
+                                        Toast.makeText(context, "分享失败: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
                             showSheet = false
                         }
                     )
@@ -139,6 +183,14 @@ fun GlobalImagePreviewerProvider(
                 scope.launch { previewerState.close() }
             }
         }
+    }
+}
+
+private fun showResultToast(context: Context, result: Result<String>, successMsg: String) {
+    if (result.isSuccess) {
+        Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
+    } else {
+        Toast.makeText(context, "操作失败: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
     }
 }
 
