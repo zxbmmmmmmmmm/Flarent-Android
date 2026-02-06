@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.widgets
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import java.time.ZonedDateTime
 @Composable
 fun ProfileHeader(user: User, modifier: Modifier = Modifier){
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        val imagePreviewer = LocalImagePreviewer.current
         Avatar(
             avatarUrl = user.avatarUrl,
             name = user.displayName,
@@ -42,6 +44,11 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
                 .width(64.dp)
                 .height(64.dp)
                 .clip(CircleShape)
+                .clickable{
+                    user.avatarUrl?.let {
+                        imagePreviewer(listOf(it),0)
+                    }
+                }
         )
         Column() {
             Text(
