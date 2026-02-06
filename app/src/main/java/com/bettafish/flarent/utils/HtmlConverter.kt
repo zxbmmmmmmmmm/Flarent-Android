@@ -35,7 +35,6 @@ class PostMentionNodeRenderer : HtmlNodeRenderer {
 
             out.append("[").append(text).append("](").append(newHref).append(")")
         } else {
-            // 回退逻辑：直接输出标准链接，不加额外的 post 参数
             out.append("[").append(text).append("](").append(href).append(")")
         }
 

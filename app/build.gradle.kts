@@ -95,6 +95,9 @@ dependencies {
     implementation("io.github.raamcosta.compose-destinations:bottom-sheet:2.3.0")
     ksp("io.github.raamcosta.compose-destinations:ksp:2.3.0")
 
+    val scale_version = "1.1.1-beta.3"
+    implementation("com.jvziyaoyao.scale:image-viewer:$scale_version")
+
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")

@@ -5,12 +5,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
@@ -37,24 +36,19 @@ import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.relativeTime
-import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.rememberMarkdownState
-import com.vladsch.flexmark.html.HtmlRenderer
-import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
-import com.vladsch.flexmark.parser.Parser
-import com.vladsch.flexmark.util.data.MutableDataSet
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.intellij.markdown.flavours.gfm.GFMElementTypes
 import java.time.ZonedDateTime
-import kotlin.comparisons.then
 
 
 @Composable
@@ -64,8 +58,10 @@ fun PostItem(
     isOp: Boolean = false,
     userClick: (username: String) -> Unit = {  },
     postClick: (id: String) -> Unit = {  },
-    discussionClick: (id: String, number: Int?) -> Unit = { _,_ -> }
+    discussionClick: (id: String, number: Int?) -> Unit = { _,_ -> },
+    imageClick: ((String) -> Unit) ?= null
 ) {
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -74,7 +70,7 @@ fun PostItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { post.user?.username?.let{ username -> userClick(username) } },
+                .clickable { post.user?.username?.let { username -> userClick(username) } },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Avatar(
@@ -156,9 +152,6 @@ fun PostItem(
                             showHeader = true,
                         )
                     },
-                    image = {
-                        AsyncImage(model = it.content, null,modifier = Modifier.fillMaxWidth())
-                    }
                 )
             }
             val defaultUriHandler = LocalUriHandler.current
@@ -193,18 +186,22 @@ fun PostItem(
                     }
                 }
             }) {
-                Markdown(markdownState = markdownState,
-                    imageTransformer = Coil3ImageTransformerImpl,
-                    components = markdownComponents,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth(),
-                    annotator = markdownAnnotator { content, child ->
-                        if (child.type == GFMElementTypes.STRIKETHROUGH) {
-                            append("Replaced you :)")
-                            true // return true to consume this ASTNode child
-                        } else false
-                    })
+                SelectionContainer{
+                    val imagePreviewer = LocalImagePreviewer.current
+                    Markdown(
+                        markdownState = markdownState,
+                        imageTransformer = ClickableCoil3ImageTransformer(imageClick ?:
+                        ({ url ->
+                            imagePreviewer(listOf(url), 0)
+                        })
+                        ),
+                        components = markdownComponents,
+                        modifier = Modifier
+                            .padding(vertical = 12.dp)
+                            .fillMaxWidth(),
+                    )
+                }
+
             }
 
         }

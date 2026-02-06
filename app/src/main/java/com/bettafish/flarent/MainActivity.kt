@@ -61,6 +61,7 @@ import androidx.navigation.plusAssign
 import com.bettafish.flarent.ui.pages.DiscussionsPage
 import com.bettafish.flarent.ui.pages.TagsPage
 import com.bettafish.flarent.ui.theme.FlarentTheme
+import com.bettafish.flarent.ui.widgets.GlobalImagePreviewerProvider
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.animations.defaults.DefaultFadingTransitions
@@ -101,22 +102,23 @@ fun FlarentApp() {
     navController.navigatorProvider += bottomSheetNavigator
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
         ?: NavGraphs.root.startDestination
-
     Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
-        ModalBottomSheetLayout(
-            bottomSheetNavigator = bottomSheetNavigator,
-            sheetBackgroundColor = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.fillMaxSize()
-        ){
-            DestinationsNavHost(
-                navController = navController,
-                modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
-                navGraph = NavGraphs.root,
-                defaultTransitions = SlideTransitions,)
+        GlobalImagePreviewerProvider {
+            ModalBottomSheetLayout(
+                bottomSheetNavigator = bottomSheetNavigator,
+                sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+                modifier = Modifier.fillMaxSize()
+            ){
+                DestinationsNavHost(
+                    navController = navController,
+                    modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
+                    navGraph = NavGraphs.root,
+                    defaultTransitions = SlideTransitions)
+            }
         }
 
-
     }
+
 }
 object SlideTransitions : NavHostAnimatedDestinationStyle() {
     private val AnimationSpec = tween<IntOffset>(durationMillis = 300, easing = FastOutSlowInEasing)
