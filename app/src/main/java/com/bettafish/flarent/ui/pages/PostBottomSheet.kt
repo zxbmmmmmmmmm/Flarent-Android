@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.PostItem
 import com.bettafish.flarent.viewModels.PostViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -40,6 +41,7 @@ fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
     val post = viewModel.post.collectAsState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+    val imagePreviewer = LocalImagePreviewer.current
     Box(modifier = Modifier
         .fillMaxWidth()
         .defaultMinSize(minHeight = screenHeight / 2)
@@ -50,7 +52,8 @@ fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
                 modifier = Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp),
                 userClick = { navigator.navigate(UserProfilePageDestination(it)) },
                 discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) },
-                postClick = { navigator.navigate(PostBottomSheetDestination(it)) })
+                postClick = { navigator.navigate(PostBottomSheetDestination(it)) },
+                imageClick = { url-> imagePreviewer(listOf(url),0) })
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

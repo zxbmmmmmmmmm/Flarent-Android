@@ -62,6 +62,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
+import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.PostItem
 import com.bettafish.flarent.ui.widgets.ProfileHeader
 import com.bettafish.flarent.viewModels.UserProfileViewModel
@@ -187,6 +188,7 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                                 navigator.navigate(DiscussionDetailPageDestination(post.discussion!!.id, post.discussion?.lastReadPostNumber?:0))
                                             })
                                 }
+                                val imagePreviewer = LocalImagePreviewer.current
                                 PostItem(post,
                                     modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
                                     userClick = {
@@ -197,7 +199,8 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                     postClick = {
                                         navigator.navigate(PostBottomSheetDestination(it))
                                     },
-                                    discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) }
+                                    discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0))},
+                                    imageClick = { url-> imagePreviewer(listOf(url),0) }
                                 )
                             }
                             1 -> PagingDataList(discussions) { discussion ->

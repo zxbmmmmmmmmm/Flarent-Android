@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
@@ -59,7 +61,7 @@ fun PostItem(
     userClick: (username: String) -> Unit = {  },
     postClick: (id: String) -> Unit = {  },
     discussionClick: (id: String, number: Int?) -> Unit = { _,_ -> },
-    imageClick: ((String) -> Unit) ?= null
+    imageClick: ((String) -> Unit) = {}
 ) {
 
     Column(
@@ -187,14 +189,9 @@ fun PostItem(
                 }
             }) {
                 SelectionContainer{
-                    val imagePreviewer = LocalImagePreviewer.current
                     Markdown(
                         markdownState = markdownState,
-                        imageTransformer = ClickableCoil3ImageTransformer(imageClick ?:
-                        ({ url ->
-                            imagePreviewer(listOf(url), 0)
-                        })
-                        ),
+                        imageTransformer = ClickableCoil3ImageTransformer(imageClick),
                         components = markdownComponents,
                         modifier = Modifier
                             .padding(vertical = 12.dp)
@@ -208,27 +205,20 @@ fun PostItem(
 
         // Footer Actions
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().offset(12.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
+            IconButton(onClick = {}){
                 Icon(Icons.AutoMirrored.Filled.Reply,
                     tint = colorScheme.outline,
                     contentDescription = null)
-                Text(
-                    text = stringResource(R.string.reply),
-                    color = colorScheme.outline,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
             }
-            Icon(Icons.Default.MoreHoriz,
-                tint = colorScheme.outline,
-                contentDescription =  null)
+            IconButton(onClick = {}){
+                Icon(Icons.Default.MoreHoriz,
+                    tint = colorScheme.outline,
+                    contentDescription =  null)
+            }
         }
     }
 }
