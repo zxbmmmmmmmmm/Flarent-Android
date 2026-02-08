@@ -71,6 +71,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
+import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -200,7 +201,17 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                         navigator.navigate(PostBottomSheetDestination(it))
                                     },
                                     discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0))},
-                                    imageClick = { url-> imagePreviewer(listOf(url),0) }
+                                    imageClick = { url-> imagePreviewer(listOf(url),0)},
+                                    replyClick = { name, postId ->
+                                        post.discussion?.id?.let {
+                                            val content = "@\"$name\"#p$postId "
+                                            navigator.navigate(
+                                                ReplyBottomSheetDestination(
+                                                    it,
+                                                    content = content
+                                                )
+                                            )
+                                        }}
                                 )
                             }
                             1 -> PagingDataList(discussions) { discussion ->

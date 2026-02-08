@@ -27,6 +27,7 @@ import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailP
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination.invoke
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination.invoke
+import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination.invoke
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -53,7 +54,12 @@ fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
                 userClick = { navigator.navigate(UserProfilePageDestination(it)) },
                 discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) },
                 postClick = { navigator.navigate(PostBottomSheetDestination(it)) },
-                imageClick = { url-> imagePreviewer(listOf(url),0) })
+                imageClick = { url-> imagePreviewer(listOf(url),0) },
+                replyClick = { name, postId ->
+                    post.value?.discussion?.id?.let {
+                        val content = "@\"$name\"#p$postId "
+                        navigator.navigate(ReplyBottomSheetDestination(it, content = content))
+                    }})
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

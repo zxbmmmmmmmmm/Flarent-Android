@@ -167,7 +167,14 @@ fun ReplyBottomSheet(discussionId: String,
 @Composable
 fun MarkdownEditBox(viewModel: ReplyViewModel){
     Column{
-        var textState: TextFieldValue by remember { mutableStateOf(TextFieldValue(viewModel.content.value)) }
+        var textState: TextFieldValue by remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = viewModel.content.value,
+                    selection = TextRange(viewModel.content.value.length)
+                )
+            )
+        }
         val focusRequester = remember { FocusRequester() }
         Row(horizontalArrangement = Arrangement.SpaceEvenly){
             ToolbarButton(Icons.Default.FormatBold, "加粗") {

@@ -61,7 +61,8 @@ fun PostItem(
     userClick: (username: String) -> Unit = {  },
     postClick: (id: String) -> Unit = {  },
     discussionClick: (id: String, number: Int?) -> Unit = { _,_ -> },
-    imageClick: ((String) -> Unit) = {}
+    imageClick: ((String) -> Unit) = {},
+    replyClick: (name: String, postId:String) -> Unit = { _,_ -> }
 ) {
 
     Column(
@@ -209,7 +210,9 @@ fun PostItem(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {}){
+            IconButton(onClick = {
+                replyClick(post.user?.displayName ?: post.user?.username ?: "", post.id)
+            }){
                 Icon(Icons.AutoMirrored.Filled.Reply,
                     tint = colorScheme.outline,
                     contentDescription = null)

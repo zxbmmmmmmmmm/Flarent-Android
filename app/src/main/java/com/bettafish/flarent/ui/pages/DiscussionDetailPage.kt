@@ -126,7 +126,17 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                                     userClick = { navigator.navigate(UserProfilePageDestination(it)) },
                                     discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) },
                                     postClick = { navigator.navigate(PostBottomSheetDestination(it)) },
-                                    imageClick = { url-> imagePreviewer(listOf(url),0) }
+                                    imageClick = { url-> imagePreviewer(listOf(url),0) },
+                                    replyClick = { name, postId ->
+                                        post.discussion?.id?.let {
+                                            val content = "@\"$name\"#p$postId "
+                                            navigator.navigate(
+                                                ReplyBottomSheetDestination(
+                                                    it,
+                                                    content = content
+                                                )
+                                            )
+                                        }}
                                 )
                             }
                         }
