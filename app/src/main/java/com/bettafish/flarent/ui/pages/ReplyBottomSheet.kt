@@ -40,6 +40,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bettafish.flarent.viewModels.ReplyViewModel
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.m3.Markdown
 import com.ramcosta.composedestinations.annotation.Destination
@@ -65,14 +67,18 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 import java.time.format.TextStyle
 
 @Composable
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
-fun ReplyBottomSheet(discussionId: String, title: String?){
+fun ReplyBottomSheet(discussionId: String, title: String? = null, content: String? = null){
+    val viewModel : ReplyViewModel = getViewModel{ parametersOf(discussionId, content) }
+    val content by viewModel.content.collectAsState()
+
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    var selectedIndex by remember { mutableIntStateOf(0) }
     val options = listOf("编辑", "预览")
     val pagerState = rememberPagerState { options.size }
     val coroutineScope = rememberCoroutineScope()
@@ -108,19 +114,19 @@ fun ReplyBottomSheet(discussionId: String, title: String?){
         HorizontalPager(state = pagerState) {
             when (it) {
                 0 -> {
-                    MarkdownEditBox()
+                    MarkdownEditBox(viewModel)
                 }
                 1 -> {
-                    Markdown("预览", modifier = Modifier.fillMaxSize().padding(16.dp))
+                    Markdown(content, modifier = Modifier.fillMaxSize().padding(16.dp))
                 }
             }
         }
     }
 }
 @Composable
-fun MarkdownEditBox(){
+fun MarkdownEditBox(viewModel: ReplyViewModel){
     Column{
-        var textState: TextFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+        var textState: TextFieldValue by remember { mutableStateOf(TextFieldValue(viewModel.content.value)) }
         val focusRequester = remember { FocusRequester() }
         Row(horizontalArrangement = Arrangement.SpaceEvenly){
             ToolbarButton(Icons.Default.FormatBold, "加粗") {
@@ -144,7 +150,9 @@ fun MarkdownEditBox(){
         }
         TextField(
             value = textState,
-            onValueChange = { textState = it },
+            onValueChange = {
+                textState = it
+                viewModel.onContentChange(it.text) },
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester)
@@ -200,5 +208,5 @@ fun ToolbarButton(icon: ImageVector, contentDescription: String, onClick: () -> 
 @Preview(showBackground = true)
 @Composable
 fun ReplyBottomSheetPreview(){
-    ReplyBottomSheet("",null)
+    ReplyBottomSheet("0","",null)
 }

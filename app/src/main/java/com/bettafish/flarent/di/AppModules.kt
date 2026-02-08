@@ -25,6 +25,7 @@ import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
 import com.bettafish.flarent.viewModels.DiscussionsViewModel
 import com.bettafish.flarent.viewModels.LoginViewModel
 import com.bettafish.flarent.viewModels.PostViewModel
+import com.bettafish.flarent.viewModels.ReplyViewModel
 import com.bettafish.flarent.viewModels.TagsViewModel
 import com.bettafish.flarent.viewModels.UserProfileViewModel
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -108,6 +109,7 @@ val viewModelModule = module {
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { (id:String) -> PostViewModel(id, get()) }
+    viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
 }
 
 class AuthInterceptor() : Interceptor {
