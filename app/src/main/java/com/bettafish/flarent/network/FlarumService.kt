@@ -55,4 +55,9 @@ interface FlarumService {
     suspend fun getToken(
         @Body body: LoginRequest
     ): LoginResponse
+
+    @POST("api/posts")
+    suspend fun sendPost(
+        @Body post: Post
+    ) : Post
 }

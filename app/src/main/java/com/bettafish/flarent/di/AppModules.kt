@@ -28,6 +28,7 @@ import com.bettafish.flarent.viewModels.PostViewModel
 import com.bettafish.flarent.viewModels.ReplyViewModel
 import com.bettafish.flarent.viewModels.TagsViewModel
 import com.bettafish.flarent.viewModels.UserProfileViewModel
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -68,6 +69,7 @@ val networkModule = module {
         val objectMapper = ObjectMapper()
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         objectMapper.registerModule(JavaTimeModule())
+        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         val resourceConverter = com.github.jasminb.jsonapi.ResourceConverter(
             objectMapper,
             Discussion::class.java,
@@ -78,6 +80,8 @@ val networkModule = module {
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_TYPE_IN_RELATIONSHIP)
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)
         resourceConverter.disableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.REQUIRE_RESOURCE_ID)
+        resourceConverter.disableSerializationOption(com.github.jasminb.jsonapi.SerializationFeature.INCLUDE_ID)
+
         Retrofit.Builder()
             .client(get())
             .baseUrl(BuildConfig.FLARUM_BASE_URL)

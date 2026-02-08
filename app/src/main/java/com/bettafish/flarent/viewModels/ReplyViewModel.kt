@@ -3,12 +3,16 @@ package com.bettafish.flarent.viewModels
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bettafish.flarent.data.PostsRepository
+import com.bettafish.flarent.models.Post
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class ReplyViewModel(val discussionId: String, initContent: String?, repository: PostsRepository): ViewModel() {
+class ReplyViewModel(val discussionId: String, initContent: String?, val repository: PostsRepository): ViewModel() {
     companion object{
         private val drafts: MutableMap<String, String> = mutableMapOf()
     }
@@ -36,6 +40,14 @@ class ReplyViewModel(val discussionId: String, initContent: String?, repository:
         super.onCleared()
         if(!content.value.isEmpty()){
             drafts[discussionId] = content.value
+        }
+    }
+    suspend fun send(): Post?{
+        try{
+            return repository.sendPost(discussionId, content.value)
+        }
+        catch (e:Exception){
+            return null
         }
     }
 }

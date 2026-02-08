@@ -1,6 +1,7 @@
 package com.bettafish.flarent.ui.pages
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,9 +30,11 @@ import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Title
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -47,6 +50,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -59,12 +63,18 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.models.navigation.LoginResult
+import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
 import com.bettafish.flarent.viewModels.ReplyViewModel
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.m3.Markdown
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
+import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -73,7 +83,11 @@ import java.time.format.TextStyle
 
 @Composable
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
-fun ReplyBottomSheet(discussionId: String, title: String? = null, content: String? = null){
+@OptIn(ExperimentalMaterial3Api::class)
+fun ReplyBottomSheet(discussionId: String,
+                     title: String? = null,
+                     content: String? = null,
+                     navigator: DestinationsNavigator? = null){
     val viewModel : ReplyViewModel = getViewModel{ parametersOf(discussionId, content) }
     val content by viewModel.content.collectAsState()
 
@@ -82,15 +96,18 @@ fun ReplyBottomSheet(discussionId: String, title: String? = null, content: Strin
     val options = listOf("编辑", "预览")
     val pagerState = rememberPagerState { options.size }
     val coroutineScope = rememberCoroutineScope()
+    val isSending = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 12.dp)
         .height(screenHeight / 2)){
+
         Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp, end = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)){
+
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier.weight(0.5f),) {
                 options.forEachIndexed { index, label ->
@@ -107,9 +124,33 @@ fun ReplyBottomSheet(discussionId: String, title: String? = null, content: Strin
                     )
                 }
             }
-            IconButton(onClick = {}) {
-                Icon(Icons.AutoMirrored.Filled.Send, "发送")
+            Box(modifier = Modifier.height(48.dp).width(48.dp),
+                contentAlignment = Alignment.Center
+            ){
+                if(isSending.value){
+                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                }
+                else{
+                    IconButton(onClick = {
+                        isSending.value = true
+                        coroutineScope.launch {
+                            val post = viewModel.send()
+                            if(post != null)
+                            {
+                                navigator?.popBackStack()
+                                navigator?.navigate(
+                                    PostBottomSheetDestination(post.id)
+                                )
+                            }
+                            isSending.value = false
+
+                        }
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.Send, "发送")
+                    }
+                }
             }
+
         }
         HorizontalPager(state = pagerState) {
             when (it) {
@@ -208,5 +249,5 @@ fun ToolbarButton(icon: ImageVector, contentDescription: String, onClick: () -> 
 @Preview(showBackground = true)
 @Composable
 fun ReplyBottomSheetPreview(){
-    ReplyBottomSheet("0","",null)
+    ReplyBottomSheet("")
 }
