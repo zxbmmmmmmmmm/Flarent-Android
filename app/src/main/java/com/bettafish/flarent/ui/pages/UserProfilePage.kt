@@ -197,10 +197,6 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                             navigator.navigate(UserProfilePageDestination(it))
                                         }
                                     },
-                                    postClick = {
-                                        navigator.navigate(PostBottomSheetDestination(it))
-                                    },
-                                    discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0))},
                                     imageClick = { url-> imagePreviewer(listOf(url),0)},
                                     replyClick = { name, postId ->
                                         post.discussion?.id?.let {

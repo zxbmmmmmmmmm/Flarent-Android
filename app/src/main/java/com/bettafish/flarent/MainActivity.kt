@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -69,9 +72,14 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.AccountPageDestination
+import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
+import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination.invoke
 import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.MainPageDestination
+import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
+import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination.invoke
 import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.spec.DestinationSpec
@@ -79,6 +87,7 @@ import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import kotlin.unaryMinus
 
 class MainActivity : ComponentActivity() {
@@ -100,23 +109,60 @@ fun FlarentApp() {
     val navController = rememberNavController()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
-    val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
-        ?: NavGraphs.root.startDestination
-    Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
-        GlobalImagePreviewerProvider {
-            ModalBottomSheetLayout(
-                bottomSheetNavigator = bottomSheetNavigator,
-                sheetBackgroundColor = MaterialTheme.colorScheme.surface,
-                modifier = Modifier.fillMaxSize()
-            ){
-                DestinationsNavHost(
-                    navController = navController,
-                    modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
-                    navGraph = NavGraphs.root,
-                    defaultTransitions = SlideTransitions)
+    val navigator = navController.toDestinationsNavigator()
+    val defaultUriHandler = LocalUriHandler.current
+
+    val uriHandler = object : UriHandler {
+        override fun openUri(url: String) {
+            if (url.contains(BuildConfig.FLARUM_BASE_URL)) {
+                val httpUrl = url.toHttpUrl()
+                val segments = httpUrl.pathSegments
+                val queryMap = httpUrl.query?.split("&")?.associate {
+                    val (key, value) = it.split("=")
+                    key to value
+                } ?: emptyMap()
+                when (segments.getOrNull(0)) {
+                    "d" -> {
+                        val discussion = segments.getOrNull(1)
+                        val number = segments.getOrNull(2)
+                        val post = queryMap["post"]
+                        if(post != null){
+                            navigator.navigate(PostBottomSheetDestination(post))
+                        }
+                        else if (discussion != null){
+                            navigator.navigate(DiscussionDetailPageDestination(discussion,number?.toIntOrNull() ?: 0))
+                        }
+                    }
+                    "u" -> {
+                        val user = segments.getOrNull(1)
+                        user?.let {
+                            navigator.navigate(UserProfilePageDestination(it))
+                        }
+                    }
+                }
+            } else {
+                defaultUriHandler.openUri(url)
             }
         }
+    }
 
+
+    Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
+        GlobalImagePreviewerProvider {
+            CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+                ModalBottomSheetLayout(
+                    bottomSheetNavigator = bottomSheetNavigator,
+                    sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    DestinationsNavHost(
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
+                        navGraph = NavGraphs.root,
+                        defaultTransitions = SlideTransitions)
+                }}
+
+        }
     }
 
 }

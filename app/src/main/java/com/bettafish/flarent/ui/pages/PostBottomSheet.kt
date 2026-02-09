@@ -52,8 +52,6 @@ fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
             PostItem(post.value!!,
                 modifier = Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp),
                 userClick = { navigator.navigate(UserProfilePageDestination(it)) },
-                discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) },
-                postClick = { navigator.navigate(PostBottomSheetDestination(it)) },
                 imageClick = { url-> imagePreviewer(listOf(url),0) },
                 replyClick = { name, postId ->
                     post.value?.discussion?.id?.let {
