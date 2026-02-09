@@ -3,6 +3,7 @@ package com.bettafish.flarent.ui.widgets
 import android.content.res.Configuration
 import android.view.RoundedCorner
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material3.Badge
@@ -33,13 +37,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
@@ -80,11 +89,56 @@ fun DiscussionItem(discussion: Discussion,
                 }
             }
         }
+        val density = LocalDensity.current
+
         Column(modifier = Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.SpaceEvenly) {
-            discussion.title?.let { Text(text = it) }
+            discussion.title?.let {
+                val annotatedString = buildAnnotatedString {
+                    if(discussion.isSticky == true){
+                        appendInlineContent("pinned")
+                    }
+                    if(discussion.frontpage == true){
+                        appendInlineContent("front")
+                    }
+
+                    if(discussion.isLocked == true){
+                        appendInlineContent("locked")
+                    }
+                    if(discussion.hasBestAnswer == true){
+                        appendInlineContent("hasBestAnswer")
+                    }
+                    append(it)
+                }
+                val textMeasurer = androidx.compose.ui.text.rememberTextMeasurer()
+                val badgeStyle = MaterialTheme.typography.bodySmall
+
+                fun getAutoInlineContent(text: String, containerColor: Color, contentColor: Color): InlineTextContent {
+                    val textLayoutResult = textMeasurer.measure(text, badgeStyle)
+                    val width = with(density) { (textLayoutResult.size.width.toDp() + 20.dp).toSp() }
+                    val height = with(density) { (textLayoutResult.size.height.toDp() + 4.dp).toSp() }
+
+                    return InlineTextContent(
+                        Placeholder(
+                            width = width,
+                            height = height,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        InlineTag(text, containerColor, contentColor)
+                    }
+                }
+
+                val inlineContent = mapOf(
+                    "pinned" to getAutoInlineContent("置顶", colorScheme.secondaryContainer, colorScheme.secondary),
+                    "front" to getAutoInlineContent("精", colorScheme.errorContainer, colorScheme.onErrorContainer),
+                    "locked" to getAutoInlineContent("已锁定", colorScheme.surfaceContainerHighest, colorScheme.onSurface),
+                    "hasBestAnswer" to getAutoInlineContent("已有最佳回复", colorScheme.surfaceContainerHighest, colorScheme.onSurface)
+                )
+
+                Text(text = annotatedString, inlineContent = inlineContent,)
+            }
 
             val textStyle = MaterialTheme.typography.bodyMedium
-            val density = LocalDensity.current
             val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
 
             FlowRow(
@@ -187,6 +241,21 @@ fun DiscussionItem(discussion: Discussion,
     }
 }
 
+@Composable
+fun InlineTag(text: String,
+              containerColor: Color = colorScheme.surfaceContainerHighest,
+              contentColor: Color = colorScheme.onSurface){
+    Box(
+        modifier = Modifier
+            .padding(end = 6.dp)
+            .fillMaxSize()
+            .background(containerColor, RoundedCornerShape(4.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = contentColor, style = MaterialTheme.typography.bodySmall)
+    }
+}
+
 @Preview(showBackground = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -198,6 +267,10 @@ fun DiscussionItemPreview() {
         participantCount = 5
         lastPostNumber = 24
         lastReadPostNumber = 22
+        isSticky = true
+        frontpage = true
+        hasBestAnswer = true
+        isLocked = true
         lastPostedUser = User().apply {
             displayName = "John Doe"
             username = "AA"

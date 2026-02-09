@@ -42,6 +42,21 @@ class Discussion {
     @JsonProperty("lastReadPostNumber")
     var lastReadPostNumber: Int? = null
 
+    @JsonProperty("isSticky")
+    var isSticky: Boolean? = null
+
+    @JsonProperty("hasBestAnswer")
+    var hasBestAnswer: Boolean? = null
+
+    @JsonProperty("front")
+    var front: Boolean? = null
+
+    @JsonProperty("isLocked")
+    var isLocked: Boolean? = null
+
+    @JsonProperty("frontpage")
+    var frontpage: Boolean? = null
+
     @Relationship("user")
     var user: User? = null
 
