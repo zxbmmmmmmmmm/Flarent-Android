@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.Tag
@@ -59,7 +60,9 @@ fun TagBadge(tag: Tag,
                 style = MaterialTheme.typography.bodySmall,
                 color = contentColor,
                 fontWeight = FontWeight.Bold,
-                modifier = if(icon != null) Modifier.padding(start = 4.dp) else Modifier.padding(0.dp)
+                modifier = if(icon != null) Modifier.padding(start = 4.dp) else Modifier.padding(0.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
