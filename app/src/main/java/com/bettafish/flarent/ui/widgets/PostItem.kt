@@ -49,6 +49,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -107,7 +108,10 @@ fun PostItem(
                         Text(
                             text = post.user?.displayName ?: post.user?.username ?: "",
                             style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         if (isOp) {
                             Surface(
@@ -278,7 +282,10 @@ fun PostItem(
                         )
                         Text(
                             text = post.user?.displayName ?: post.user?.username ?: "",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             style = contentTextStyle,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                         post.createdAt?.relativeTime?.let {
                             Text(text = it,
