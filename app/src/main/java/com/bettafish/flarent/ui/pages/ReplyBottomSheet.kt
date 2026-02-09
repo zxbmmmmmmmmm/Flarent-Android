@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,8 +79,7 @@ fun ReplyBottomSheet(discussionId: String,
     val fileViewModel : FileViewModel = getViewModel()
     val content by replyViewModel.content.collectAsState()
 
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
+    val screenHeight = LocalWindowInfo.current.containerDpSize.height
     val options = listOf("编辑", "预览")
     val pagerState = rememberPagerState { options.size }
     val coroutineScope = rememberCoroutineScope()

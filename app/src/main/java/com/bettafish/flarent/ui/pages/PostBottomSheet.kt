@@ -16,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.PostItem
@@ -40,8 +41,7 @@ import org.koin.core.parameter.parametersOf
 fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
     val viewModel: PostViewModel = getViewModel(){ parametersOf(id) }
     val post = viewModel.post.collectAsState()
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
+    val screenHeight = LocalWindowInfo.current.containerDpSize.height
     val imagePreviewer = LocalImagePreviewer.current
     Box(modifier = Modifier
         .fillMaxWidth()
