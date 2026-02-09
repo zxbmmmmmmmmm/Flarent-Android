@@ -266,7 +266,8 @@ fun PostItem(
                 FlowRow(modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)){
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    Row(modifier = Modifier.clickable{ post.user?.id?.let { userClick(it)  } },
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically){
                         Avatar(
                             avatarUrl = post.user?.avatarUrl,
