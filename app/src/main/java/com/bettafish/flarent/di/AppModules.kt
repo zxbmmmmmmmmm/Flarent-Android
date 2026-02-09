@@ -1,9 +1,12 @@
 package com.bettafish.flarent.di
 
+import android.content.Context
 import com.bettafish.flarent.App
 import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
+import com.bettafish.flarent.data.FileRepository
+import com.bettafish.flarent.data.FileRepositoryImpl
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.data.PostsRepositoryImpl
 import com.bettafish.flarent.data.TagsRepository
@@ -11,6 +14,7 @@ import com.bettafish.flarent.data.TagsRepositoryImpl
 import com.bettafish.flarent.data.UsersRepository
 import com.bettafish.flarent.data.UsersRepositoryImpl
 import com.bettafish.flarent.models.Discussion
+import com.bettafish.flarent.models.File
 import com.bettafish.flarent.models.LoginRequest
 import com.bettafish.flarent.models.LoginResponse
 import com.bettafish.flarent.models.Post
@@ -23,6 +27,7 @@ import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.viewModels.AccountViewModel
 import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
 import com.bettafish.flarent.viewModels.DiscussionsViewModel
+import com.bettafish.flarent.viewModels.FileViewModel
 import com.bettafish.flarent.viewModels.LoginViewModel
 import com.bettafish.flarent.viewModels.PostViewModel
 import com.bettafish.flarent.viewModels.ReplyViewModel
@@ -38,6 +43,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -75,7 +81,8 @@ val networkModule = module {
             Discussion::class.java,
             Post::class.java,
             Tag::class.java,
-            User::class.java
+            User::class.java,
+            File::class.java
         )
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_TYPE_IN_RELATIONSHIP)
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)
@@ -102,6 +109,7 @@ val repositoryModule = module {
     single<TagsRepository> { TagsRepositoryImpl(get()) }
     single<PostsRepository> { PostsRepositoryImpl(get()) }
     single<UsersRepository> { UsersRepositoryImpl(get()) }
+    single<FileRepository> { FileRepositoryImpl(get(), context = androidContext()) }
 }
 
 val viewModelModule = module {
@@ -112,6 +120,7 @@ val viewModelModule = module {
     viewModel { (id : String, targetPosition:Int) -> DiscussionDetailViewModel(get(),get(),id, targetPosition) }
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
+    viewModel { FileViewModel(get()) }
     viewModel { (id:String) -> PostViewModel(id, get()) }
     viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
 }

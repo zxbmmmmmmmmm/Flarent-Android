@@ -1,23 +1,18 @@
 package com.bettafish.flarent.ui.pages
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -26,15 +21,13 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.FormatItalic
-import androidx.compose.material.icons.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Title
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -45,7 +38,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,29 +49,23 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.bettafish.flarent.models.Post
-import com.bettafish.flarent.models.navigation.LoginResult
-import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
+import com.bettafish.flarent.viewModels.FileViewModel
 import com.bettafish.flarent.viewModels.ReplyViewModel
-import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.m3.Markdown
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
-import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-import java.time.format.TextStyle
 
 @Composable
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
@@ -88,8 +74,9 @@ fun ReplyBottomSheet(discussionId: String,
                      title: String? = null,
                      content: String? = null,
                      navigator: DestinationsNavigator? = null){
-    val viewModel : ReplyViewModel = getViewModel{ parametersOf(discussionId, content) }
-    val content by viewModel.content.collectAsState()
+    val replyViewModel : ReplyViewModel = getViewModel{ parametersOf(discussionId, content) }
+    val fileViewModel : FileViewModel = getViewModel()
+    val content by replyViewModel.content.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -102,12 +89,10 @@ fun ReplyBottomSheet(discussionId: String,
         .fillMaxWidth()
         .padding(top = 12.dp)
         .height(screenHeight / 2)){
-
         Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp, end = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)){
-
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier.weight(0.5f),) {
                 options.forEachIndexed { index, label ->
@@ -134,7 +119,7 @@ fun ReplyBottomSheet(discussionId: String,
                     IconButton(onClick = {
                         isSending.value = true
                         coroutineScope.launch {
-                            val post = viewModel.send()
+                            val post = replyViewModel.send()
                             if(post != null)
                             {
                                 navigator?.popBackStack()
@@ -143,7 +128,6 @@ fun ReplyBottomSheet(discussionId: String,
                                 )
                             }
                             isSending.value = false
-
                         }
                     }) {
                         Icon(Icons.AutoMirrored.Filled.Send, "发送")
@@ -155,7 +139,7 @@ fun ReplyBottomSheet(discussionId: String,
         HorizontalPager(state = pagerState) {
             when (it) {
                 0 -> {
-                    MarkdownEditBox(viewModel)
+                    MarkdownEditBox(replyViewModel, fileViewModel)
                 }
                 1 -> {
                     Markdown(content, modifier = Modifier.fillMaxSize().padding(16.dp))
@@ -165,18 +149,55 @@ fun ReplyBottomSheet(discussionId: String,
     }
 }
 @Composable
-fun MarkdownEditBox(viewModel: ReplyViewModel){
+fun MarkdownEditBox(replyViewModel: ReplyViewModel, fileViewModel: FileViewModel){
     Column{
         var textState: TextFieldValue by remember {
             mutableStateOf(
                 TextFieldValue(
-                    text = viewModel.content.value,
-                    selection = TextRange(viewModel.content.value.length)
+                    text = replyViewModel.content.value,
+                    selection = TextRange(replyViewModel.content.value.length)
                 )
             )
         }
         val focusRequester = remember { FocusRequester() }
+        val coroutineScope = rememberCoroutineScope()
+        val isUploading = remember { mutableStateOf(false) }
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+            uri?.let{ link ->
+                isUploading.value = true;
+                coroutineScope.launch {
+                    try{
+                        val files = fileViewModel.upload(link)
+                        if(files.isNotEmpty()){
+                            files[0].bbcode?.let {
+                                textState = handleMarkdownAction(textState, it)
+                            }
+                        }
+                    }
+                    catch(e: Exception){
+
+                    }
+                    finally {
+                        isUploading.value = false
+                    }
+                }
+            }
+        }
+
         Row(horizontalArrangement = Arrangement.SpaceEvenly){
+            Box(modifier = Modifier.width(48.dp).height(48.dp)){
+                if(isUploading.value){
+                    CircularProgressIndicator(modifier = Modifier.padding(12.dp))
+
+                }
+                else{
+                    ToolbarButton(Icons.Default.Upload, "上传") {
+                        launcher.launch("*/*")
+                    }
+                }
+            }
             ToolbarButton(Icons.Default.FormatBold, "加粗") {
                 textState = handleMarkdownAction(textState, "**", "**")
             }
@@ -200,7 +221,7 @@ fun MarkdownEditBox(viewModel: ReplyViewModel){
             value = textState,
             onValueChange = {
                 textState = it
-                viewModel.onContentChange(it.text) },
+                replyViewModel.onContentChange(it.text) },
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(focusRequester)
