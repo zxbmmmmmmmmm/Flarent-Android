@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -95,7 +96,7 @@ fun PostItem(
                         Surface(
                             color = colorScheme.primary,
                             shape = RoundedCornerShape(4.dp),
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
                         ) {
                             Text(
                                 text = stringResource(R.string.op_badge),
@@ -105,8 +106,6 @@ fun PostItem(
                             )
                         }
                     }
-
-
                 }
 
                 Row{

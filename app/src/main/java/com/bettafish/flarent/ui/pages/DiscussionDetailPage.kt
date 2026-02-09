@@ -126,6 +126,7 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                             post?.let { item ->
                                 PostItem(item,
                                     modifier = Modifier.padding(16.dp),
+                                    isOp = post.user?.id == discussion?.user?.id,
                                     userClick = { navigator.navigate(UserProfilePageDestination(it)) },
                                     discussionClick = { id,number-> navigator.navigate(DiscussionDetailPageDestination(id,number ?: 0)) },
                                     postClick = { navigator.navigate(PostBottomSheetDestination(it)) },
