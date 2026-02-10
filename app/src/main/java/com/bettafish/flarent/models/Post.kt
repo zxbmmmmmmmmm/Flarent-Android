@@ -33,9 +33,16 @@ class Post
     @JsonProperty("number")
     var number: Int? = null
 
+    @JsonProperty("votes")
+    var votes: Int? = null
+
     @JsonProperty("createdAt")
     @Contextual
     var createdAt: ZonedDateTime? = null
+
+    @JsonProperty("editedAt")
+    @Contextual
+    var editedAt: ZonedDateTime? = null
 
     @Relationship("user")
     var user: User? = null

@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -20,15 +23,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallSplit
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.Reply
+import androidx.compose.material.icons.filled.AddReaction
 import androidx.compose.material.icons.filled.CallSplit
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.InsertEmoticon
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.AddReaction
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.twotone.ThumbUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -344,24 +355,53 @@ fun PostItem(
                     )
                 }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth().offset(12.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = {
-                    replyClick(post.user?.displayName ?: post.user?.username ?: "", post.id)
-                }){
-                    Icon(Icons.AutoMirrored.Filled.Reply,
-                        tint = colorScheme.outline,
-                        contentDescription = null)
+            Box(modifier = Modifier.fillMaxWidth()){
+                Row(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(modifier = Modifier.align(Alignment.CenterVertically),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically){
+                        Icon(Icons.Outlined.ThumbUp,
+                            tint = colorScheme.outline,
+                            contentDescription = null)
+                        val likes = post.votes ?: 0
+                        if(likes != 0){
+                            Text(likes.toString(), color = colorScheme.outline)
+                        }
+                    }
+                    Button(onClick ={},
+                        contentPadding = PaddingValues(4.dp),
+                        colors = ButtonDefaults.outlinedButtonColors()){
+                        Icon(Icons.Outlined.AddReaction,
+                            tint = colorScheme.outline,
+                            contentDescription = null)
+                    }
                 }
-                IconButton(onClick = {}){
-                    Icon(Icons.Default.MoreHoriz,
-                        tint = colorScheme.outline,
-                        contentDescription =  null)
+
+
+                Row(
+                    modifier = Modifier.offset(12.dp).align(Alignment.CenterEnd),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        replyClick(post.user?.displayName ?: post.user?.username ?: "", post.id)
+                    }){
+                        Icon(Icons.AutoMirrored.Filled.Reply,
+                            tint = colorScheme.outline,
+                            contentDescription = null)
+                    }
+                    IconButton(onClick = {}){
+                        Icon(Icons.Default.MoreHoriz,
+                            tint = colorScheme.outline,
+                            contentDescription =  null)
+                    }
                 }
             }
+
         }
     }
 }
@@ -381,6 +421,7 @@ fun PostItemPreview() {
         user = sampleUser
         createdAt = ZonedDateTime.now().minusHours(1)
         number = 2
+        votes = 1
         contentMarkdown =  """
 ### Hello Markdown
 
