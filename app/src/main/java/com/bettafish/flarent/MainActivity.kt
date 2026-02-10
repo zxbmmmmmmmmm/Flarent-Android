@@ -50,6 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -111,6 +113,8 @@ fun FlarentApp() {
     navController.navigatorProvider += bottomSheetNavigator
     val navigator = navController.toDestinationsNavigator()
     val defaultUriHandler = LocalUriHandler.current
+
+
 
     val uriHandler = object : UriHandler {
         override fun openUri(url: String) {
