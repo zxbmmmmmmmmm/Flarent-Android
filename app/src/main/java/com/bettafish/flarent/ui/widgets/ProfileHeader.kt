@@ -3,6 +3,7 @@ package com.bettafish.flarent.ui.widgets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -92,7 +93,7 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
         }
 
         if(user.groups?.size != 0){
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 user.groups!!.forEach {
                     GroupBadge(it)
                 }
