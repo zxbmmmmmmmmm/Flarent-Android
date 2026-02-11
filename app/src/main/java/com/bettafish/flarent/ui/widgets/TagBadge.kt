@@ -21,12 +21,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.Tag
-import androidx.core.graphics.toColorInt
 import com.bettafish.flarent.utils.toComposeColor
 import com.bettafish.flarent.utils.toFaIcon
 import com.guru.fontawesomecomposelib.FaIcon
-import com.guru.fontawesomecomposelib.FaIconType
-import com.guru.fontawesomecomposelib.FaIcons
 
 @Composable
 fun TagBadge(tag: Tag,

@@ -41,7 +41,6 @@ import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.utils.relativeTime
 import com.bettafish.flarent.utils.toFaIcon
-import com.bettafish.flarent.ui.pages.tag.TagsViewModel
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph

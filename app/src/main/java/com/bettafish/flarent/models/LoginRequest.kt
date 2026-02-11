@@ -1,6 +1,5 @@
 package com.bettafish.flarent.models
 
-import com.github.jasminb.jsonapi.annotations.Type
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -11,8 +11,8 @@ import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
-import com.bettafish.flarent.ui.pages.discusison.DiscussionsDataSource
 import com.bettafish.flarent.ui.pages.detail.PostsDataSource
+import com.bettafish.flarent.ui.pages.discusison.DiscussionsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -36,7 +36,6 @@ import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.setting.Item.TextPref
 import com.bettafish.flarent.utils.appSettings
-import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination

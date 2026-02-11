@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.bettafish.flarent.models.File
-import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.network.FlarumService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
