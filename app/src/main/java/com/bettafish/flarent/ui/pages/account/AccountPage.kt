@@ -1,7 +1,5 @@
-package com.bettafish.flarent.ui.pages
+package com.bettafish.flarent.ui.pages.account
 
-import android.accounts.Account
-import android.widget.Button
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -30,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +36,7 @@ import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.setting.Item.TextPref
 import com.bettafish.flarent.utils.appSettings
-import com.bettafish.flarent.viewModels.AccountViewModel
+import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination

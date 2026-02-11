@@ -1,4 +1,4 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +11,8 @@ import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.ui.pages.discusison.DiscussionsDataSource
+import com.bettafish.flarent.ui.pages.detail.PostsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class UserProfileViewModel(
     val userName : String,
     val postsRepository: PostsRepository,
-    val discussionsRepository: DiscussionsRepository): ViewModel() {
+    val discussionsRepository: DiscussionsRepository
+): ViewModel() {
     companion object{
         private const val LOAD_COUNT = 20;
     }
@@ -28,27 +31,31 @@ class UserProfileViewModel(
 
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
-        pagingSourceFactory = { DiscussionsDataSource(
-            discussionsRepository,
-            LOAD_COUNT,
-            null,
-            userName,
-            "-createdAt"
-        ) }
+        pagingSourceFactory = {
+            DiscussionsDataSource(
+                discussionsRepository,
+                LOAD_COUNT,
+                null,
+                userName,
+                "-createdAt"
+            )
+        }
     ).flow.cachedIn(viewModelScope)
 
 
     val posts: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
-        pagingSourceFactory = { PostsDataSource(
-            postsRepository,
-            LOAD_COUNT,
-            userName,
-            onFirstLoad = { post ->
-                if (_user.value == null) {
-                    _user.value = post.user
+        pagingSourceFactory = {
+            PostsDataSource(
+                postsRepository,
+                LOAD_COUNT,
+                userName,
+                onFirstLoad = { post ->
+                    if (_user.value == null) {
+                        _user.value = post.user
+                    }
                 }
-            }
-        ) }
+            )
+        }
     ).flow.cachedIn(viewModelScope)
 }

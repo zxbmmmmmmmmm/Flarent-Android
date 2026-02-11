@@ -1,11 +1,10 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.detail
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.utils.HtmlConverter
-import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 import kotlin.math.max
 import kotlin.math.min
 

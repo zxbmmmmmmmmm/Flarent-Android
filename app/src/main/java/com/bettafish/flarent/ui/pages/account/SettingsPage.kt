@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages
+package com.bettafish.flarent.ui.pages.account
 
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.datastore.core.DataStore

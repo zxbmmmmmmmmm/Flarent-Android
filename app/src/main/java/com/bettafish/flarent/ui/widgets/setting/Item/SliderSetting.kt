@@ -24,11 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
-import com.bettafish.flarent.ui.pages.LocalPrefsDataStore
+import com.bettafish.flarent.ui.pages.account.LocalPrefsDataStore
 import com.bettafish.flarent.ui.widgets.setting.roundToDP
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.text.get
 
 @ExperimentalMaterial3Api
 @Composable

@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import com.bettafish.flarent.ui.pages.LocalPrefsDataStore
+import com.bettafish.flarent.ui.pages.account.LocalPrefsDataStore
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api

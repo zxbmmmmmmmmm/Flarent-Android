@@ -1,4 +1,4 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class AccountViewModel(
     val usersRepository : UsersRepository
 ): ViewModel() {
-    private val _user = MutableStateFlow(App.INSTANCE.appSettings.user)
+    private val _user = MutableStateFlow(App.Companion.INSTANCE.appSettings.user)
     val user: StateFlow<User?> = _user.asStateFlow()
 
     fun refreshUser(id: String){
@@ -22,7 +22,7 @@ class AccountViewModel(
             try {
                 val data = usersRepository.fetchUser(id)
                 _user.value = data
-                App.INSTANCE.appSettings.user = data
+                App.Companion.INSTANCE.appSettings.user = data
             } catch (e: Exception) {
             }
         }
@@ -30,8 +30,8 @@ class AccountViewModel(
 
     fun logout(){
         _user.value = null
-        App.INSTANCE.appSettings.user = null
-        App.INSTANCE.appSettings.token = null
-        App.INSTANCE.appSettings.userId = null
+        App.Companion.INSTANCE.appSettings.user = null
+        App.Companion.INSTANCE.appSettings.token = null
+        App.Companion.INSTANCE.appSettings.userId = null
     }
 }

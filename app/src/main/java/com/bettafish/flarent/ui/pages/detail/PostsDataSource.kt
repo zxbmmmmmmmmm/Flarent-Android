@@ -1,4 +1,4 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.detail
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

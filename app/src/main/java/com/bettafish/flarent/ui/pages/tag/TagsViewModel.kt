@@ -1,12 +1,10 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.tag
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.bettafish.flarent.data.TagsRepository
 import com.bettafish.flarent.models.Tag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class TagsViewModel (
     private val repository: TagsRepository

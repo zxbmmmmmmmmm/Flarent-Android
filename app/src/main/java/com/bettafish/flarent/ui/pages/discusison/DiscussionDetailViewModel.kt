@@ -1,4 +1,4 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.discusison
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +10,7 @@ import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.ui.pages.detail.DiscussionDetailPostsDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-
 
 class DiscussionDetailViewModel(
     private val postsRepository: PostsRepository,
@@ -68,7 +68,7 @@ class DiscussionDetailViewModel(
                 ?: posts.filter { it.number != null }
                     .minByOrNull { abs(it.number!! - targetPosition) }
                     ?.let { posts.indexOf(it) }
-                ?: max(0, min(posts.size,targetPosition))
+                ?: max(0, min(posts.size, targetPosition))
 
             var startKey = targetIndex
             while (startKey > 0 && posts[startKey - 1].createdAt != null) {

@@ -1,4 +1,4 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.discusison
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,14 +20,12 @@ class DiscussionsViewModel(
     }
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
-        pagingSourceFactory = { DiscussionsDataSource(
-            repository,
-            LOAD_COUNT,
-            navArgs?.slug
-        ) }
+        pagingSourceFactory = {
+            DiscussionsDataSource(
+                repository,
+                LOAD_COUNT,
+                navArgs?.slug
+            )
+        }
     ).flow.cachedIn(viewModelScope)
 }
-
-
-
-

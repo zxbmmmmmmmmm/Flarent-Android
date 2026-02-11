@@ -1,4 +1,4 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.account.login
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

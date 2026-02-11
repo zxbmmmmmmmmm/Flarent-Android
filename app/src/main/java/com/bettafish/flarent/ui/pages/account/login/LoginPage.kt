@@ -1,6 +1,5 @@
-package com.bettafish.flarent.ui.pages
+package com.bettafish.flarent.ui.pages.account.login
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
-import com.bettafish.flarent.viewModels.LoginViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

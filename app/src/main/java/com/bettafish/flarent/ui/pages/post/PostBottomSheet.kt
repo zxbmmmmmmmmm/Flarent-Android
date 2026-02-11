@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages
+package com.bettafish.flarent.ui.pages.post
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,22 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.PostItem
-import com.bettafish.flarent.viewModels.PostViewModel
+import com.bettafish.flarent.ui.pages.post.PostViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
-import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
-import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination.invoke
-import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
-import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination.invoke
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
-import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination.invoke
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf

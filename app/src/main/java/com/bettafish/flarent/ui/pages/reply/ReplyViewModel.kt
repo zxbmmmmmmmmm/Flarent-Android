@@ -1,16 +1,11 @@
-package com.bettafish.flarent.viewModels
+package com.bettafish.flarent.ui.pages.reply
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class ReplyViewModel(val discussionId: String, initContent: String?, val repository: PostsRepository): ViewModel() {
     companion object{

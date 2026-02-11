@@ -1,6 +1,5 @@
 package com.bettafish.flarent.di
 
-import android.content.Context
 import com.bettafish.flarent.App
 import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.data.DiscussionsRepository
@@ -15,24 +14,21 @@ import com.bettafish.flarent.data.UsersRepository
 import com.bettafish.flarent.data.UsersRepositoryImpl
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.File
-import com.bettafish.flarent.models.LoginRequest
-import com.bettafish.flarent.models.LoginResponse
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
-import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.utils.appSettings
-import com.bettafish.flarent.viewModels.AccountViewModel
-import com.bettafish.flarent.viewModels.DiscussionDetailViewModel
-import com.bettafish.flarent.viewModels.DiscussionsViewModel
-import com.bettafish.flarent.viewModels.FileViewModel
-import com.bettafish.flarent.viewModels.LoginViewModel
-import com.bettafish.flarent.viewModels.PostViewModel
-import com.bettafish.flarent.viewModels.ReplyViewModel
-import com.bettafish.flarent.viewModels.TagsViewModel
-import com.bettafish.flarent.viewModels.UserProfileViewModel
+import com.bettafish.flarent.ui.pages.account.AccountViewModel
+import com.bettafish.flarent.ui.pages.discusison.DiscussionDetailViewModel
+import com.bettafish.flarent.ui.pages.discusison.DiscussionsViewModel
+import com.bettafish.flarent.ui.pages.reply.FileViewModel
+import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
+import com.bettafish.flarent.ui.pages.post.PostViewModel
+import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
+import com.bettafish.flarent.ui.pages.tag.TagsViewModel
+import com.bettafish.flarent.ui.pages.user.UserProfileViewModel
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -48,8 +44,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 val networkModule = module {

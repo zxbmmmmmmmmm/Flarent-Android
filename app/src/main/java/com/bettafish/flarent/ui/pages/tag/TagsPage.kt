@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages
+package com.bettafish.flarent.ui.pages.tag
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
@@ -37,15 +36,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavArgs
-import androidx.navigation.NavController
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.TagNavArgs
-import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.utils.relativeTime
 import com.bettafish.flarent.utils.toFaIcon
-import com.bettafish.flarent.viewModels.TagsViewModel
+import com.bettafish.flarent.ui.pages.tag.TagsViewModel
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
