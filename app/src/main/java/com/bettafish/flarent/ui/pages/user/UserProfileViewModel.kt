@@ -11,8 +11,8 @@ import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
-import com.bettafish.flarent.ui.pages.detail.PostsDataSource
-import com.bettafish.flarent.ui.pages.discusison.DiscussionsDataSource
+import com.bettafish.flarent.ui.pages.detail.PostListDataSource
+import com.bettafish.flarent.ui.pages.discussionList.DiscussionListDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +32,7 @@ class UserProfileViewModel(
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
         pagingSourceFactory = {
-            DiscussionsDataSource(
+            DiscussionListDataSource(
                 discussionsRepository,
                 LOAD_COUNT,
                 null,
@@ -46,7 +46,7 @@ class UserProfileViewModel(
     val posts: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
         pagingSourceFactory = {
-            PostsDataSource(
+            PostListDataSource(
                 postsRepository,
                 LOAD_COUNT,
                 userName,

@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.discusison
+package com.bettafish.flarent.ui.pages.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,6 @@ import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.DiscussionRequest
-import com.bettafish.flarent.ui.pages.detail.DiscussionDetailPostsDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

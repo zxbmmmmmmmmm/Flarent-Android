@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.discusison
+package com.bettafish.flarent.ui.pages.discussionList
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,12 +46,12 @@ import org.koin.core.parameter.parametersOf
     navArgs = TagNavArgs::class
 )
 @ExperimentalMaterial3Api
-fun DiscussionsPage(
+fun DiscussionListPage(
     modifier: Modifier = Modifier,
     tag: TagNavArgs? = null,
     navigator: DestinationsNavigator,
 ) {
-    val viewModel: DiscussionsViewModel = getViewModel() { parametersOf(tag) }
+    val viewModel: DiscussionListViewModel = getViewModel() { parametersOf(tag) }
     val pagingItems = viewModel.discussions.collectAsLazyPagingItems()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()

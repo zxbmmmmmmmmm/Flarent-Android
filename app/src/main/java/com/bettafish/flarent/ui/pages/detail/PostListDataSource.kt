@@ -7,7 +7,7 @@ import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.utils.HtmlConverter
 
-class PostsDataSource(
+class PostListDataSource(
     private val repository: PostsRepository,
     private val pageSize: Int,
     private val author: String? = null,

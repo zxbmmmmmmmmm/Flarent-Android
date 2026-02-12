@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.tag
+package com.bettafish.flarent.ui.pages.tagList
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,8 +55,8 @@ import java.time.ZonedDateTime
 @Destination<RootGraph>
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-fun TagsPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
-    val viewModel: TagsViewModel = getViewModel()
+fun TagListPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
+    val viewModel: TagListViewModel = getViewModel()
     val list by viewModel.tags.collectAsState()
     val typography = MaterialTheme.typography
     var isRefreshing by remember { mutableStateOf(list.isEmpty()) }

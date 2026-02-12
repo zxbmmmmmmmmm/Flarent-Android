@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.discusison
+package com.bettafish.flarent.ui.pages.discussionList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import kotlinx.coroutines.flow.Flow
 
-class DiscussionsViewModel(
+class DiscussionListViewModel(
     private val repository: DiscussionsRepository,
     val navArgs: TagNavArgs? = null
 ) : ViewModel() {
@@ -21,7 +21,7 @@ class DiscussionsViewModel(
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
         pagingSourceFactory = {
-            DiscussionsDataSource(
+            DiscussionListDataSource(
                 repository,
                 LOAD_COUNT,
                 navArgs?.slug

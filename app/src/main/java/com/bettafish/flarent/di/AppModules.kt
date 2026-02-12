@@ -21,12 +21,12 @@ import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
-import com.bettafish.flarent.ui.pages.discusison.DiscussionDetailViewModel
-import com.bettafish.flarent.ui.pages.discusison.DiscussionsViewModel
+import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
+import com.bettafish.flarent.ui.pages.discussionList.DiscussionListViewModel
 import com.bettafish.flarent.ui.pages.post.PostViewModel
 import com.bettafish.flarent.ui.pages.reply.FileViewModel
 import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
-import com.bettafish.flarent.ui.pages.tag.TagsViewModel
+import com.bettafish.flarent.ui.pages.tagList.TagListViewModel
 import com.bettafish.flarent.ui.pages.user.UserProfileViewModel
 import com.bettafish.flarent.utils.appSettings
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -108,8 +108,8 @@ val repositoryModule = module {
 
 val viewModelModule = module {
     viewModel { (navArgs: TagNavArgs?) ->
-        DiscussionsViewModel(get(), navArgs) }
-    viewModel { TagsViewModel(get()) }
+        DiscussionListViewModel(get(), navArgs) }
+    viewModel { TagListViewModel(get()) }
     viewModel { AccountViewModel(get()) }
     viewModel { (id : String, targetPosition:Int) -> DiscussionDetailViewModel(get(),get(),id, targetPosition) }
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }

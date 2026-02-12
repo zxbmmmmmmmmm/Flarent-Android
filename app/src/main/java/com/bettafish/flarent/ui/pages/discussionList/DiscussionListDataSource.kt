@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.discusison
+package com.bettafish.flarent.ui.pages.discussionList
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -6,7 +6,7 @@ import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.request.DiscussionListRequest
 
-class DiscussionsDataSource(
+class DiscussionListDataSource(
     private val repository: DiscussionsRepository,
     private val pageSize: Int,
     private val tag: String? = null,

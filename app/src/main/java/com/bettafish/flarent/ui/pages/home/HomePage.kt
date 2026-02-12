@@ -2,7 +2,7 @@ package com.bettafish.flarent.ui.pages.home
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import com.bettafish.flarent.ui.pages.discusison.DiscussionsPage
+import com.bettafish.flarent.ui.pages.discussionList.DiscussionListPage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -11,5 +11,5 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination<RootGraph>(start=true)
 @ExperimentalMaterial3Api
 fun MainPage(navigator: DestinationsNavigator){
-    DiscussionsPage(navigator = navigator)
+    DiscussionListPage(navigator = navigator)
 }
