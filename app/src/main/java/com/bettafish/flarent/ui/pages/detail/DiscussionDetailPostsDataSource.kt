@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.utils.HtmlConverter
 import kotlin.math.max
 import kotlin.math.min
@@ -41,7 +42,7 @@ class DiscussionDetailPostsDataSource(
                  subList
             } else {
                 val postIds = subList.map(Post::id)
-                postsRepository.fetchPosts(postIds)
+                postsRepository.fetchPosts(PostsRequest(postIds))
             }
 
             items.forEach { item ->

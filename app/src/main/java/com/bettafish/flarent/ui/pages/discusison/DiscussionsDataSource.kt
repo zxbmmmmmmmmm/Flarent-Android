@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.models.Discussion
+import com.bettafish.flarent.models.request.DiscussionListRequest
 
 class DiscussionsDataSource(
     private val repository: DiscussionsRepository,
@@ -21,7 +22,7 @@ class DiscussionsDataSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Discussion> {
         return try {
             val offset = params.key ?: 0
-            val items = repository.fetchDiscussions(offset, tag, author, sort)
+            val items = repository.fetchDiscussionList(DiscussionListRequest(offset, tag, author, sort))
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
             LoadResult.Page(

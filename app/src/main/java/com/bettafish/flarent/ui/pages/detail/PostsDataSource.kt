@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.utils.HtmlConverter
 
 class PostsDataSource(
@@ -21,7 +22,7 @@ class PostsDataSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
         return try {
             val offset = params.key ?: 0
-            val items = repository.fetchPosts(author = author, type = "comment" , offset = offset, limit = pageSize, sort = "-createdAt")
+            val items = repository.fetchPosts(PostsRequest(author = author, type = "comment" , offset = offset, limit = pageSize, sort = "-createdAt"))
 
             if (offset == 0 && items.isNotEmpty()) {
                 onFirstLoad?.invoke(items.first())

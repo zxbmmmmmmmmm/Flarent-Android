@@ -1,8 +1,10 @@
 package com.bettafish.flarent.data
 
 import com.bettafish.flarent.models.Discussion
+import com.bettafish.flarent.models.request.DiscussionListRequest
+import com.bettafish.flarent.models.request.DiscussionRequest
 
 interface DiscussionsRepository {
-    suspend fun fetchDiscussions(pageOffset: Int = 0, tag: String? = null, author : String? = null, sort: String? = null): List<Discussion>
-    suspend fun fetchDiscussionById(id: String, near: Int = 0, limit: Int = 20): Discussion
+    suspend fun fetchDiscussionList(request: DiscussionListRequest): List<Discussion>
+    suspend fun fetchDiscussion(request: DiscussionRequest): Discussion
 }

@@ -15,24 +15,19 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 interface FlarumService {
     // GET /api/discussions
     @GET("api/discussions")
-    suspend fun getDiscussions(
-        @Query("page[offset]") offset: Int = 0,
-        @Query("filter[tag]") tag: String? = null,
-        @Query("filter[author]") author: String? = null,
-        @Query("sort") string: String? = null,
-        @Query("include") include: String? = "user,lastPostedUser,tags"
+    suspend fun getDiscussionList(
+        @QueryMap options: Map<String, String>
     ): List<Discussion>
 
     // GET /api/discussions/{id}
     @GET("api/discussions/{id}")
     suspend fun getDiscussion(
-        @Path("id") id: String,
-        @Query("page[near]") near:Int = 0,
-        @Query("page[limit]") limit:Int = 20,
+        @QueryMap options: Map<String, String>
     ): Discussion
 
     @GET("api/tags")
@@ -41,13 +36,8 @@ interface FlarumService {
     ): List<Tag>
 
     @GET("api/posts")
-    suspend fun getPosts (
-        @Query("filter[id][]") id: List<String>? = null,
-        @Query("filter[author]") author:String? = null,
-        @Query("filter[type]") type: String? = null,
-        @Query("page[limit]") limit:Int? = null,
-        @Query("page[offset]") offset: Int? = null,
-        @Query("sort") string: String? = null,
+    suspend fun getPosts(
+        @QueryMap options: Map<String, String>
         ):List<Post>
 
     @GET("api/users/{id}")

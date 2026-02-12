@@ -10,6 +10,7 @@ import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.models.request.DiscussionRequest
 import com.bettafish.flarent.ui.pages.detail.DiscussionDetailPostsDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -47,7 +48,13 @@ class DiscussionDetailViewModel(
         viewModelScope.launch {
             try {
                 val fetchPos = max(0, targetPosition)
-                val result = discussionsRepository.fetchDiscussionById(discussionId, fetchPos, POST_PAGE_SIZE)
+                val result = discussionsRepository.fetchDiscussion(
+                    DiscussionRequest(
+                        discussionId,
+                        fetchPos,
+                        POST_PAGE_SIZE
+                    )
+                )
                 _discussion.value = result
             } catch (e: Exception) {
             }
