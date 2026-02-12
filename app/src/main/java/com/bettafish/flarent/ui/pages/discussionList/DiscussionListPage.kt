@@ -35,7 +35,7 @@ import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
-import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
@@ -85,7 +85,7 @@ fun DiscussionListPage(
                         DiscussionItem(item, click = {
                             navigator.navigate(DiscussionDetailPageDestination(it.id, it.lastReadPostNumber?:0))
                         }, tagClick = {
-                            navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
+                            navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
                         }, userClick = {
                             navigator.navigate(UserProfilePageDestination(it.username!!))
                         })

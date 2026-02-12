@@ -45,7 +45,7 @@ import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
-import com.ramcosta.composedestinations.generated.destinations.DiscussionsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.getViewModel
@@ -89,10 +89,10 @@ fun TagListPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator)
                     if(tag.isChild == false){
                         TagViewItem(tag,
                             onClick = {
-                                navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
+                                navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
                             },
                             onChildrenClick = {
-                                navigator.navigate(DiscussionsPageDestination(TagNavArgs.from(it)))
+                                navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
                             },
                             onDiscussionClick = {
                                 navigator.navigate(DiscussionDetailPageDestination(it.id))

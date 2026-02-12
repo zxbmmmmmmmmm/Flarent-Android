@@ -53,13 +53,14 @@ import com.ramcosta.composedestinations.generated.destinations.AccountPageDestin
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.MainPageDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
-import com.ramcosta.composedestinations.generated.destinations.TagsPageDestination
+import com.ramcosta.composedestinations.generated.destinations.TagListPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 class MainActivity : ComponentActivity() {
@@ -177,6 +178,7 @@ object SlideTransitions : NavHostAnimatedDestinationStyle() {
 }
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 @ExperimentalMaterial3Api
 fun BottomBar(
@@ -187,7 +189,7 @@ fun BottomBar(
         ?: NavGraphs.root.startDestination
     val destinationsNavigator = navController.toDestinationsNavigator()
     val shouldShowBottomBar = currentDestination.route == MainPageDestination.route ||
-            currentDestination.route == TagsPageDestination.route ||
+            currentDestination.route == TagListPageDestination.route ||
             currentDestination.route == AccountPageDestination.route
 
     AnimatedVisibility(
@@ -225,7 +227,8 @@ enum class BottomBarDestination(
     val label: String,
 ) {
     Home(MainPageDestination, Icons.Default.Home, "Home"),
-    Tags(TagsPageDestination, Icons.Default.Category, "Tags"),
+    @OptIn(ExperimentalCoroutinesApi::class)
+    Tags(TagListPageDestination, Icons.Default.Category, "Tags"),
     Account(AccountPageDestination, Icons.Default.AccountCircle, "Account"),
 }
 

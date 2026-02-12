@@ -9,7 +9,7 @@ import com.bettafish.flarent.utils.HtmlConverter
 import kotlin.math.max
 import kotlin.math.min
 
-class DiscussionDetailPostsDataSource(
+class DiscussionDetailPostListDataSource(
     val postsRepository: PostsRepository,
     val posts: List<Post>) : PagingSource<Int, Post>() {
 

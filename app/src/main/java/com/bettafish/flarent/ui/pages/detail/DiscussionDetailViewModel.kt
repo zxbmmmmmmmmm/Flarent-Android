@@ -60,7 +60,7 @@ class DiscussionDetailViewModel(
         }
     }
 
-    @ExperimentalCoroutinesApi
+    @OptIn(ExperimentalCoroutinesApi::class)
     val posts: Flow<PagingData<Post>> = _discussion
         .filterNotNull()
         .filter { !it.posts.isNullOrEmpty() }
@@ -92,7 +92,7 @@ class DiscussionDetailViewModel(
                 ),
                 initialKey = startKey,
                 pagingSourceFactory = {
-                    DiscussionDetailPostsDataSource(
+                    DiscussionDetailPostListDataSource(
                         postsRepository = postsRepository,
                         posts = discussion.posts!!
                     )

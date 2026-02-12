@@ -10,5 +10,5 @@ class DiscussionsRepositoryImpl(
 
     override suspend fun fetchDiscussionList(request: DiscussionListRequest) = service.getDiscussionList(request.toQueryMap())
 
-    override suspend fun fetchDiscussion(request: DiscussionRequest) = service.getDiscussion(request.toQueryMap())
+    override suspend fun fetchDiscussion(request: DiscussionRequest) = service.getDiscussion(request.id, request.toQueryMap())
 }

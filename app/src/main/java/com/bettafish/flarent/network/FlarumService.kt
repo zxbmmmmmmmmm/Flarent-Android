@@ -27,6 +27,7 @@ interface FlarumService {
     // GET /api/discussions/{id}
     @GET("api/discussions/{id}")
     suspend fun getDiscussion(
+        @Path("id") id: String,
         @QueryMap options: Map<String, String>
     ): Discussion
 
