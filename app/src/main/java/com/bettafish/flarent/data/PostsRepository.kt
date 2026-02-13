@@ -7,4 +7,6 @@ interface PostsRepository {
     suspend fun fetchPosts(request: PostsRequest): List<Post>
 
     suspend fun sendPost(discussionId : String, content : String) : Post
+
+    suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean): Post
 }

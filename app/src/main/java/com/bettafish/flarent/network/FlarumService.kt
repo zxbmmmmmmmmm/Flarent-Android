@@ -11,6 +11,7 @@ import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -50,6 +51,13 @@ interface FlarumService {
     suspend fun getToken(
         @Body body: LoginRequest
     ): LoginResponse
+
+    @PATCH("api/posts/{id}")
+    @JvmSuppressWildcards(true)
+    suspend fun votePost(
+        @Path("id") id: String,
+        @Body request: Map<String, Any?>
+    ): Post
 
     @POST("api/posts")
     suspend fun sendPost(

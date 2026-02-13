@@ -29,18 +29,24 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.AddReaction
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,7 +81,8 @@ fun PostItem(
     isOp: Boolean = false,
     userClick: (username: String) -> Unit = {  },
     imageClick: ((String) -> Unit) = {},
-    replyClick: (name: String, postId:String) -> Unit = { _,_ -> }
+    replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
+    voteClick: (String, Boolean, Boolean) -> Unit = { _, _, _ -> }
 ) {
 
     Column(
@@ -346,17 +353,37 @@ fun PostItem(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(modifier = Modifier.align(Alignment.CenterVertically),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically){
-                        Icon(Icons.Outlined.ThumbUp,
-                            tint = colorScheme.outline,
-                            contentDescription = null)
-                        val likes = post.votes ?: 0
-                        if(likes != 0){
-                            Text(likes.toString(), color = colorScheme.outline)
+                    val isUpvoted = post.hasUpvoted ?: false
+                    val votes = post.votes ?: 0
+
+                    Row(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconToggleButton(
+                            checked = post.hasUpvoted ?: false,
+                            enabled = post.canVote ?: false,
+                            onCheckedChange = {
+                                val newUpvoted = !isUpvoted
+                                voteClick(post.id, newUpvoted, post.hasDownvoted?:false)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (isUpvoted) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                                tint = if (isUpvoted) colorScheme.primary else colorScheme.outline,
+                                contentDescription = null
+                            )
+                        }
+                        if (votes != 0) {
+                            Text(
+                                text = votes.toString(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (isUpvoted) colorScheme.primary else colorScheme.outline
+                            )
                         }
                     }
+
                     Button(onClick ={},
                         contentPadding = PaddingValues(4.dp),
                         colors = ButtonDefaults.outlinedButtonColors()){

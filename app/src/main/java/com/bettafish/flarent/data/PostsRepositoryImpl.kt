@@ -16,4 +16,14 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
             discussion = Discussion().apply { id = discussionId } }
         return service.sendPost(post)
     }
+
+    override suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) : Post {
+        val request = mapOf("data" to mapOf(
+            "type" to "posts",
+            "attributes" to listOf(isUpvoted, isDownvoted, "vote"),
+            "id" to postId,
+            ),
+        )
+        return service.votePost(postId,request)
+    }
 }

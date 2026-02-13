@@ -34,6 +34,15 @@ class Post
     @JsonProperty("votes")
     var votes: Int? = null
 
+    @JsonProperty("hasUpvoted")
+    var hasUpvoted: Boolean? = null
+
+    @JsonProperty("hasDownvoted")
+    var hasDownvoted: Boolean? = null
+
+    @JsonProperty("canVote")
+    var canVote: Boolean? = null
+
     @JsonProperty("createdAt")
     @Contextual
     var createdAt: ZonedDateTime? = null

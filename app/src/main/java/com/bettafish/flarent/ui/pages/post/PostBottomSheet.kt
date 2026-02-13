@@ -50,7 +50,11 @@ fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
                     post.value?.discussion?.id?.let {
                         val content = "@\"$name\"#p$postId "
                         navigator.navigate(ReplyBottomSheetDestination(it, content = content))
-                    }})
+                    }},
+                voteClick = { postId, isUpvoted, isDownvoted ->
+                    viewModel.votePost(postId, isUpvoted, isDownvoted)
+                }
+            )
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

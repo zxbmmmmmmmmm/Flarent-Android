@@ -33,4 +33,13 @@ class PostViewModel(
             }
         }
     }
+
+    fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
+        viewModelScope.launch {
+            try {
+                repository.votePost(postId, isUpvoted, isDownvoted)
+            } catch (e: Exception) {
+            }
+        }
+    }
 }

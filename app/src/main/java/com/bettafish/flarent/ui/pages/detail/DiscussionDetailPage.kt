@@ -26,19 +26,14 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.paging.LoadState
-import androidx.paging.cachedIn
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import androidx.paging.map
-import com.bettafish.flarent.models.Post
-import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.PostItem
@@ -48,7 +43,6 @@ import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetD
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.map
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -58,7 +52,7 @@ import org.koin.core.parameter.parametersOf
 fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigator: DestinationsNavigator, modifier: Modifier = Modifier){
     val viewModel: DiscussionDetailViewModel = getViewModel() { parametersOf(discussionId, targetPosition) }
     val discussion by viewModel.discussion.collectAsState()
-    val posts = viewModel.posts.collectAsLazyPagingItems()
+    val posts = viewModel.combinedPosts.collectAsLazyPagingItems()
     val initialIndex by viewModel.initialScrollIndex.collectAsState()
 
     PullToRefreshBox(
@@ -119,7 +113,10 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                                                     content = content
                                                 )
                                             )
-                                        }}
+                                        }},
+                                    voteClick = { postId, isUpvoted, isDownvoted ->
+                                        viewModel.votePost(postId, isUpvoted, isDownvoted)
+                                    }
                                 )
                             }
                         }

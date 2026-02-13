@@ -76,7 +76,7 @@ val networkModule = module {
             Post::class.java,
             Tag::class.java,
             User::class.java,
-            File::class.java
+            File::class.java,
         )
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_TYPE_IN_RELATIONSHIP)
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)

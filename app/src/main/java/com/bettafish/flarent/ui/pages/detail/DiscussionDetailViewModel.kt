@@ -6,19 +6,24 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.DiscussionRequest
+import com.bettafish.flarent.utils.HtmlConverter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
@@ -60,8 +65,24 @@ class DiscussionDetailViewModel(
         }
     }
 
+
+
+    fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
+        viewModelScope.launch {
+            try {
+                val updated = postsRepository.votePost(postId, isUpvoted, isDownvoted)
+                val currentMods = modifiedItems.value.toMutableMap()
+                currentMods[postId] = updated
+                updated.contentMarkdown = HtmlConverter.convert(updated.contentHtml?:"")
+                modifiedItems.value = currentMods
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val posts: Flow<PagingData<Post>> = _discussion
+    var posts: Flow<PagingData<Post>> = _discussion
         .filterNotNull()
         .filter { !it.posts.isNullOrEmpty() }
         .flatMapLatest { discussion ->
@@ -100,4 +121,12 @@ class DiscussionDetailViewModel(
             ).flow
         }
         .cachedIn(viewModelScope)
+
+    val modifiedItems = MutableStateFlow<Map<String, Post>>(emptyMap())
+
+    val combinedPosts = combine(posts, modifiedItems) { pagingData, modifications ->
+        pagingData.map { user ->
+            modifications[user.id] ?: user // 如果有修改记录就用修改后的，否则用原始的
+        }
+    }.cachedIn(viewModelScope)
 }

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class UserProfileViewModel(
     val userName : String,
@@ -28,6 +29,15 @@ class UserProfileViewModel(
     }
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()
+
+    fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
+        viewModelScope.launch {
+            try {
+                postsRepository.votePost(postId, isUpvoted, isDownvoted)
+            } catch (e: Exception) {
+            }
+        }
+    }
 
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
