@@ -36,11 +36,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
-import com.bettafish.flarent.ui.widgets.PostItem
+import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
-import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.getViewModel
@@ -100,20 +99,10 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                             val post = posts[index]
                             post?.let { item ->
                                 PostItem(item,
+                                    null,
+                                    navigator,
                                     modifier = Modifier.padding(16.dp),
                                     isOp = post.user?.id == discussion?.user?.id,
-                                    userClick = { navigator.navigate(UserProfilePageDestination(it)) },
-                                    imageClick = { url-> imagePreviewer(listOf(url),0) },
-                                    replyClick = { name, postId ->
-                                        post.discussion?.id?.let {
-                                            val content = "@\"$name\"#p$postId "
-                                            navigator.navigate(
-                                                ReplyBottomSheetDestination(
-                                                    it,
-                                                    content = content
-                                                )
-                                            )
-                                        }},
                                 )
                             }
                         }

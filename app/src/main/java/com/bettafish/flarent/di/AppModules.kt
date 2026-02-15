@@ -23,7 +23,7 @@ import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
 import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListViewModel
-import com.bettafish.flarent.ui.pages.post.PostViewModel
+import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.bettafish.flarent.ui.pages.reply.FileViewModel
 import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
 import com.bettafish.flarent.ui.pages.tagList.TagListViewModel
@@ -115,7 +115,7 @@ val viewModelModule = module {
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { FileViewModel(get()) }
-    viewModel { (id:String, initPost: Post?) -> PostViewModel(id, initPost, get()) }
+    viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
     viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
 }
 

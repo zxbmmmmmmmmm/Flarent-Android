@@ -56,7 +56,7 @@ import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
-import com.bettafish.flarent.ui.widgets.PostItem
+import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.bettafish.flarent.ui.widgets.ProfileHeader
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -179,25 +179,11 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                                 navigator.navigate(DiscussionDetailPageDestination(post.discussion!!.id, post.discussion?.lastReadPostNumber?:0))
                                             })
                                 }
-                                val imagePreviewer = LocalImagePreviewer.current
                                 PostItem(post,
+                                    null,
+                                    navigator,
                                     modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
-                                    userClick = {
-                                        if(it != user?.username){
-                                            navigator.navigate(UserProfilePageDestination(it))
-                                        }
-                                    },
-                                    imageClick = { url-> imagePreviewer(listOf(url),0)},
-                                    replyClick = { name, postId ->
-                                        post.discussion?.id?.let {
-                                            val content = "@\"$name\"#p$postId "
-                                            navigator.navigate(
-                                                ReplyBottomSheetDestination(
-                                                    it,
-                                                    content = content
-                                                )
-                                            )
-                                        }},
+                                    userClickEnabled = false
                                 )
                             }
                             1 -> PagingDataList(discussions) { discussion ->

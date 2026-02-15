@@ -18,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
-import com.bettafish.flarent.ui.widgets.PostItem
+import com.bettafish.flarent.ui.widgets.post.PostItem
+import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
@@ -32,29 +33,16 @@ import org.koin.core.parameter.parametersOf
 @ExperimentalMaterial3Api
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
 fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
-    val viewModel: PostViewModel = getViewModel(){ parametersOf(id, null) }
-    val post = viewModel.post.collectAsState()
+
     val screenHeight = LocalWindowInfo.current.containerDpSize.height
-    val imagePreviewer = LocalImagePreviewer.current
     Box(modifier = Modifier
         .fillMaxWidth()
         .defaultMinSize(minHeight = screenHeight / 2)
         .windowInsetsPadding(WindowInsets.systemBars)
         .verticalScroll(rememberScrollState())) {
-        if(post.value != null){
-            PostItem(post.value!!,
-                modifier = Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp),
-                userClick = { navigator.navigate(UserProfilePageDestination(it)) },
-                imageClick = { url-> imagePreviewer(listOf(url),0) },
-                replyClick = { name, postId ->
-                    post.value?.discussion?.id?.let {
-                        val content = "@\"$name\"#p$postId "
-                        navigator.navigate(ReplyBottomSheetDestination(it, content = content))
-                    }},
-            )
-        }
-        else{
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
+        PostItem(null,
+            id,
+            navigator,
+            modifier = Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp))
     }
 }

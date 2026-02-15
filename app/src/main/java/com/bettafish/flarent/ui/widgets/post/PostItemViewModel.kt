@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.post
+package com.bettafish.flarent.ui.widgets.post
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PostViewModel(
+class PostItemViewModel(
     private val id: String,
     initPost: Post? = null,
     private val repository: PostsRepository
 ): ViewModel() {
-    private val _post = MutableStateFlow<Post?>(initPost)
+    private val _post = MutableStateFlow(initPost)
     val post: StateFlow<Post?> = _post
 
     init {

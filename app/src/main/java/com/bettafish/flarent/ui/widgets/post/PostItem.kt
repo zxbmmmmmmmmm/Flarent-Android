@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.widgets
+package com.bettafish.flarent.ui.widgets.post
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.outlined.AddReaction
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -59,7 +61,8 @@ import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
-import com.bettafish.flarent.ui.pages.post.PostViewModel
+import com.bettafish.flarent.ui.widgets.Avatar
+import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.relativeTime
 import com.mikepenz.markdown.compose.components.markdownComponents
@@ -67,6 +70,9 @@ import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.model.rememberMarkdownState
+import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
+import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 import org.koin.androidx.compose.getViewModel
@@ -76,15 +82,54 @@ import java.time.ZonedDateTime
 
 @Composable
 fun PostItem(
-    initPost: Post,
+    initPost: Post?,
+    postId: String?,
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
+    userClickEnabled: Boolean = true,
+    isOp: Boolean = false,
+) {
+    val id = initPost?.id ?: postId!!
+    val vm: PostItemViewModel = getViewModel( key = id ){ parametersOf(id, initPost) }
+    val post = vm.post.collectAsState()
+    val imagePreviewer = LocalImagePreviewer.current
+
+    Box(modifier = Modifier.fillMaxSize()){
+        if(post.value != null){
+            PostItem(post.value!!,
+                modifier,
+                isOp,
+                userClickEnabled = userClickEnabled,
+                userClick = { navigator.navigate(UserProfilePageDestination(it)) },
+                imageClick = { url-> imagePreviewer(listOf(url),0) },
+                replyClick = { name, postId ->
+                    post.value?.discussion?.id?.let {
+                        val content = "@\"$name\"#p$postId "
+                        navigator.navigate(ReplyBottomSheetDestination(it, content = content))
+                    }},
+                onVote = { postId, isUpvoted, isDownvoted ->
+                    vm.vote(postId, isUpvoted, isDownvoted)
+                })
+        }
+        else{
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    }
+
+}
+
+@Composable
+private fun PostItem(
+    post: Post,
     modifier: Modifier = Modifier,
     isOp: Boolean = false,
+    userClickEnabled: Boolean = true,
     userClick: (username: String) -> Unit = {  },
     imageClick: ((String) -> Unit) = {},
     replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
+    onVote: (postId: String, isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_,_ -> }
 ) {
-    val vm: PostViewModel = getViewModel( key = initPost.id ){ parametersOf(initPost.id, initPost) }
-    val post = vm.post.collectAsState().value!!
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -92,10 +137,16 @@ fun PostItem(
         val isComment = post.contentType == "comment"
         // Header
         if(isComment){
+
+            val rowModifier = if(userClickEnabled){
+                Modifier.fillMaxWidth().clickable { post.user?.username?.let { username -> userClick(username) } }
+            }
+            else{
+                Modifier.fillMaxWidth()
+            }
+
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { post.user?.username?.let { username -> userClick(username) } },
+                modifier = rowModifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Avatar(
@@ -153,8 +204,6 @@ fun PostItem(
                 }
             }
         }
-
-
         // Content
         if(!isComment){
 
@@ -307,8 +356,6 @@ fun PostItem(
             }
         }
 
-
-
         if(isComment){
             post.contentMarkdown?.let { markdown ->
                 val isDarkTheme = isSystemInDarkTheme()
@@ -366,7 +413,7 @@ fun PostItem(
                             enabled = post.canVote ?: false,
                             onCheckedChange = {
                                 val newUpvoted = !isUpvoted
-                                vm.vote(post.id, newUpvoted, post.hasDownvoted?:false)
+                                onVote(post.id, newUpvoted, post.hasDownvoted?:false)
                             }
                         ) {
                             Icon(
@@ -418,7 +465,6 @@ fun PostItem(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun PostItemPreview() {
@@ -447,7 +493,7 @@ This is a simple markdown example with:
 """
     }
     MaterialTheme {
-        PostItem(initPost = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -469,6 +515,6 @@ fun PostItemRenamePreview() {
         content = listOf("11111111", "22222222")
     }
     MaterialTheme {
-        PostItem(initPost = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }
