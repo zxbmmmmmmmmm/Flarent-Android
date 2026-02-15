@@ -93,6 +93,7 @@ fun PostItem(
     val vm: PostItemViewModel = getViewModel( key = id ){ parametersOf(id, initPost) }
     val post = vm.post.collectAsState()
     val imagePreviewer = LocalImagePreviewer.current
+    val canVoteCommandExec = vm.voteCommand.canExecute.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()){
         if(post.value != null){
@@ -108,8 +109,9 @@ fun PostItem(
                         navigator.navigate(ReplyBottomSheetDestination(it, content = content))
                     }},
                 onVote = { postId, isUpvoted, isDownvoted ->
-                    vm.vote(postId, isUpvoted, isDownvoted)
-                })
+                    vm.voteCommand.execute(postId, isUpvoted, isDownvoted)
+                },
+                isVoting = !canVoteCommandExec.value)
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -127,7 +129,8 @@ private fun PostItem(
     userClick: (username: String) -> Unit = {  },
     imageClick: ((String) -> Unit) = {},
     replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
-    onVote: (postId: String, isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_,_ -> }
+    onVote: (postId: String, isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_,_ -> },
+    isVoting: Boolean = false
 ) {
 
     Column(
@@ -416,11 +419,18 @@ private fun PostItem(
                                 onVote(post.id, newUpvoted, post.hasDownvoted?:false)
                             }
                         ) {
-                            Icon(
-                                imageVector = if (isUpvoted) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                                tint = if (isUpvoted) colorScheme.primary else colorScheme.outline,
-                                contentDescription = null
-                            )
+                            if(isVoting){
+                                CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                            }
+                            else
+                            {
+                                Icon(
+                                    imageVector = if (isUpvoted) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                                    tint = if (isUpvoted) colorScheme.primary else colorScheme.outline,
+                                    contentDescription = null
+                                )
+                            }
+
                         }
                         if (votes != 0) {
                             Text(
