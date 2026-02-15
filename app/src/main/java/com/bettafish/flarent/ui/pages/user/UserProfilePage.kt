@@ -198,9 +198,6 @@ fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier
                                                 )
                                             )
                                         }},
-                                    voteClick = { postId, isUpvoted,isDownvoted ->
-                                        viewModel.votePost(postId, isUpvoted,isDownvoted)
-                                    }
                                 )
                             }
                             1 -> PagingDataList(discussions) { discussion ->

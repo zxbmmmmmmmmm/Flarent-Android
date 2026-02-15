@@ -65,22 +65,6 @@ class DiscussionDetailViewModel(
         }
     }
 
-
-
-    fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
-        viewModelScope.launch {
-            try {
-                val updated = postsRepository.votePost(postId, isUpvoted, isDownvoted)
-                val currentMods = modifiedItems.value.toMutableMap()
-                currentMods[postId] = updated
-                updated.contentMarkdown = HtmlConverter.convert(updated.contentHtml?:"")
-                modifiedItems.value = currentMods
-            } catch (e: Exception) {
-
-            }
-        }
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     var posts: Flow<PagingData<Post>> = _discussion
         .filterNotNull()

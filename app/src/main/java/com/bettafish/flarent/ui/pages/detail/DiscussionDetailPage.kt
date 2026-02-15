@@ -114,9 +114,6 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                                                 )
                                             )
                                         }},
-                                    voteClick = { postId, isUpvoted, isDownvoted ->
-                                        viewModel.votePost(postId, isUpvoted, isDownvoted)
-                                    }
                                 )
                             }
                         }

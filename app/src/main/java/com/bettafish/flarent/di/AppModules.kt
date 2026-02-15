@@ -115,7 +115,7 @@ val viewModelModule = module {
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { FileViewModel(get()) }
-    viewModel { (id:String) -> PostViewModel(id, get()) }
+    viewModel { (id:String, initPost: Post?) -> PostViewModel(id, initPost, get()) }
     viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
 }
 

@@ -42,11 +42,8 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.ui.pages.post.PostViewModel
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.relativeTime
 import com.mikepenz.markdown.compose.components.markdownComponents
@@ -71,20 +69,22 @@ import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.model.rememberMarkdownState
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 import java.time.ZonedDateTime
 
 
 @Composable
 fun PostItem(
-    post: Post,
+    initPost: Post,
     modifier: Modifier = Modifier,
     isOp: Boolean = false,
     userClick: (username: String) -> Unit = {  },
     imageClick: ((String) -> Unit) = {},
     replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
-    voteClick: (String, Boolean, Boolean) -> Unit = { _, _, _ -> }
 ) {
-
+    val vm: PostViewModel = getViewModel( key = initPost.id ){ parametersOf(initPost.id, initPost) }
+    val post = vm.post.collectAsState().value!!
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -366,7 +366,7 @@ fun PostItem(
                             enabled = post.canVote ?: false,
                             onCheckedChange = {
                                 val newUpvoted = !isUpvoted
-                                voteClick(post.id, newUpvoted, post.hasDownvoted?:false)
+                                vm.vote(post.id, newUpvoted, post.hasDownvoted?:false)
                             }
                         ) {
                             Icon(
@@ -447,7 +447,7 @@ This is a simple markdown example with:
 """
     }
     MaterialTheme {
-        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+        PostItem(initPost = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -469,6 +469,6 @@ fun PostItemRenamePreview() {
         content = listOf("11111111", "22222222")
     }
     MaterialTheme {
-        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+        PostItem(initPost = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }

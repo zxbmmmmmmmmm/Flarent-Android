@@ -32,7 +32,7 @@ import org.koin.core.parameter.parametersOf
 @ExperimentalMaterial3Api
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
 fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
-    val viewModel: PostViewModel = getViewModel(){ parametersOf(id) }
+    val viewModel: PostViewModel = getViewModel(){ parametersOf(id, null) }
     val post = viewModel.post.collectAsState()
     val screenHeight = LocalWindowInfo.current.containerDpSize.height
     val imagePreviewer = LocalImagePreviewer.current
@@ -51,9 +51,6 @@ fun PostBottomSheet(id: String, navigator: DestinationsNavigator){
                         val content = "@\"$name\"#p$postId "
                         navigator.navigate(ReplyBottomSheetDestination(it, content = content))
                     }},
-                voteClick = { postId, isUpvoted, isDownvoted ->
-                    viewModel.votePost(postId, isUpvoted, isDownvoted)
-                }
             )
         }
         else{

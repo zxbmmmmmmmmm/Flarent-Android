@@ -12,16 +12,19 @@ import kotlinx.coroutines.launch
 
 class PostViewModel(
     private val id: String,
+    initPost: Post? = null,
     private val repository: PostsRepository
 ): ViewModel() {
-    private val _post = MutableStateFlow<Post?>(null)
+    private val _post = MutableStateFlow<Post?>(initPost)
     val post: StateFlow<Post?> = _post
 
     init {
-        loadPost()
+        if(initPost == null){
+            load()
+        }
     }
 
-    private fun loadPost() {
+    private fun load() {
         viewModelScope.launch {
             try {
                 val data = repository.fetchPosts(PostsRequest(listOf(id)))[0]
@@ -34,10 +37,14 @@ class PostViewModel(
         }
     }
 
-    fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
+    fun vote(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
         viewModelScope.launch {
             try {
-                repository.votePost(postId, isUpvoted, isDownvoted)
+                val data = repository.votePost(postId, isUpvoted, isDownvoted)
+                if(data.contentHtml!=null){
+                    data.contentMarkdown = HtmlConverter.convert(data.contentHtml)
+                }
+                _post.value = data
             } catch (e: Exception) {
             }
         }
