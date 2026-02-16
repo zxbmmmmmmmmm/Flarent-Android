@@ -2,7 +2,8 @@ package com.bettafish.flarent.network
 
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.File
-import com.bettafish.flarent.models.LoginRequest
+import com.bettafish.flarent.models.Forum
+import com.bettafish.flarent.models.request.LoginRequest
 import com.bettafish.flarent.models.LoginResponse
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
@@ -46,6 +47,9 @@ interface FlarumService {
     suspend fun getUser(
         @Path("id") id: String
     ): User
+
+    @GET("api")
+    suspend fun getForum(): Forum
 
     @POST("api/token")
     suspend fun getToken(

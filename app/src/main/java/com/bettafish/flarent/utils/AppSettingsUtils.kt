@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +49,9 @@ open class AppSettingsUtils private constructor(ctx: Context) {
     var userId by DataStoreDelegates.string(key = "userId")
 
     var user by DataStoreDelegates.any<User>(key = "user")
+
+    var forum by DataStoreDelegates.any<Forum>(key = "forum")
+
 
     private object DataStoreDelegates {
         fun int(

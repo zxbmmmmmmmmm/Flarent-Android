@@ -6,6 +6,7 @@ import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.utils.HtmlConverter
+import com.bettafish.flarent.utils.SuspendCommand3
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,24 +47,5 @@ class PostItemViewModel(
         _post.value = data
     }
 
-    val voteCommand = SuspendCommand(::vote, viewModelScope)
-
-    class SuspendCommand<T1,T2,T3>(val func: suspend (arg1:T1, arg2:T2, arg3:T3) -> Unit, val coroutineScope: CoroutineScope){
-        val canExecute = MutableStateFlow(true)
-
-        fun execute(arg1:T1, arg2:T2, arg3:T3){
-            if(!canExecute.value) return
-            canExecute.value = false
-            coroutineScope.launch {
-                try {
-                    func(arg1,arg2,arg3)
-                }
-                catch (e: Exception) {
-                }
-                finally {
-                    canExecute.value = true
-                }
-            }
-        }
-    }
+    val voteCommand = SuspendCommand3(::vote, viewModelScope)
 }

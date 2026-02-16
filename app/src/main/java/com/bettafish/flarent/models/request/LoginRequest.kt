@@ -1,4 +1,4 @@
-package com.bettafish.flarent.models
+package com.bettafish.flarent.models.request
 
 import kotlinx.serialization.Serializable
 

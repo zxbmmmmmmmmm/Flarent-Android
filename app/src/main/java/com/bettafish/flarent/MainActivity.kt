@@ -46,16 +46,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
 import com.bettafish.flarent.ui.theme.FlarentTheme
 import com.bettafish.flarent.ui.widgets.GlobalImagePreviewerProvider
+import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.AccountPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
-import com.ramcosta.composedestinations.generated.destinations.MainPageDestination
+import com.ramcosta.composedestinations.generated.destinations.HomePageDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.TagListPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
+import com.ramcosta.composedestinations.generated.destinations.WelcomePageDestination
 import com.ramcosta.composedestinations.spec.DestinationSpec
+import com.ramcosta.composedestinations.spec.Direction
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import com.ramcosta.composedestinations.utils.startDestination
@@ -76,6 +79,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 @ExperimentalMaterial3Api
 fun FlarentApp() {
@@ -130,15 +134,23 @@ fun FlarentApp() {
                     sheetBackgroundColor = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.fillMaxSize()
                 ){
+                    val start: Direction = if(App.INSTANCE.appSettings.forum == null){
+                        WelcomePageDestination
+                    }
+                    else{
+                        NavGraphs.root.defaultStartDirection
+                    }
                     DestinationsNavHost(
                         navController = navController,
                         modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
                         navGraph = NavGraphs.root,
+                        start = start,
                         defaultTransitions = SlideTransitions)
                 }}
 
         }
     }
+
 
 }
 object SlideTransitions : NavHostAnimatedDestinationStyle() {
@@ -188,7 +200,7 @@ fun BottomBar(
     val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
         ?: NavGraphs.root.startDestination
     val destinationsNavigator = navController.toDestinationsNavigator()
-    val shouldShowBottomBar = currentDestination.route == MainPageDestination.route ||
+    val shouldShowBottomBar = currentDestination.route == HomePageDestination.route ||
             currentDestination.route == TagListPageDestination.route ||
             currentDestination.route == AccountPageDestination.route
 
@@ -226,7 +238,7 @@ enum class BottomBarDestination(
     val icon: ImageVector,
     val label: String,
 ) {
-    Home(MainPageDestination, Icons.Default.Home, "Home"),
+    Home(HomePageDestination, Icons.Default.Home, "Home"),
     @OptIn(ExperimentalCoroutinesApi::class)
     Tags(TagListPageDestination, Icons.Default.Category, "Tags"),
     Account(AccountPageDestination, Icons.Default.AccountCircle, "Account"),

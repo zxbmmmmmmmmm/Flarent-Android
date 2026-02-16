@@ -1,6 +1,6 @@
 package com.bettafish.flarent.data
 
-import com.bettafish.flarent.models.LoginRequest
+import com.bettafish.flarent.models.request.LoginRequest
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.network.FlarumService
 

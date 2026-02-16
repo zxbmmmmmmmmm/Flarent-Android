@@ -10,6 +10,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 @Destination<RootGraph>(start=true)
 @ExperimentalMaterial3Api
-fun MainPage(navigator: DestinationsNavigator){
+fun HomePage(navigator: DestinationsNavigator){
     DiscussionListPage(navigator = navigator)
 }

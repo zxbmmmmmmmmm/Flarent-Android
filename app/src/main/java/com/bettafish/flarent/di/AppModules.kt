@@ -6,6 +6,8 @@ import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
 import com.bettafish.flarent.data.FileRepository
 import com.bettafish.flarent.data.FileRepositoryImpl
+import com.bettafish.flarent.data.ForumRepository
+import com.bettafish.flarent.data.ForumRepositoryImpl
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.data.PostsRepositoryImpl
 import com.bettafish.flarent.data.TagsRepository
@@ -17,6 +19,7 @@ import com.bettafish.flarent.models.File
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.ui.pages.account.AccountViewModel
@@ -28,6 +31,7 @@ import com.bettafish.flarent.ui.pages.reply.FileViewModel
 import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
 import com.bettafish.flarent.ui.pages.tagList.TagListViewModel
 import com.bettafish.flarent.ui.pages.user.UserProfileViewModel
+import com.bettafish.flarent.ui.pages.welcome.WelcomeViewModel
 import com.bettafish.flarent.utils.appSettings
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -77,6 +81,7 @@ val networkModule = module {
             Tag::class.java,
             User::class.java,
             File::class.java,
+            Forum::class.java
         )
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_TYPE_IN_RELATIONSHIP)
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)
@@ -103,6 +108,7 @@ val repositoryModule = module {
     single<TagsRepository> { TagsRepositoryImpl(get()) }
     single<PostsRepository> { PostsRepositoryImpl(get()) }
     single<UsersRepository> { UsersRepositoryImpl(get()) }
+    single<ForumRepository> { ForumRepositoryImpl(get()) }
     single<FileRepository> { FileRepositoryImpl(get(), context = androidContext()) }
 }
 
@@ -115,6 +121,7 @@ val viewModelModule = module {
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { FileViewModel(get()) }
+    viewModel { WelcomeViewModel(get()) }
     viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
     viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
 }
