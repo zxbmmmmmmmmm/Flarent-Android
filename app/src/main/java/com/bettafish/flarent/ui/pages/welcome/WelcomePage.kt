@@ -27,8 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavOptions
+import com.bettafish.flarent.App
 import com.bettafish.flarent.models.Forum
+import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.utils.HtmlConverter
+import com.bettafish.flarent.utils.appSettings
 import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
@@ -44,18 +48,36 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomePageDestination
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavOptionsBuilder
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.composedestinations.result.onResult
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 import org.koin.androidx.compose.getViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination<RootGraph>
-fun WelcomePage(navigator: DestinationsNavigator){
+fun WelcomePage(navigator: DestinationsNavigator,
+                resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>){
     val viewModel : WelcomeViewModel = getViewModel()
     val forum = viewModel.forum.collectAsState()
+    val canRefreshUser = viewModel.refreshUserCommand.canExecute.collectAsState()
+    resultRecipient.onResult(
+        onValue = { resultValue ->
+            App.INSTANCE.appSettings.userId = resultValue.id
+            App.INSTANCE.appSettings.token = resultValue.token
+            viewModel.refreshUserCommand.execute(resultValue.id)
+            viewModel.refreshUserCommand.onCompleted = {
+                navigator.navigate(HomePageDestination) {
+                    launchSingleTop = true
+                }
+            }
+        }
+    )
     Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()){
-        if(forum.value == null){
+        if(forum.value == null || !canRefreshUser.value){
             CircularProgressIndicator(modifier = Modifier
                 .height(64.dp)
                 .width(64.dp)
@@ -117,7 +139,6 @@ fun WelcomePage(forum: Forum,
                 modifier = Modifier
                     .padding(vertical = 12.dp)
                     .fillMaxWidth(),
-                colors = markdownColor( text = MaterialTheme.colorScheme.outline ),
                 extendedSpans = markdownExtendedSpans {
                     val animator = rememberSquigglyUnderlineAnimator()
                     remember {
@@ -146,7 +167,9 @@ fun WelcomePage(forum: Forum,
             OutlinedButton(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    navigator?.navigate(HomePageDestination)
+                    navigator?.navigate(HomePageDestination) {
+                        launchSingleTop = true
+                    }
                     onSave()}) {
                 Text("直接进入")
             }
@@ -154,7 +177,7 @@ fun WelcomePage(forum: Forum,
                 modifier = Modifier.weight(1f),
                 onClick = {
                     navigator?.navigate(LoginPageDestination)
-                    onSave
+                    onSave()
                 }) {
                 Text("登录")
             }

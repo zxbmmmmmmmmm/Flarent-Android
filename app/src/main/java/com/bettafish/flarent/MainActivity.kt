@@ -92,9 +92,9 @@ fun FlarentApp() {
 
 
     val uriHandler = object : UriHandler {
-        override fun openUri(url: String) {
-            if (url.contains(BuildConfig.FLARUM_BASE_URL)) {
-                val httpUrl = url.toHttpUrl()
+        override fun openUri(uri: String) {
+            if (uri.contains(BuildConfig.FLARUM_BASE_URL)) {
+                val httpUrl = uri.toHttpUrl()
                 val segments = httpUrl.pathSegments
                 val queryMap = httpUrl.query?.split("&")?.associate {
                     val (key, value) = it.split("=")
@@ -119,11 +119,11 @@ fun FlarentApp() {
                         }
                     }
                     else ->{
-                        defaultUriHandler.openUri(url)
+                        defaultUriHandler.openUri(uri)
                     }
                 }
             } else {
-                defaultUriHandler.openUri(url)
+                defaultUriHandler.openUri(uri)
             }
         }
     }
