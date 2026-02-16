@@ -79,7 +79,7 @@ fun TagListPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator)
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 MediumTopAppBar(
-                    title = { Text("标签") },
+                    title = { Text("分类") },
                     scrollBehavior = scrollBehavior
                 )
             }

@@ -5,63 +5,37 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
 import com.bettafish.flarent.ui.theme.FlarentTheme
+
 import com.bettafish.flarent.ui.widgets.GlobalImagePreviewerProvider
 import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.AccountPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
-import com.ramcosta.composedestinations.generated.destinations.HomePageDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
-import com.ramcosta.composedestinations.generated.destinations.TagListPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.generated.destinations.WelcomePageDestination
-import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.Direction
-import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
-import com.ramcosta.composedestinations.utils.currentDestinationAsState
-import com.ramcosta.composedestinations.utils.startDestination
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -88,7 +62,6 @@ fun FlarentApp() {
     navController.navigatorProvider += bottomSheetNavigator
     val navigator = navController.toDestinationsNavigator()
     val defaultUriHandler = LocalUriHandler.current
-
 
 
     val uriHandler = object : UriHandler {
@@ -129,12 +102,17 @@ fun FlarentApp() {
     }
 
 
-    Scaffold(bottomBar = { BottomBar(navController) }) { innerPadding ->
-        GlobalImagePreviewerProvider {
-            CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+    GlobalImagePreviewerProvider {
+        CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background, // 背景色
+                contentColor = MaterialTheme.colorScheme.onBackground // 自动传递给子组件的文字颜色
+            ){
                 ModalBottomSheetLayout(
                     bottomSheetNavigator = bottomSheetNavigator,
                     sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+                    sheetContentColor = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.fillMaxSize()
                 ){
                     val start: Direction = if(App.INSTANCE.appSettings.forum == null){
@@ -145,11 +123,13 @@ fun FlarentApp() {
                     }
                     DestinationsNavHost(
                         navController = navController,
-                        modifier = Modifier.fillMaxSize().padding(bottom = innerPadding.calculateBottomPadding()),
+                        modifier = Modifier.fillMaxSize(),
                         navGraph = NavGraphs.root,
                         start = start,
-                        defaultTransitions = SlideTransitions)
-                }}
+                        defaultTransitions = SlideTransitions
+                    )
+                }
+            }
 
         }
     }
@@ -190,64 +170,6 @@ object SlideTransitions : NavHostAnimatedDestinationStyle() {
             targetOffset = { it }
         )
     }
-}
-
-
-@OptIn(ExperimentalCoroutinesApi::class)
-@Composable
-@ExperimentalMaterial3Api
-fun BottomBar(
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
-    val currentDestination: DestinationSpec = navController.currentDestinationAsState().value
-        ?: NavGraphs.root.startDestination
-    val destinationsNavigator = navController.toDestinationsNavigator()
-    val shouldShowBottomBar = currentDestination.route == HomePageDestination.route ||
-            currentDestination.route == TagListPageDestination.route ||
-            currentDestination.route == AccountPageDestination.route
-
-    AnimatedVisibility(
-        modifier = modifier.fillMaxWidth(),
-        visible = shouldShowBottomBar,
-        enter = expandIn() + expandVertically(expandFrom = Alignment.CenterVertically),
-        exit = shrinkOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically)
-    ) {
-        NavigationBar () {
-            BottomBarDestination.entries.fastForEach { destination ->
-                NavigationBarItem(
-                    selected = currentDestination == destination.direction,
-                    onClick = {
-                        destinationsNavigator.navigate(destination.direction) {
-                            launchSingleTop = true
-                            restoreState = true
-                            popUpTo(NavGraphs.root.startDestination) {
-                                saveState = true
-                            }
-                        }
-                    },
-                    icon = { Icon(destination.icon, contentDescription = destination.label)},
-                    label = { destination.label },
-                )
-            }
-        }
-    }
 
 }
 
-@ExperimentalMaterial3Api
-enum class BottomBarDestination(
-    val direction: DirectionDestinationSpec,
-    val icon: ImageVector,
-    val label: String,
-) {
-    Home(HomePageDestination, Icons.Default.Home, "Home"),
-    @OptIn(ExperimentalCoroutinesApi::class)
-    Tags(TagListPageDestination, Icons.Default.Category, "Tags"),
-    Account(AccountPageDestination, Icons.Default.AccountCircle, "Account"),
-}
-
-@Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
-    Text(text = "Profile Screen", modifier = modifier.padding(16.dp))
-}
