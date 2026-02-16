@@ -118,6 +118,9 @@ fun FlarentApp() {
                             navigator.navigate(UserProfilePageDestination(it))
                         }
                     }
+                    else ->{
+                        defaultUriHandler.openUri(url)
+                    }
                 }
             } else {
                 defaultUriHandler.openUri(url)
