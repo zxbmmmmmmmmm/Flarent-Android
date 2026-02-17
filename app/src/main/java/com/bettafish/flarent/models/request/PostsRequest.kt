@@ -10,7 +10,7 @@ data class PostsRequest(
 ) {
     fun toQueryMap(): Map<String, String> {
         val map = mutableMapOf<String, String>()
-        ids?.forEach { map["filter[id][]"] = it }
+        ids?.let { map["filter[id]"] = it.joinToString(",") }
         author?.let { map["filter[author]"] = it }
         type?.let { map["filter[type]"] = it }
         limit?.let { map["page[limit]"] = it.toString() }
