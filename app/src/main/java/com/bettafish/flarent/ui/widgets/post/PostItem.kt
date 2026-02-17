@@ -58,12 +58,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.App
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
+import com.bettafish.flarent.ui.widgets.ReactionList
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
+import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.relativeTime
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
@@ -79,6 +82,7 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.time.ZonedDateTime
 
+val reactions = App.INSTANCE.appSettings.forum?.reactions?.associateBy { it.id }
 
 @Composable
 fun PostItem(
@@ -397,6 +401,20 @@ private fun PostItem(
                     )
                 }
             }
+            val reactions = post.reactionCounts?.mapNotNull {
+                    (id,value) ->
+                val reaction = reactions?.get(id)
+                if(reaction != null)
+                    reaction to value
+                else null
+            }
+            if(!reactions.isNullOrEmpty() && !reactions.all { it.second == 0 }){
+                ReactionList(
+                    reactions = reactions,
+                    selectedReaction = post.userReactionIdentifier,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
             Box(modifier = Modifier.fillMaxWidth()){
                 Row(
                     modifier = Modifier.align(Alignment.CenterStart),
@@ -430,7 +448,6 @@ private fun PostItem(
                                     contentDescription = null
                                 )
                             }
-
                         }
                         if (votes != 0) {
                             Text(
@@ -440,6 +457,9 @@ private fun PostItem(
                             )
                         }
                     }
+
+
+
 
                     Button(onClick ={},
                         contentPadding = PaddingValues(4.dp),

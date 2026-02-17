@@ -1,21 +1,25 @@
 package com.bettafish.flarent.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.github.jasminb.jsonapi.annotations.Id
 import com.github.jasminb.jsonapi.annotations.Type
 import kotlinx.serialization.Serializable
 
 @Serializable
 @Type("reactions")
 class Reaction {
+    @Id
+    lateinit var id: String
+
     @JsonProperty("identifier")
-    val identifier:String? = null
+    var identifier: String? = null
 
     @JsonProperty("display")
-    val display: String? = null
+    var display: String? = null
 
     @JsonProperty("type")
-    val type: String? = null
+    var type: String? = null
 
     @JsonProperty("enabled")
-    val enabled: Boolean? = null
+    var enabled: Boolean? = null
 }

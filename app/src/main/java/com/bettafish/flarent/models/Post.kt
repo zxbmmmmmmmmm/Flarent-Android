@@ -43,6 +43,12 @@ class Post
     @JsonProperty("canVote")
     var canVote: Boolean? = null
 
+    @JsonProperty("reactionCounts")
+    var reactionCounts: Map<String, Int>? = null
+
+    @JsonProperty("userReactionIdentifier")
+    var userReactionIdentifier: String? = null
+
     @JsonProperty("createdAt")
     @Contextual
     var createdAt: ZonedDateTime? = null

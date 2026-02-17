@@ -58,5 +58,5 @@ class Forum {
     var actor: User? = null
 
     @Relationship("reactions")
-    var reactions: List<Tag>? = null
+    var reactions: List<Reaction>? = null
 }
