@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.pages.home
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -14,14 +15,18 @@ import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.QuestionAnswer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.pages.account.AccountPage
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListPage
@@ -52,7 +57,9 @@ fun HomePage(
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                tonalElevation = 8.dp,
+                modifier = Modifier.height(56.dp)) {
                 tabs.forEachIndexed { index, tab ->
                     NavigationBarItem(
                         selected = pagerState.currentPage == index,
@@ -61,12 +68,18 @@ fun HomePage(
                                 pagerState.animateScrollToPage(index)
                             }
                         },
-                        label = { Text(tab.label) },
                         icon = { if(pagerState.currentPage == index)
                             Icon(tab.selectedIcon, contentDescription = tab.label)
                         else
                             Icon(tab.icon, contentDescription = tab.label) },
-                        alwaysShowLabel = false
+                        alwaysShowLabel = false,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color.Transparent,
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     )
                 }
             }

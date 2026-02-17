@@ -133,8 +133,6 @@ fun FlarentApp() {
 
         }
     }
-
-
 }
 object SlideTransitions : NavHostAnimatedDestinationStyle() {
     private val AnimationSpec = tween<IntOffset>(durationMillis = 300, easing = FastOutSlowInEasing)
