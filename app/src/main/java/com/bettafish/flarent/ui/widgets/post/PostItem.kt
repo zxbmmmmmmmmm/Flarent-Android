@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,12 +32,13 @@ import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.AddReaction
 import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.App
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
@@ -66,6 +67,7 @@ import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.ReactionList
+import com.bettafish.flarent.ui.widgets.getEmoji
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.relativeTime
@@ -83,7 +85,8 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.time.ZonedDateTime
 
-val reactions = App.INSTANCE.appSettings.forum?.reactions?.associateBy { it.id }
+val allReactions = App.INSTANCE.appSettings.forum?.reactions ?: emptyList()
+val allReactionsMap = allReactions.associateBy { it.id }
 
 @Composable
 fun PostItem(
@@ -144,6 +147,7 @@ private fun PostItem(
     onReact: (reactionId: String) -> Unit = {  },
     isReacting: Boolean = false
 ) {
+    var showReactionMenu by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -411,7 +415,7 @@ private fun PostItem(
             }
             val reactions = post.reactionCounts?.mapNotNull {
                     (id,value) ->
-                val reaction = reactions?.get(id)
+                val reaction = allReactionsMap?.get(id)
                 if(reaction != null)
                     reaction to value
                 else null
@@ -469,8 +473,8 @@ private fun PostItem(
                         }
                     }
 
-                    IconButton(onClick ={}){
-                        if(isReacting){
+                    IconButton(onClick = { showReactionMenu = true }) {
+                        if (isReacting) {
                             CircularProgressIndicator(modifier = Modifier.padding(8.dp))
                         }
                         else {
@@ -479,6 +483,34 @@ private fun PostItem(
                                 tint = colorScheme.outline,
                                 contentDescription = null
                             )
+                        }
+                        DropdownMenu(
+                            expanded = showReactionMenu,
+                            onDismissRequest = { showReactionMenu = false }
+                        ) {
+                            val chunkedReactions = allReactions.chunked(4)
+
+                            FlowRow(
+                                modifier = Modifier.padding(horizontal = 4.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                maxItemsInEachRow = 5) {
+                                allReactions.forEach { reaction ->
+                                    val emoji = if (reaction.type == "emoji" && reaction.identifier != null) {
+                                        getEmoji(reaction.identifier!!)
+                                    } else {
+                                        reaction.display ?: ""
+                                    }
+                                    IconButton({
+                                        onReact(reaction.id)
+                                        showReactionMenu = false
+                                    }) {
+                                        Text(
+                                            text = emoji,
+                                            fontSize = 20.sp
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -561,3 +593,16 @@ fun PostItemRenamePreview() {
         PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }
+
+private val emojiMap = mapOf(
+    "thinking" to "🤔",
+    "rofl" to "🤣",
+    "heart" to "❤️",
+    "lemon" to "🍋",
+    "tada" to "🎉",
+    "herb" to "🌿",
+    "savour" to "😋",
+    "cold_sweat" to "😰",
+    "overheating" to "🥵",
+)
+
