@@ -1,21 +1,25 @@
 package com.bettafish.flarent.ui.widgets
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +31,7 @@ fun ReactionBadge(
     count: Int,
     selected: Boolean,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
@@ -42,28 +47,32 @@ fun ReactionBadge(
         colorScheme.onSurface
     }
 
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        modifier = Modifier.height(36.dp),
-        contentPadding = PaddingValues(4.dp,8.dp),
-        enabled = enabled
+    Surface(
+        color = if (enabled) containerColor else containerColor.copy(alpha = 0.38f),
+        contentColor = if (enabled) contentColor else contentColor.copy(alpha = 0.38f),
+        shape = ButtonDefaults.shape,
+        modifier = Modifier
+            .height(32.dp)
+            .clip(ButtonDefaults.shape)
+            .combinedClickable(
+                enabled = enabled,
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
         Row(
+            modifier = Modifier.padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            val emoji = if(reaction.type == "emoji" && reaction.identifier != null){
-                getEmoji(reaction.identifier!!)
+            val emoji = if(reaction.type == "emoji"){
+                getEmoji(reaction.identifier)
             }
             else{
                 reaction.display ?: ""
             }
             Text(
-                text = emoji,
+                text = emoji ?: "",
                 style = MaterialTheme.typography.titleSmall
             )
 
@@ -84,6 +93,7 @@ fun ReactionList(reactions: List<Pair<Reaction,Int>>,
                  selectedReaction: String? = null,
                  modifier: Modifier = Modifier,
                  onReactionSelected: (String) -> Unit = {},
+                 onReactionLongClicked: (String) -> Unit = {},
                  enabled: Boolean = true){
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier){
@@ -93,7 +103,8 @@ fun ReactionList(reactions: List<Pair<Reaction,Int>>,
                     it.second,
                     it.first.id == selectedReaction,
                     { onReactionSelected(it.first.id) },
-                    enabled = enabled)
+                    { onReactionLongClicked(it.first.id) },
+                    enabled = enabled )
             }
         }
     }
@@ -111,8 +122,8 @@ val emojiMap = mapOf(
     "overheating" to "🥵",
 )
 
-fun getEmoji(name: String): String {
-    return emojiMap[name.lowercase()] ?: "❓"
+fun getEmoji(name: String?): String? {
+    return emojiMap[name?.lowercase()]
 }
 
 @Composable
@@ -123,7 +134,7 @@ fun ReactionBadgePreview(){
         display = "思考"
         type = "emoji"
         enabled = true
-    }, 1, false, {})
+    }, 1, false, {}, {})
 }
 
 
@@ -135,7 +146,7 @@ fun ReactionBadgeSelectedPreview(){
         display = "思考"
         type = "emoji"
         enabled = true
-    }, 1, true, {})
+    }, 1, true, {}, {})
 }
 
 @Composable

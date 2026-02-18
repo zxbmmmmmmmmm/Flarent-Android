@@ -64,6 +64,7 @@ import com.bettafish.flarent.App
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.ui.pages.reaction.PostReactionsBottomSheet
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.ReactionList
@@ -76,6 +77,7 @@ import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.model.rememberMarkdownState
+import com.ramcosta.composedestinations.generated.destinations.PostReactionsBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -124,7 +126,10 @@ fun PostItem(
                 onReact = {
                     vm.reactCommand.execute(post.value!!.id, it)
                 },
-                isReacting = !canReactCommandExec.value)
+                isReacting = !canReactCommandExec.value,
+                onReactionLongClicked = {
+                    navigator.navigate(PostReactionsBottomSheetDestination(id)
+                    )})
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -145,7 +150,8 @@ private fun PostItem(
     onVote: (isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_ -> },
     isVoting: Boolean = false,
     onReact: (reactionId: String) -> Unit = {  },
-    isReacting: Boolean = false
+    isReacting: Boolean = false,
+    onReactionLongClicked : (reactionId: String) -> Unit = {  },
 ) {
     var showReactionMenu by remember { mutableStateOf(false) }
 
@@ -158,7 +164,9 @@ private fun PostItem(
         if(isComment){
 
             val rowModifier = if(userClickEnabled){
-                Modifier.fillMaxWidth().clickable { post.user?.username?.let { username -> userClick(username) } }
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { post.user?.username?.let { username -> userClick(username) } }
             }
             else{
                 Modifier.fillMaxWidth()
@@ -190,7 +198,9 @@ private fun PostItem(
                             Surface(
                                 color = colorScheme.primary,
                                 shape = RoundedCornerShape(4.dp),
-                                modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .align(Alignment.CenterVertically)
                             ) {
                                 Text(
                                     text = stringResource(R.string.op_badge),
@@ -335,10 +345,14 @@ private fun PostItem(
             {
 
                 Icon(icon,
-                    modifier = Modifier.height(36.dp).width(36.dp),
+                    modifier = Modifier
+                        .height(36.dp)
+                        .width(36.dp),
                     tint = colorScheme.outline,
                     contentDescription = null)
-                FlowRow(modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically),
+                FlowRow(modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)){
                     Row(modifier = Modifier.clickable{ post.user?.id?.let { userClick(it)  } },
@@ -415,18 +429,22 @@ private fun PostItem(
             }
             val reactions = post.reactionCounts?.mapNotNull {
                     (id,value) ->
-                val reaction = allReactionsMap?.get(id)
+                val reaction = allReactionsMap[id]
                 if(reaction != null)
                     reaction to value
                 else null
-            }
+            }?.sortedByDescending { it.second }
 
             if(!reactions.isNullOrEmpty() && !reactions.all { it.second == 0 }){
                 ReactionList(
                     reactions = reactions,
                     selectedReaction = post.userReactionIdentifier,
                     modifier = Modifier.padding(bottom = 8.dp),
-                    onReactionSelected = onReact,
+                    onReactionSelected = {
+                        if(post.canReact == true){
+                            onReact(it)
+                        }},
+                    onReactionLongClicked = onReactionLongClicked,
                     enabled = !isReacting
                 )
             }
@@ -441,7 +459,7 @@ private fun PostItem(
 
                     Row(
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconToggleButton(
@@ -468,46 +486,47 @@ private fun PostItem(
                             Text(
                                 text = votes.toString(),
                                 style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(end = 4.dp),
                                 color = if (isUpvoted) colorScheme.primary else colorScheme.outline
                             )
                         }
                     }
 
-                    IconButton(onClick = { showReactionMenu = true }) {
-                        if (isReacting) {
-                            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
-                        }
-                        else {
-                            Icon(
-                                Icons.Outlined.AddReaction,
-                                tint = colorScheme.outline,
-                                contentDescription = null
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = showReactionMenu,
-                            onDismissRequest = { showReactionMenu = false }
-                        ) {
-                            val chunkedReactions = allReactions.chunked(4)
-
-                            FlowRow(
-                                modifier = Modifier.padding(horizontal = 4.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                maxItemsInEachRow = 5) {
-                                allReactions.forEach { reaction ->
-                                    val emoji = if (reaction.type == "emoji" && reaction.identifier != null) {
-                                        getEmoji(reaction.identifier!!)
-                                    } else {
-                                        reaction.display ?: ""
-                                    }
-                                    IconButton({
-                                        onReact(reaction.id)
-                                        showReactionMenu = false
-                                    }) {
-                                        Text(
-                                            text = emoji,
-                                            fontSize = 20.sp
-                                        )
+                    if(post.canReact == true){
+                        IconButton(onClick = { showReactionMenu = true }) {
+                            if (isReacting) {
+                                CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                            }
+                            else {
+                                Icon(
+                                    Icons.Outlined.AddReaction,
+                                    tint = colorScheme.outline,
+                                    contentDescription = null
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showReactionMenu,
+                                onDismissRequest = { showReactionMenu = false }
+                            ) {
+                                FlowRow(
+                                    modifier = Modifier.padding(horizontal = 4.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    maxItemsInEachRow = 5) {
+                                    allReactions.forEach { reaction ->
+                                        val emoji = if (reaction.type == "emoji" && reaction.identifier != null) {
+                                            getEmoji(reaction.identifier!!)
+                                        } else {
+                                            reaction.display ?: ""
+                                        }
+                                        IconButton({
+                                            onReact(reaction.id)
+                                            showReactionMenu = false
+                                        }) {
+                                            Text(
+                                                text = emoji ?: "",
+                                                fontSize = 20.sp
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -517,7 +536,9 @@ private fun PostItem(
 
 
                 Row(
-                    modifier = Modifier.offset(12.dp).align(Alignment.CenterEnd),
+                    modifier = Modifier
+                        .offset(12.dp)
+                        .align(Alignment.CenterEnd),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -593,16 +614,3 @@ fun PostItemRenamePreview() {
         PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
     }
 }
-
-private val emojiMap = mapOf(
-    "thinking" to "🤔",
-    "rofl" to "🤣",
-    "heart" to "❤️",
-    "lemon" to "🍋",
-    "tada" to "🎉",
-    "herb" to "🌿",
-    "savour" to "😋",
-    "cold_sweat" to "😰",
-    "overheating" to "🥵",
-)
-

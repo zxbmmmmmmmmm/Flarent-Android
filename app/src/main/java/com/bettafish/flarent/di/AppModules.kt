@@ -20,12 +20,15 @@ import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.Forum
+import com.bettafish.flarent.models.PostReactions
+import com.bettafish.flarent.models.Reaction
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
 import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListViewModel
+import com.bettafish.flarent.ui.pages.reaction.PostReactionsViewModel
 import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.bettafish.flarent.ui.pages.reply.FileViewModel
 import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
@@ -81,7 +84,9 @@ val networkModule = module {
             Tag::class.java,
             User::class.java,
             File::class.java,
-            Forum::class.java
+            Forum::class.java,
+            Reaction::class.java,
+            PostReactions::class.java
         )
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_TYPE_IN_RELATIONSHIP)
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)
@@ -121,6 +126,7 @@ val viewModelModule = module {
     viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { FileViewModel(get()) }
+    viewModel { (postId : String) -> PostReactionsViewModel(get(), postId) }
     viewModel { WelcomeViewModel(get(),get()) }
     viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
     viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }

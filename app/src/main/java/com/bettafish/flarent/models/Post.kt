@@ -43,6 +43,15 @@ class Post
     @JsonProperty("canVote")
     var canVote: Boolean? = null
 
+    @JsonProperty("seeVoters")
+    var seeVoters: Boolean? = null
+
+    @JsonProperty("canEdit")
+    var canEdit: Boolean? = null
+
+    @JsonProperty("canReact")
+    var canReact: Boolean? = null
+
     @JsonProperty("reactionCounts")
     var reactionCounts: Map<String, Int>? = null
 

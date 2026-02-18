@@ -2,6 +2,7 @@ package com.bettafish.flarent.data
 
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.network.FlarumService
 
@@ -34,5 +35,9 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
             "id" to postId,
         ),)
         return service.reactPost(postId,request)
+    }
+
+    override suspend fun fetchReactions(postId: String): List<PostReactions>{
+        return service.getReactions(postId)
     }
 }

@@ -6,6 +6,7 @@ import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.request.LoginRequest
 import com.bettafish.flarent.models.LoginResponse
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
 import okhttp3.MultipartBody
@@ -55,6 +56,12 @@ interface FlarumService {
     suspend fun getToken(
         @Body body: LoginRequest
     ): LoginResponse
+
+    @GET("api/posts/{id}/reactions")
+    suspend fun getReactions(
+        @Path("id") id : String,
+        @Query("include") include: String? = "user,reaction"
+    ): List<PostReactions>
 
     @PATCH("api/posts/{id}")
     @JvmSuppressWildcards(true)
