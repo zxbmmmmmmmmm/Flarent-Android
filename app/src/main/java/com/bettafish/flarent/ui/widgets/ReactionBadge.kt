@@ -27,7 +27,8 @@ fun ReactionBadge(
     count: Int,
     selected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val containerColor = if (selected) {
         colorScheme.primaryContainer
@@ -48,7 +49,8 @@ fun ReactionBadge(
             contentColor = contentColor
         ),
         modifier = Modifier.height(36.dp),
-        contentPadding = PaddingValues(4.dp,8.dp)
+        contentPadding = PaddingValues(4.dp,8.dp),
+        enabled = enabled
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -81,7 +83,8 @@ fun ReactionBadge(
 fun ReactionList(reactions: List<Pair<Reaction,Int>>,
                  selectedReaction: String? = null,
                  modifier: Modifier = Modifier,
-                 onReactionSelected: (String) -> Unit = {}){
+                 onReactionSelected: (String) -> Unit = {},
+                 enabled: Boolean = true){
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier){
         reactions.forEach {
@@ -89,7 +92,8 @@ fun ReactionList(reactions: List<Pair<Reaction,Int>>,
                 ReactionBadge(it.first,
                     it.second,
                     it.first.id == selectedReaction,
-                    { onReactionSelected(it.first.id) })
+                    { onReactionSelected(it.first.id) },
+                    enabled = enabled)
             }
         }
     }

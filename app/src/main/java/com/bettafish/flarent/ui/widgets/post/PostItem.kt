@@ -38,6 +38,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -98,6 +99,7 @@ fun PostItem(
     val post = vm.post.collectAsState()
     val imagePreviewer = LocalImagePreviewer.current
     val canVoteCommandExec = vm.voteCommand.canExecute.collectAsState()
+    val canReactCommandExec = vm.reactCommand.canExecute.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()){
         if(post.value != null){
@@ -112,10 +114,14 @@ fun PostItem(
                         val content = "@\"$name\"#p$postId "
                         navigator.navigate(ReplyBottomSheetDestination(it, content = content))
                     }},
-                onVote = { postId, isUpvoted, isDownvoted ->
-                    vm.voteCommand.execute(postId, isUpvoted, isDownvoted)
+                onVote = { isUpvoted, isDownvoted ->
+                    vm.voteCommand.execute(post.value!!.id, isUpvoted, isDownvoted)
                 },
-                isVoting = !canVoteCommandExec.value)
+                isVoting = !canVoteCommandExec.value,
+                onReact = {
+                    vm.reactCommand.execute(post.value!!.id, it)
+                },
+                isReacting = !canReactCommandExec.value)
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -133,8 +139,10 @@ private fun PostItem(
     userClick: (username: String) -> Unit = {  },
     imageClick: ((String) -> Unit) = {},
     replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
-    onVote: (postId: String, isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_,_ -> },
-    isVoting: Boolean = false
+    onVote: (isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_ -> },
+    isVoting: Boolean = false,
+    onReact: (reactionId: String) -> Unit = {  },
+    isReacting: Boolean = false
 ) {
 
     Column(
@@ -408,11 +416,14 @@ private fun PostItem(
                     reaction to value
                 else null
             }
+
             if(!reactions.isNullOrEmpty() && !reactions.all { it.second == 0 }){
                 ReactionList(
                     reactions = reactions,
                     selectedReaction = post.userReactionIdentifier,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    onReactionSelected = onReact,
+                    enabled = !isReacting
                 )
             }
             Box(modifier = Modifier.fillMaxWidth()){
@@ -434,7 +445,7 @@ private fun PostItem(
                             enabled = post.canVote ?: false,
                             onCheckedChange = {
                                 val newUpvoted = !isUpvoted
-                                onVote(post.id, newUpvoted, post.hasDownvoted?:false)
+                                onVote(newUpvoted, post.hasDownvoted?:false)
                             }
                         ) {
                             if(isVoting){
@@ -458,15 +469,17 @@ private fun PostItem(
                         }
                     }
 
-
-
-
-                    Button(onClick ={},
-                        contentPadding = PaddingValues(4.dp),
-                        colors = ButtonDefaults.outlinedButtonColors()){
-                        Icon(Icons.Outlined.AddReaction,
-                            tint = colorScheme.outline,
-                            contentDescription = null)
+                    IconButton(onClick ={}){
+                        if(isReacting){
+                            CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                        }
+                        else {
+                            Icon(
+                                Icons.Outlined.AddReaction,
+                                tint = colorScheme.outline,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
 

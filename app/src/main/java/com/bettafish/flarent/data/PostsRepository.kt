@@ -9,4 +9,6 @@ interface PostsRepository {
     suspend fun sendPost(discussionId : String, content : String) : Post
 
     suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean): Post
+
+    suspend fun reactPost(postId: String, reactionId: String): Post
 }

@@ -26,4 +26,13 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
         )
         return service.votePost(postId,request)
     }
+
+    override suspend fun reactPost(postId: String, reactionId: String) : Post {
+        val request = mapOf("data" to mapOf(
+            "type" to "posts",
+            "attributes" to mapOf("reaction" to reactionId),
+            "id" to postId,
+        ),)
+        return service.reactPost(postId,request)
+    }
 }

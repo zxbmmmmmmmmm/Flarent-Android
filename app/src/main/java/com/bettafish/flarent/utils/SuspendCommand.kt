@@ -43,6 +43,7 @@ class SuspendCommand2<T1,T2>(val func: suspend (arg1:T1, arg2:T2) -> Unit, val c
     }
 }
 
+
 class SuspendCommand3<T1,T2,T3>(val func: suspend (arg1:T1, arg2:T2, arg3:T3) -> Unit, val coroutineScope: CoroutineScope){
     val canExecute = MutableStateFlow(true)
 
@@ -51,7 +52,7 @@ class SuspendCommand3<T1,T2,T3>(val func: suspend (arg1:T1, arg2:T2, arg3:T3) ->
         canExecute.value = false
         coroutineScope.launch {
             try {
-                func(arg1,arg2,arg3)
+                func(arg1, arg2, arg3)
             }
             catch (e: Exception) {
             }

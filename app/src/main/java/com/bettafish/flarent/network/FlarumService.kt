@@ -63,6 +63,13 @@ interface FlarumService {
         @Body request: Map<String, Any?>
     ): Post
 
+    @PATCH("api/posts/{id}")
+    @JvmSuppressWildcards(true)
+    suspend fun reactPost(
+        @Path("id") id: String,
+        @Body request: Map<String, Any?>
+    ): Post
+
     @POST("api/posts")
     suspend fun sendPost(
         @Body post: Post
