@@ -34,6 +34,7 @@ import com.bettafish.flarent.ui.pages.reply.FileViewModel
 import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
 import com.bettafish.flarent.ui.pages.tagList.TagListViewModel
 import com.bettafish.flarent.ui.pages.user.UserProfileViewModel
+import com.bettafish.flarent.ui.pages.vote.VotesViewModel
 import com.bettafish.flarent.ui.pages.welcome.WelcomeViewModel
 import com.bettafish.flarent.utils.appSettings
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -130,6 +131,7 @@ val viewModelModule = module {
     viewModel { WelcomeViewModel(get(),get()) }
     viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
     viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
+    viewModel { (id:String) -> VotesViewModel(get(), id) }
 }
 
 class AuthInterceptor() : Interceptor {

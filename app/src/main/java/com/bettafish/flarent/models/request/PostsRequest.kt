@@ -6,7 +6,8 @@ data class PostsRequest(
     val type: String? = null,
     val limit: Int? = null,
     val offset: Int? = null,
-    val sort: String? = null
+    val sort: String? = null,
+    val include: List<String>? = null
 ) {
     fun toQueryMap(): Map<String, String> {
         val map = mutableMapOf<String, String>()
@@ -16,6 +17,7 @@ data class PostsRequest(
         limit?.let { map["page[limit]"] = it.toString() }
         offset?.let { map["page[offset]"] = it.toString() }
         sort?.let { map["sort"] = it }
+        include?.let { map["include"] = it.joinToString(",") }
         return map
     }
 }

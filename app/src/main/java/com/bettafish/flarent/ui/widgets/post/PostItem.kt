@@ -2,6 +2,7 @@ package com.bettafish.flarent.ui.widgets.post
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -67,6 +68,7 @@ import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.pages.reaction.PostReactionsBottomSheet
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
+import com.bettafish.flarent.ui.widgets.LongClickableIconButton
 import com.bettafish.flarent.ui.widgets.ReactionList
 import com.bettafish.flarent.ui.widgets.getEmoji
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
@@ -80,6 +82,7 @@ import com.mikepenz.markdown.model.rememberMarkdownState
 import com.ramcosta.composedestinations.generated.destinations.PostReactionsBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
+import com.ramcosta.composedestinations.generated.destinations.VotesBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
@@ -129,7 +132,10 @@ fun PostItem(
                 isReacting = !canReactCommandExec.value,
                 onReactionLongClicked = {
                     navigator.navigate(PostReactionsBottomSheetDestination(id)
-                    )})
+                    )},
+                onVoteLongClicked = {
+                    navigator.navigate(VotesBottomSheetDestination(id))
+                })
         }
         else{
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -152,6 +158,7 @@ private fun PostItem(
     onReact: (reactionId: String) -> Unit = {  },
     isReacting: Boolean = false,
     onReactionLongClicked : (reactionId: String) -> Unit = {  },
+    onVoteLongClicked : () -> Unit = {  },
 ) {
     var showReactionMenu by remember { mutableStateOf(false) }
 
@@ -448,6 +455,7 @@ private fun PostItem(
                     enabled = !isReacting
                 )
             }
+
             Box(modifier = Modifier.fillMaxWidth()){
                 Row(
                     modifier = Modifier.align(Alignment.CenterStart),
@@ -462,34 +470,39 @@ private fun PostItem(
                         horizontalArrangement = Arrangement.spacedBy(2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconToggleButton(
-                            checked = post.hasUpvoted ?: false,
-                            enabled = post.canVote ?: false,
-                            onCheckedChange = {
-                                val newUpvoted = !isUpvoted
-                                onVote(newUpvoted, post.hasDownvoted?:false)
+                        if(post.canVote != null){
+
+                            LongClickableIconButton(
+                                enabled = post.canVote ?: false,
+                                onClick = {
+                                    val newUpvoted = !isUpvoted
+                                    onVote(newUpvoted, post.hasDownvoted?:false)
+                                },
+                                onLongClick = onVoteLongClicked,
+                            ) {
+                                if(isVoting){
+                                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
+                                }
+                                else
+                                {
+                                    Icon(
+                                        imageVector = if (isUpvoted) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                                        tint = if (isUpvoted) colorScheme.primary else colorScheme.outline,
+                                        contentDescription = null
+                                    )
+                                }
                             }
-                        ) {
-                            if(isVoting){
-                                CircularProgressIndicator(modifier = Modifier.padding(8.dp))
-                            }
-                            else
-                            {
-                                Icon(
-                                    imageVector = if (isUpvoted) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                                    tint = if (isUpvoted) colorScheme.primary else colorScheme.outline,
-                                    contentDescription = null
+                            if (votes != 0) {
+                                Text(
+                                    text = votes.toString(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(end = 4.dp),
+                                    color = if (isUpvoted) colorScheme.primary else colorScheme.outline
                                 )
                             }
                         }
-                        if (votes != 0) {
-                            Text(
-                                text = votes.toString(),
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(end = 4.dp),
-                                color = if (isUpvoted) colorScheme.primary else colorScheme.outline
-                            )
-                        }
+
+
                     }
 
                     if(post.canReact == true){

@@ -66,6 +66,12 @@ class Post
     @Contextual
     var editedAt: ZonedDateTime? = null
 
+    @Relationship("upvotes")
+    var upvotes: List<User>? = null
+
+    @Relationship("downvotes")
+    var downvotes: List<User>? = null
+
     @Relationship("user")
     var user: User? = null
 
