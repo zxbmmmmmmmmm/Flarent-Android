@@ -116,19 +116,24 @@ fun ReactionCard(reaction: Reaction,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 12.dp))
                 }
+                intArrayOf()
             }
             HorizontalDivider()
             Column(modifier = Modifier.fillMaxWidth()){
                 users.forEachIndexed { index, user ->
-                    val padding = if(index == 0){
-                        PaddingValues(16.dp, 16.dp, 16.dp, 12.dp)
-                    }
-                    else if(index == users.size - 1){
-                        PaddingValues(16.dp, 16.dp, 16.dp, 16.dp)
-                    }
-                    else{
-                        PaddingValues(horizontal = 16.dp, vertical = 12.dp)
-                    }
+                    val padding =
+                        when (index) {
+                            0 if users.size == 1 -> PaddingValues(16.dp)
+                            0 -> {
+                                PaddingValues(16.dp, 16.dp, 16.dp, 12.dp)
+                            }
+                            users.size - 1 -> {
+                                PaddingValues(16.dp, 12.dp, 16.dp, 16.dp)
+                            }
+                            else -> {
+                                PaddingValues(horizontal = 16.dp, vertical = 12.dp)
+                            }
+                        }
 
                     Row(modifier = Modifier
                         .fillMaxWidth()
