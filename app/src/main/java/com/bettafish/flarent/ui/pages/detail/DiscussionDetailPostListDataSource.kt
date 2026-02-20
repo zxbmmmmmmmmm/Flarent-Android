@@ -62,7 +62,9 @@ class DiscussionDetailPostListDataSource(
             LoadResult.Page(
                 data = items,
                 prevKey = prevKey,
-                nextKey = nextKey
+                nextKey = nextKey,
+                itemsBefore = actualStart,
+                itemsAfter = posts.size - actualEnd
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

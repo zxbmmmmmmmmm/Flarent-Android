@@ -29,6 +29,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+data class ScrollTarget(val index: Int, val version: Int)
+
 class DiscussionDetailViewModel(
     private val postsRepository: PostsRepository,
     private val discussionsRepository: DiscussionsRepository,
@@ -41,8 +43,11 @@ class DiscussionDetailViewModel(
     private val _discussion = MutableStateFlow<Discussion?>(null)
     val discussion: StateFlow<Discussion?> = _discussion.asStateFlow()
 
-    private val _initialScrollIndex = MutableStateFlow<Int?>(null)
-    val initialScrollIndex = _initialScrollIndex.asStateFlow()
+    private var currentTargetPosition = targetPosition
+    private var scrollVersion = 0
+
+    private val _scrollTarget = MutableStateFlow<ScrollTarget?>(null)
+    val scrollTarget: StateFlow<ScrollTarget?> = _scrollTarget.asStateFlow()
 
     init {
         loadDiscussion()
@@ -51,7 +56,7 @@ class DiscussionDetailViewModel(
     private fun loadDiscussion() {
         viewModelScope.launch {
             try {
-                val fetchPos = max(0, targetPosition)
+                val fetchPos = max(0, currentTargetPosition)
                 val result = discussionsRepository.fetchDiscussion(
                     DiscussionRequest(
                         discussionId,
@@ -65,33 +70,44 @@ class DiscussionDetailViewModel(
         }
     }
 
+    fun jumpToPosition(position: Int) {
+        currentTargetPosition = position
+        viewModelScope.launch {
+            try {
+                val result = discussionsRepository.fetchDiscussion(
+                    DiscussionRequest(discussionId, max(0, position), POST_PAGE_SIZE)
+                )
+                _discussion.value = result
+            } catch (e: Exception) {
+            }
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     var posts: Flow<PagingData<Post>> = _discussion
         .filterNotNull()
         .filter { !it.posts.isNullOrEmpty() }
         .flatMapLatest { discussion ->
             val posts = discussion.posts!!
-            // Find the index of the target post (startingPosition)
-            // Because post.number varies and entries might be deleted, we can't assume index == number.
-            // We search for the exact number, or the closest number among loaded posts.
-            val targetIndex = posts.indexOfFirst { it.number == targetPosition }
+            val targetIndex = posts.indexOfFirst { it.number == currentTargetPosition }
                 .takeIf { it != -1 }
                 ?: posts.filter { it.number != null }
-                    .minByOrNull { abs(it.number!! - targetPosition) }
+                    .minByOrNull { abs(it.number!! - currentTargetPosition) }
                     ?.let { posts.indexOf(it) }
-                ?: max(0, min(posts.size, targetPosition))
+                ?: max(0, min(posts.size, currentTargetPosition))
 
             var startKey = targetIndex
             while (startKey > 0 && posts[startKey - 1].createdAt != null) {
                 startKey--
             }
 
-            _initialScrollIndex.value = targetIndex - startKey
+            scrollVersion++
+            _scrollTarget.value = ScrollTarget(targetIndex, scrollVersion)
 
             Pager(
                 config = PagingConfig(
                     pageSize = POST_PAGE_SIZE,
-                    enablePlaceholders = false,
+                    enablePlaceholders = true,
                     initialLoadSize = POST_PAGE_SIZE,
                     prefetchDistance = 1,
                 ),
