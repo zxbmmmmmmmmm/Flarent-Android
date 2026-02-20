@@ -12,7 +12,6 @@ import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.DiscussionRequest
-import com.bettafish.flarent.utils.HtmlConverter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
@@ -71,16 +69,16 @@ class DiscussionDetailViewModel(
     }
 
     fun jumpToPosition(position: Int) {
+        val posts = _discussion.value?.posts ?: return
         currentTargetPosition = position
-        viewModelScope.launch {
-            try {
-                val result = discussionsRepository.fetchDiscussion(
-                    DiscussionRequest(discussionId, max(0, position), POST_PAGE_SIZE)
-                )
-                _discussion.value = result
-            } catch (e: Exception) {
-            }
-        }
+        val targetIndex = posts.indexOfFirst { it.number == position }
+            .takeIf { it != -1 }
+            ?: posts.filter { it.number != null }
+                .minByOrNull { abs(it.number!! - position) }
+                ?.let { posts.indexOf(it) }
+            ?: max(0, min(posts.size - 1, position - 1))
+        scrollVersion++
+        _scrollTarget.value = ScrollTarget(targetIndex, scrollVersion)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

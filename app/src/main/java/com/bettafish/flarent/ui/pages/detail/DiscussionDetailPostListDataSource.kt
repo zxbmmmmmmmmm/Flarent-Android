@@ -13,10 +13,14 @@ class DiscussionDetailPostListDataSource(
     val postsRepository: PostsRepository,
     val posts: List<Post>) : PagingSource<Int, Post>() {
 
+    override val jumpingSupported = true
+
     override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         val anchor = state.anchorPosition ?: return null
-        val page = state.closestPageToPosition(anchor) ?: return null
-        return page.prevKey?.plus(state.config.pageSize) ?: page.nextKey?.minus(state.config.pageSize)
+        val page = state.closestPageToPosition(anchor)
+        return page?.prevKey?.plus(state.config.pageSize)
+            ?: page?.nextKey?.minus(state.config.pageSize)
+            ?: anchor
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
