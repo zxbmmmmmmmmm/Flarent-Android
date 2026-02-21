@@ -33,7 +33,7 @@ class DiscussionDetailViewModel(
     private val postsRepository: PostsRepository,
     private val discussionsRepository: DiscussionsRepository,
     val discussionId: String,
-    val targetPosition: Int = 0
+    private var targetPosition: Int = 0
 ) : ViewModel() {
     companion object{
         const val POST_PAGE_SIZE = 20
@@ -41,11 +41,12 @@ class DiscussionDetailViewModel(
     private val _discussion = MutableStateFlow<Discussion?>(null)
     val discussion: StateFlow<Discussion?> = _discussion.asStateFlow()
 
-    private var currentTargetPosition = targetPosition
-    private var scrollVersion = 0
 
-    private val _scrollTarget = MutableStateFlow<ScrollTarget?>(null)
-    val scrollTarget: StateFlow<ScrollTarget?> = _scrollTarget.asStateFlow()
+    private val _scrollTarget = MutableStateFlow<Int?>(null)
+    val scrollTarget: StateFlow<Int?> = _scrollTarget.asStateFlow()
+
+    var currentPagingSource : DiscussionDetailPostListDataSource? = null
+
 
     init {
         loadDiscussion()
@@ -54,7 +55,7 @@ class DiscussionDetailViewModel(
     private fun loadDiscussion() {
         viewModelScope.launch {
             try {
-                val fetchPos = max(0, currentTargetPosition)
+                val fetchPos = max(0, targetPosition)
                 val result = discussionsRepository.fetchDiscussion(
                     DiscussionRequest(
                         discussionId,
@@ -69,16 +70,8 @@ class DiscussionDetailViewModel(
     }
 
     fun jumpToPosition(position: Int) {
-        val posts = _discussion.value?.posts ?: return
-        currentTargetPosition = position
-        val targetIndex = posts.indexOfFirst { it.number == position }
-            .takeIf { it != -1 }
-            ?: posts.filter { it.number != null }
-                .minByOrNull { abs(it.number!! - position) }
-                ?.let { posts.indexOf(it) }
-            ?: max(0, min(posts.size - 1, position - 1))
-        scrollVersion++
-        _scrollTarget.value = ScrollTarget(targetIndex, scrollVersion)
+        targetPosition = position
+        _scrollTarget.value = position
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -87,44 +80,37 @@ class DiscussionDetailViewModel(
         .filter { !it.posts.isNullOrEmpty() }
         .flatMapLatest { discussion ->
             val posts = discussion.posts!!
-            val targetIndex = posts.indexOfFirst { it.number == currentTargetPosition }
+            val targetIndex = posts.indexOfFirst { it.number == targetPosition }
                 .takeIf { it != -1 }
                 ?: posts.filter { it.number != null }
-                    .minByOrNull { abs(it.number!! - currentTargetPosition) }
+                    .minByOrNull { abs(it.number!! - targetPosition) }
                     ?.let { posts.indexOf(it) }
-                ?: max(0, min(posts.size, currentTargetPosition))
+                ?: max(0, min(posts.size, targetPosition))
 
             var startKey = targetIndex
             while (startKey > 0 && posts[startKey - 1].createdAt != null) {
                 startKey--
             }
 
-            scrollVersion++
-            _scrollTarget.value = ScrollTarget(targetIndex, scrollVersion)
+            _scrollTarget.value = targetIndex
 
             Pager(
                 config = PagingConfig(
                     pageSize = POST_PAGE_SIZE,
                     enablePlaceholders = true,
                     initialLoadSize = POST_PAGE_SIZE,
-                    prefetchDistance = 1,
+                    prefetchDistance = 2,
+                    jumpThreshold = POST_PAGE_SIZE
                 ),
                 initialKey = startKey,
                 pagingSourceFactory = {
                     DiscussionDetailPostListDataSource(
                         postsRepository = postsRepository,
                         posts = discussion.posts!!
-                    )
+                    ).also { currentPagingSource = it }
                 }
             ).flow
         }
         .cachedIn(viewModelScope)
 
-    val modifiedItems = MutableStateFlow<Map<String, Post>>(emptyMap())
-
-    val combinedPosts = combine(posts, modifiedItems) { pagingData, modifications ->
-        pagingData.map { user ->
-            modifications[user.id] ?: user // 如果有修改记录就用修改后的，否则用原始的
-        }
-    }.cachedIn(viewModelScope)
 }

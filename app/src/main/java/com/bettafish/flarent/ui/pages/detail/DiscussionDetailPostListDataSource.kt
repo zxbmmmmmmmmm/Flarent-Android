@@ -18,9 +18,7 @@ class DiscussionDetailPostListDataSource(
     override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         val anchor = state.anchorPosition ?: return null
         val page = state.closestPageToPosition(anchor)
-        return page?.prevKey?.plus(state.config.pageSize)
-            ?: page?.nextKey?.minus(state.config.pageSize)
-            ?: anchor
+        return anchor
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
@@ -68,7 +66,7 @@ class DiscussionDetailPostListDataSource(
                 prevKey = prevKey,
                 nextKey = nextKey,
                 itemsBefore = actualStart,
-                itemsAfter = posts.size - actualEnd
+                itemsAfter = posts.size - actualEnd,
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

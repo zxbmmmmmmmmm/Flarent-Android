@@ -66,7 +66,7 @@ import org.koin.core.parameter.parametersOf
 fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigator: DestinationsNavigator, modifier: Modifier = Modifier){
     val viewModel: DiscussionDetailViewModel = getViewModel() { parametersOf(discussionId, targetPosition) }
     val discussion by viewModel.discussion.collectAsState()
-    val posts = viewModel.combinedPosts.collectAsLazyPagingItems()
+    val posts = viewModel.posts.collectAsLazyPagingItems()
     val scrollTarget by viewModel.scrollTarget.collectAsState()
 
     var showMoreMenu by remember { mutableStateOf(false) }
@@ -118,15 +118,10 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
         ) { innerPadding ->
             val target = scrollTarget
             if (target != null) {
-                val listState = rememberLazyListState(initialFirstVisibleItemIndex = target.index)
+                val listState = rememberLazyListState(initialFirstVisibleItemIndex = target)
 
                 LaunchedEffect(target) {
-                    if (target.version > 1) {
-                        snapshotFlow { posts.itemCount }
-                            .filter { it > 0 }
-                            .first()
-                        listState.scrollToItem(target.index)
-                    }
+                    listState.scrollToItem(target)
                 }
 
                 Box(modifier = Modifier
@@ -176,7 +171,7 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
             onDismissRequest = { showJumpDialog = false },
             title = { Text("跳转到楼层") },
             text = {
-                val totalCount = discussion?.commentCount
+                val totalCount = discussion?.lastPostNumber ?: discussion?.posts?.size
                 TextField(
                     value = jumpInput,
                     onValueChange = { jumpInput = it.filter { char -> char.isDigit() } },
@@ -192,7 +187,7 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                     onClick = {
                         val floor = jumpInput.toIntOrNull()
                         if (floor != null && floor >= 1) {
-                            viewModel.jumpToPosition(floor)
+                            viewModel.jumpToPosition(floor - 1)
                         }
                         showJumpDialog = false
                     }
