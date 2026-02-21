@@ -6,7 +6,7 @@ import com.bettafish.flarent.App
 import com.bettafish.flarent.data.ForumRepository
 import com.bettafish.flarent.data.UsersRepository
 import com.bettafish.flarent.models.Forum
-import com.bettafish.flarent.utils.SuspendCommand
+import com.bettafish.flarent.utils.SuspendCommand1
 import com.bettafish.flarent.utils.appSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ class WelcomeViewModel(val forumRepository: ForumRepository,
         }
     }
 
-    val refreshUserCommand = SuspendCommand(::refreshUser, viewModelScope)
+    val refreshUserCommand = SuspendCommand1(::refreshUser, viewModelScope)
 
     fun saveForum(){
         App.INSTANCE.appSettings.forum = _forum.value
