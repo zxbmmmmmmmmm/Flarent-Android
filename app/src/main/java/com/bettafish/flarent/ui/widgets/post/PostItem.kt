@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -192,49 +193,60 @@ private fun PostItem(
                 )
 
                 Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Row{
-                        Text(
-                            text = post.user?.displayName ?: post.user?.username ?: "",
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.weight(1f, fill = false)
-                        )
-                        if (isOp) {
-                            Surface(
-                                color = colorScheme.primary,
-                                shape = RoundedCornerShape(4.dp),
-                                modifier = Modifier
-                                    .padding(start = 8.dp)
-                                    .align(Alignment.CenterVertically)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.op_badge),
-                                    color = colorScheme.onPrimary,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                                )
+                    Row(horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()){
+                        Row(verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f, fill = false)){
+                            Text(
+                                text = post.user?.displayName ?: post.user?.username ?: "",
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.weight(1f,fill = false)
+                            )
+                            if (isOp) {
+                                Surface(
+                                    color = colorScheme.primary,
+                                    shape = RoundedCornerShape(4.dp),
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .align(Alignment.CenterVertically)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.op_badge),
+                                        color = colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                    )
+                                }
                             }
+                        }
+
+                        post.number?.let {
+                            Text(
+                                text = "#$it",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colorScheme.outline.copy(alpha = 0.5f),
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
                         }
                     }
 
-                    Row{
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
                         post.createdAt?.let {
                             val displayTime = remember(it) { it.relativeTime }
                             Text(
                                 text = displayTime,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = colorScheme.outline,
-                                modifier = Modifier.padding(end = 8.dp)
                             )
                         }
-                        post.number?.let {
-                            Text(
-                                text = "#$it",
+
+                        post.editedAt?.relativeTime?.let {
+                            Text(text = "编辑于 $it",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = colorScheme.outline,
-                            )
+                                color = colorScheme.outline)
                         }
                     }
                 }
