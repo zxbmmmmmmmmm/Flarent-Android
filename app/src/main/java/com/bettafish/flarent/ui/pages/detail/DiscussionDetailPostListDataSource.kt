@@ -17,7 +17,6 @@ class DiscussionDetailPostListDataSource(
 
     override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         val anchor = state.anchorPosition ?: return null
-        val page = state.closestPageToPosition(anchor)
         return anchor
     }
 

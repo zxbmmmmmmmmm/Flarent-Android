@@ -6,22 +6,21 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.DiscussionRequest
+import com.bettafish.flarent.utils.SuspendCommand
+import com.bettafish.flarent.utils.SuspendCommand1
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
@@ -47,27 +46,28 @@ class DiscussionDetailViewModel(
 
     var currentPagingSource : DiscussionDetailPostListDataSource? = null
 
+    val loadDiscussionCommand = SuspendCommand(::loadDiscussion, viewModelScope)
 
     init {
-        loadDiscussion()
+        loadDiscussionCommand.execute()
     }
 
-    private fun loadDiscussion() {
-        viewModelScope.launch {
-            try {
-                val fetchPos = max(0, targetPosition)
-                val result = discussionsRepository.fetchDiscussion(
-                    DiscussionRequest(
-                        discussionId,
-                        fetchPos,
-                        POST_PAGE_SIZE
-                    )
+    private suspend fun loadDiscussion() {
+        try {
+            val fetchPos = max(0, targetPosition)
+            val result = discussionsRepository.fetchDiscussion(
+                DiscussionRequest(
+                    discussionId,
+                    fetchPos,
+                    POST_PAGE_SIZE
                 )
-                _discussion.value = result
-            } catch (e: Exception) {
-            }
+            )
+            _discussion.value = result
+        } catch (e: Exception) {
         }
     }
+
+
 
     fun jumpToPosition(position: Int) {
         targetPosition = position

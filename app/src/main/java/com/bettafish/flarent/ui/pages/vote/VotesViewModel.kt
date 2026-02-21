@@ -5,10 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.request.PostsRequest
-import com.bettafish.flarent.utils.SuspendCommand
+import com.bettafish.flarent.utils.SuspendCommand1
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class VotesViewModel(val repository: PostsRepository,
                      val postId: String) : ViewModel() {
@@ -18,7 +17,7 @@ class VotesViewModel(val repository: PostsRepository,
     private val _downvoters = MutableStateFlow<List<User>?>(null)
     val downvoters = _downvoters.asStateFlow()
 
-    val refreshCommand = SuspendCommand(::refresh, viewModelScope)
+    val refreshCommand = SuspendCommand1(::refresh, viewModelScope)
 
     init {
         refreshCommand.execute(postId)

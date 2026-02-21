@@ -4,7 +4,27 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class SuspendCommand<T1>(val func: suspend (arg1:T1) -> Unit, val coroutineScope: CoroutineScope, var onCompleted: () -> Unit = {}){
+class SuspendCommand(val func: suspend () -> Unit, val coroutineScope: CoroutineScope, var onCompleted: () -> Unit = {}){
+    val canExecute = MutableStateFlow(true)
+
+    fun execute(){
+        if(!canExecute.value) return
+        canExecute.value = false
+        coroutineScope.launch {
+            try {
+                func()
+                onCompleted()
+            }
+            catch (e: Exception) {
+            }
+            finally {
+                canExecute.value = true
+            }
+        }
+    }
+}
+
+class SuspendCommand1<T1>(val func: suspend (arg1:T1) -> Unit, val coroutineScope: CoroutineScope, var onCompleted: () -> Unit = {}){
     val canExecute = MutableStateFlow(true)
 
     fun execute(arg1:T1){
