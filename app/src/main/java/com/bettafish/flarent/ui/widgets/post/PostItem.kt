@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallSplit
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.Reply
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
@@ -47,6 +48,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -66,13 +68,13 @@ import com.bettafish.flarent.App
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
-import com.bettafish.flarent.ui.pages.reaction.PostReactionsBottomSheet
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.LongClickableIconButton
 import com.bettafish.flarent.ui.widgets.ReactionList
 import com.bettafish.flarent.ui.widgets.getEmoji
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
+import com.bettafish.flarent.utils.GlobalPostUpdateManager
 import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.relativeTime
 import com.mikepenz.markdown.compose.components.markdownComponents
@@ -85,6 +87,8 @@ import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetD
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.generated.destinations.VotesBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 import org.koin.androidx.compose.getViewModel
@@ -109,6 +113,14 @@ fun PostItem(
     val imagePreviewer = LocalImagePreviewer.current
     val canVoteCommandExec = vm.voteCommand.canExecute.collectAsState()
     val canReactCommandExec = vm.reactCommand.canExecute.collectAsState()
+
+    LaunchedEffect(Unit) {
+        GlobalPostUpdateManager.events.collect { updatedPost ->
+            if (updatedPost.id == id) {
+                vm.updatePost(updatedPost)
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()){
         if(post.value != null){
@@ -136,6 +148,9 @@ fun PostItem(
                     )},
                 onVoteLongClicked = {
                     navigator.navigate(VotesBottomSheetDestination(id))
+                },
+                onEditClick = { postId, content ->
+                    navigator.navigate(ReplyBottomSheetDestination(null, postId, null, content))
                 })
         }
         else{
@@ -154,6 +169,7 @@ private fun PostItem(
     userClick: (username: String) -> Unit = {  },
     imageClick: ((String) -> Unit) = {},
     replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
+    onEditClick: (postId: String, content: String) -> Unit = { _,_ -> },
     onVote: (isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_ -> },
     isVoting: Boolean = false,
     onReact: (reactionId: String) -> Unit = {  },
@@ -162,6 +178,7 @@ private fun PostItem(
     onVoteLongClicked : () -> Unit = {  },
 ) {
     var showReactionMenu by remember { mutableStateOf(false) }
+    var showMoreMenu by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -411,7 +428,7 @@ private fun PostItem(
         if(isComment){
             post.contentMarkdown?.let { markdown ->
                 val isDarkTheme = isSystemInDarkTheme()
-                val markdownState = rememberMarkdownState(post.id, retainState = true) {
+                val markdownState = rememberMarkdownState(post.id, post.editedAt, retainState = true) {
                     markdown
                 }
                 val markdownComponents = remember(isDarkTheme) {
@@ -574,10 +591,27 @@ private fun PostItem(
                             tint = colorScheme.outline,
                             contentDescription = null)
                     }
-                    IconButton(onClick = {}){
-                        Icon(Icons.Default.MoreHoriz,
-                            tint = colorScheme.outline,
-                            contentDescription =  null)
+                    Box {
+                        IconButton(onClick = { showMoreMenu = true }) {
+                            Icon(Icons.Default.MoreHoriz,
+                                tint = colorScheme.outline,
+                                contentDescription = null)
+                        }
+                        DropdownMenu(
+                            expanded = showMoreMenu,
+                            onDismissRequest = { showMoreMenu = false }
+                        ) {
+                            if (post.canEdit == true) {
+                                androidx.compose.material3.DropdownMenuItem(
+                                    text = { Text("编辑") },
+                                    leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        onEditClick(post.id, post.content?.toString() ?: post.contentMarkdown ?: "")
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
