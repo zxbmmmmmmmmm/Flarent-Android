@@ -18,6 +18,13 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
         return service.sendPost(post)
     }
 
+    override suspend fun editPost(postId: String, content: String) : Post {
+        val post = Post().apply {
+            id = postId
+            this.content = content }
+        return service.editPost(postId, post)
+    }
+
     override suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) : Post {
         val request = mapOf("data" to mapOf(
             "type" to "posts",
