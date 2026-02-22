@@ -14,4 +14,6 @@ interface PostsRepository {
     suspend fun reactPost(postId: String, reactionId: String): Post
 
     suspend fun fetchReactions(postId: String): List<PostReactions>
+
+    suspend fun editPost(postId: String, content: String): Post
 }
