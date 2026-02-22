@@ -160,7 +160,7 @@ fun PostItem(
                 })
         }
         else{
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            PostItemPlaceholder(modifier = Modifier.padding(16.dp))
         }
     }
 
