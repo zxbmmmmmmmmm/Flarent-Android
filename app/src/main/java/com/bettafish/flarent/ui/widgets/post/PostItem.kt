@@ -1,5 +1,7 @@
 package com.bettafish.flarent.ui.widgets.post
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -32,11 +34,13 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.AddReaction
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +58,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -65,6 +70,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.App
+import com.bettafish.flarent.BuildConfig.FLARUM_BASE_URL
 import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
@@ -601,8 +607,19 @@ private fun PostItem(
                             expanded = showMoreMenu,
                             onDismissRequest = { showMoreMenu = false }
                         ) {
+                            val context = LocalContext.current
+                            post.discussion?.let {
+                                DropdownMenuItem(
+                                    text = { Text("分享") },
+                                    leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        shareLink(context, "${FLARUM_BASE_URL}d/${it.id}/${post.id}", "${post.user?.displayName ?: post.user?.username } 在 ${it.title} 的回复")
+                                    }
+                                )
+                            }
                             if (post.canEdit == true) {
-                                androidx.compose.material3.DropdownMenuItem(
+                                DropdownMenuItem(
                                     text = { Text("编辑") },
                                     leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
                                     onClick = {
@@ -618,6 +635,14 @@ private fun PostItem(
 
         }
     }
+}
+
+fun shareLink(context: Context, url: String, title: String = "分享") {
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, url)
+    }
+    context.startActivity(Intent.createChooser(intent, title))
 }
 
 @Preview(showBackground = true)

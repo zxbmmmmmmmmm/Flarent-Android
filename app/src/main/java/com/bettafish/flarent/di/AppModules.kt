@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit
 val networkModule = module {
     single {
         val logging = HttpLoggingInterceptor().apply {
-            level = if (com.bettafish.flarent.BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         }
         OkHttpClient.Builder()
             .addInterceptor(logging)
