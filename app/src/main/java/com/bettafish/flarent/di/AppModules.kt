@@ -130,7 +130,7 @@ val viewModelModule = module {
     viewModel { (postId : String) -> PostReactionsViewModel(get(), postId) }
     viewModel { WelcomeViewModel(get(),get()) }
     viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
-    viewModel { (id:String, content:String?) -> ReplyViewModel(id, content, get()) }
+    viewModel { (id:String, postId:String? , content:String?) -> ReplyViewModel(discussionId = id, postId = postId, initContent = content, get()) }
     viewModel { (id:String) -> VotesViewModel(get(), id) }
 }
 

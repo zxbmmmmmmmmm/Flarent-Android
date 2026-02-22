@@ -40,7 +40,7 @@ class PostItemViewModel(
         }
     }
 
-    private fun updatePost(updatedPost: Post) {
+    fun updatePost(updatedPost: Post) {
         if (updatedPost.contentHtml != null) {
             updatedPost.contentMarkdown = HtmlConverter.convert(updatedPost.contentHtml)
         }
