@@ -1,8 +1,14 @@
 package com.bettafish.flarent.ui.pages.reply
 
 import androidx.lifecycle.ViewModel
+import com.bettafish.flarent.App
 import com.bettafish.flarent.data.PostsRepository
+import com.bettafish.flarent.firebaseAnalytics
 import com.bettafish.flarent.models.Post
+import com.bettafish.flarent.utils.Analytics
+import com.bettafish.flarent.utils.appSettings
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

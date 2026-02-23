@@ -6,13 +6,18 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.bettafish.flarent.App
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
+import com.bettafish.flarent.firebaseAnalytics
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.DiscussionRequest
+import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.SuspendCommand
-import com.bettafish.flarent.utils.SuspendCommand1
+import com.bettafish.flarent.utils.appSettings
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +26,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -63,6 +67,10 @@ class DiscussionDetailViewModel(
                 )
             )
             _discussion.value = result
+            firebaseAnalytics.logEvent(Analytics.Event.VIEW_DISCUSSION) {
+                result.title?.let{ param(Analytics.Param.DISCUSSION_TITLE, it )}
+                param(FirebaseAnalytics.Param.METHOD, "welcomePage")
+            }
         } catch (e: Exception) {
         }
     }

@@ -53,7 +53,12 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.App
+import com.bettafish.flarent.firebaseAnalytics
+import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.GlobalPostUpdateManager
+import com.bettafish.flarent.utils.appSettings
+import com.google.firebase.analytics.logEvent
 import com.mikepenz.markdown.m3.Markdown
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -69,7 +74,7 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 fun ReplyBottomSheet(discussionId: String? = null,
                      postId: String? = null,
-                     title: String? = null,
+                     discussionTitle: String? = null,
                      content: String? = null,
                      navigator: DestinationsNavigator? = null){
     val replyViewModel : ReplyViewModel = getViewModel{ parametersOf(discussionId, postId, content) }
@@ -122,11 +127,17 @@ fun ReplyBottomSheet(discussionId: String? = null,
                                 navigator?.popBackStack()
                                 if(postId != null){ // edit
                                     GlobalPostUpdateManager.emitPost(post)
+                                    firebaseAnalytics.logEvent(Analytics.Event.EDIT_POST) {
+                                    }
                                 }
                                 else{
                                     navigator?.navigate(
                                         PostBottomSheetDestination(post.id)
                                     )
+                                    firebaseAnalytics.logEvent(Analytics.Event.REPLY) {
+                                        discussionId?.let{ param(Analytics.Param.DISCUSSION_ID,it )}
+                                        discussionTitle?.let{ param(Analytics.Param.DISCUSSION_TITLE,it )}
+                                    }
                                 }
 
                             }

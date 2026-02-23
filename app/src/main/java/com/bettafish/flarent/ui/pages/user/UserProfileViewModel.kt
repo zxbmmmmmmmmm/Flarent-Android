@@ -6,18 +6,22 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.bettafish.flarent.App
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
+import com.bettafish.flarent.firebaseAnalytics
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.pages.detail.PostListDataSource
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListDataSource
+import com.bettafish.flarent.utils.Analytics
+import com.bettafish.flarent.utils.appSettings
+import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class UserProfileViewModel(
     val userName : String,
@@ -54,6 +58,10 @@ class UserProfileViewModel(
                 onFirstLoad = { post ->
                     if (_user.value == null) {
                         _user.value = post.user
+                    }
+                    firebaseAnalytics.logEvent(Analytics.Event.VIEW_USER_PROFILE) {
+                        post.user?.username?.let{ param(Analytics.Param.USERNAME,it )}
+                        post.user?.id?.let{ param(Analytics.Param.USER_ID,it )}
                     }
                 }
             )

@@ -59,7 +59,7 @@ fun AccountPage(modifier: Modifier = Modifier,
         onValue = { resultValue ->
             App.INSTANCE.appSettings.userId = resultValue.id
             App.INSTANCE.appSettings.token = resultValue.token
-            viewModel.refreshUser(resultValue.id)
+            viewModel.refreshUser(resultValue.id, true)
         }
     )
     Column(modifier = modifier.fillMaxSize()){

@@ -27,7 +27,11 @@ import androidx.navigation.plusAssign
 import com.bettafish.flarent.ui.theme.FlarentTheme
 
 import com.bettafish.flarent.ui.widgets.GlobalImagePreviewerProvider
+import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.appSettings
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.generated.NavGraphs
@@ -40,6 +44,8 @@ import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
+lateinit var firebaseAnalytics: FirebaseAnalytics
+    private set
 class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +56,12 @@ class MainActivity : ComponentActivity() {
                 FlarentApp()
             }
         }
+        firebaseAnalytics = Firebase.analytics
+        val parameters = Bundle().apply {
+            App.INSTANCE.appSettings.userId?.let{ this.putString(Analytics.Param.CURRENT_USER_ID,it )}
+            App.INSTANCE.appSettings.user?.username?.let{ this.putString(Analytics.Param.CURRENT_USERNAME,it )}
+        }
+        firebaseAnalytics.setDefaultEventParameters(parameters)
     }
 }
 
