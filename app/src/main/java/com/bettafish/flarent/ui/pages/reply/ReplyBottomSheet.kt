@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -157,7 +159,11 @@ fun ReplyBottomSheet(discussionId: String? = null,
                     MarkdownEditBox(replyViewModel, fileViewModel)
                 }
                 1 -> {
-                    Markdown(content, modifier = Modifier.fillMaxSize().padding(16.dp))
+                    Markdown(content,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()))
                 }
             }
         }
