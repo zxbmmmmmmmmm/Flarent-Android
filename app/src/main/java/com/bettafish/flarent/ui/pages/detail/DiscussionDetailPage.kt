@@ -37,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -57,16 +58,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.bettafish.flarent.ui.theme.defaultTypography
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
+import com.bettafish.flarent.ui.widgets.KnowledgeTopAppBar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.SheetIconButton
+import com.bettafish.flarent.ui.widgets.TagList
 import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.bettafish.flarent.ui.widgets.post.PostItemPlaceholder
 import com.ramcosta.composedestinations.annotation.Destination
@@ -91,6 +97,7 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
     var showJumpDialog by remember { mutableStateOf(false) }
     var jumpInput by remember { mutableStateOf("") }
     val canLoadDiscussionCommandExec = viewModel.loadDiscussionCommand.canExecute.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     PullToRefreshBox(
         isRefreshing = posts.loadState.refresh is LoadState.Loading,
@@ -98,13 +105,29 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
         modifier = modifier.fillMaxSize()
     ) {
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
-                TopAppBar(
-                    title = { Text(text = discussion?.title ?: "帖子", maxLines = 1, overflow = TextOverflow.Ellipsis ) },
+                KnowledgeTopAppBar(
+                    topLayout = { Text(text = discussion?.title ?: "帖子", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 20.sp) },
+                    bottomLayout = {
+                        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)){
+                            Text(text = discussion?.title ?: "帖子", style = defaultTypography.titleLarge )
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically){
+                                discussion?.tags?.let {
+                                    TagList(it)
+                                }
+                                discussion?.commentCount?.let {
+                                    Text("$it 条回复", color = colorScheme.outline, style = defaultTypography.bodyMedium)
+                                }
+                            }
+
+                        }
+                    },
                     navigationIcon = {
                         BackNavigationIcon { navigator.navigateUp() }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = colorScheme.surfaceContainer)
+                    actions = {},
+                    scrollBehavior = scrollBehavior
                 )
             },
             bottomBar = {
