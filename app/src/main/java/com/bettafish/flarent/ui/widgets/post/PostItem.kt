@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.AddReaction
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,8 +58,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -189,6 +192,7 @@ private fun PostItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .alpha(if(post.isHidden == true) 0.38f else 1f)
     ) {
         val isComment = post.contentType == "comment"
         // Header
@@ -245,15 +249,22 @@ private fun PostItem(
                                 }
                             }
                         }
-
-                        post.number?.let {
-                            Text(
-                                text = "#$it",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = colorScheme.outline.copy(alpha = 0.5f),
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
+                        Row(modifier = Modifier.align(Alignment.CenterVertically), horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                            if(post.isHidden == true){
+                                val textStyle = MaterialTheme.typography.bodyMedium
+                                val density = LocalDensity.current
+                                val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
+                                Icon(Icons.Default.VisibilityOff, contentDescription = "隐藏", modifier = Modifier.size(textHeightDp), tint = colorScheme.outline )
+                            }
+                            post.number?.let {
+                                Text(
+                                    text = "#$it",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = colorScheme.outline.copy(alpha = 0.5f),
+                                )
+                            }
                         }
+
                     }
 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){

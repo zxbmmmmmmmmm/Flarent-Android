@@ -66,6 +66,9 @@ class Post
     @Contextual
     var editedAt: ZonedDateTime? = null
 
+    @JsonProperty("isHidden")
+    var isHidden: Boolean? = null
+
     @Relationship("upvotes")
     var upvotes: List<User>? = null
 

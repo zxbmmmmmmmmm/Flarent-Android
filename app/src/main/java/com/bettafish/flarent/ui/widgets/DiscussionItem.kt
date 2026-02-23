@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -60,11 +61,13 @@ fun DiscussionItem(discussion: Discussion,
                    click : (Discussion) -> Unit = {},
                    tagClick : (Tag) -> Unit = {},
                    userClick : (User) -> Unit = {}){
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { click(discussion) }
-            .padding(16.dp),) {
+            .padding(16.dp)
+            .alpha(if(discussion.isHidden == true) 0.38f else 1f),) {
         Box{
             discussion.user?.let {
                 Avatar(
@@ -104,6 +107,9 @@ fun DiscussionItem(discussion: Discussion,
                     if(discussion.hasBestAnswer == true){
                         appendInlineContent("hasBestAnswer")
                     }
+                    if(discussion.isHidden == true){
+                        appendInlineContent("hidden")
+                    }
                     append(it)
                 }
                 val textMeasurer = androidx.compose.ui.text.rememberTextMeasurer()
@@ -129,7 +135,8 @@ fun DiscussionItem(discussion: Discussion,
                     "pinned" to getAutoInlineContent("置顶", colorScheme.secondaryContainer, colorScheme.secondary),
                     "front" to getAutoInlineContent("精", colorScheme.errorContainer, colorScheme.onErrorContainer),
                     "locked" to getAutoInlineContent("已锁定", colorScheme.surfaceContainerHighest, colorScheme.onSurface),
-                    "hasBestAnswer" to getAutoInlineContent("已有最佳回复", colorScheme.surfaceContainerHighest, colorScheme.onSurface)
+                    "hasBestAnswer" to getAutoInlineContent("已有最佳回复", colorScheme.surfaceContainerHighest, colorScheme.onSurface),
+                    "hidden" to getAutoInlineContent("隐藏", colorScheme.surfaceContainerHighest, colorScheme.onSurface)
                 )
 
                 Text(text = annotatedString, inlineContent = inlineContent,)

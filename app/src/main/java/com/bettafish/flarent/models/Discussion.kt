@@ -52,6 +52,9 @@ class Discussion {
     @JsonProperty("isLocked")
     var isLocked: Boolean? = null
 
+    @JsonProperty("isHidden")
+    var isHidden: Boolean? = null
+
     @JsonProperty("frontpage")
     var frontpage: Boolean? = null
 
