@@ -100,8 +100,8 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     PullToRefreshBox(
-        isRefreshing = posts.loadState.refresh is LoadState.Loading,
-        onRefresh = { posts.refresh() },
+        isRefreshing = posts.loadState.refresh is LoadState.Loading || !canLoadDiscussionCommandExec.value,
+        onRefresh = { viewModel.loadDiscussionCommand.execute() },
         modifier = modifier.fillMaxSize()
     ) {
         Scaffold(
