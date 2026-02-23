@@ -300,17 +300,23 @@ private fun PostItem(
                     icon = Icons.Default.EditNote
                     detailsContent = {
                         val arr = post.content as? List<*>
-                        arr?.get(0)?.toString()?.let{
+                        arr?.get(1)?.toString()?.let{
                             Text("更改标题为",
                                 style = contentTextStyle,
                                 color = contentTextColor)
+                        }
+                        arr?.get(0)?.toString()?.let{
                             Text(it,
                                 style = contentTextStyle,
                                 textDecoration = TextDecoration.LineThrough,
                                 color = contentTextColor)
-                            Text(it,
+                        }
+                        arr?.get(1)?.toString()?.let {
+                            Text(
+                                it,
                                 style = contentTextStyle,
-                                color = contentTextColor)
+                                color = contentTextColor
+                            )
                         }
                     }
                 }
