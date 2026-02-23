@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MoveUp
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.twotone.MoveUp
@@ -54,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -108,20 +110,25 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
             bottomBar = {
                 Row(modifier = Modifier
                     .background(colorScheme.surfaceContainer)
-                    .padding(bottom = 8.dp)
-                    .height(48.dp)) {
+                    .padding(horizontal = 8.dp)
+                    .navigationBarsPadding()
+                    .height(56.dp)) {
                     Box(modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
+                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
+                        .clip(RoundedCornerShape(64.dp))
+                        .background(colorScheme.surfaceContainerHigh)
                         .clickable(){
                         navigator.navigate(ReplyBottomSheetDestination(discussionId, discussion?.title))
                     }) {
-                        Text(text = "回复" , color = colorScheme.outline, modifier = Modifier.padding(start = 16.dp).align(Alignment.CenterStart))
+                        Text(text = "说点什么吧" ,
+                            color = colorScheme.outline,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 20.dp).align(Alignment.CenterStart))
                     }
-                    Box {
-                        IconButton(onClick = { showSheet = true }) {
-                            Icon(Icons.Default.MoreHoriz, "更多")
-                        }
+                    IconButton(onClick = { showSheet = true }, modifier = Modifier.align(Alignment.CenterVertically)) {
+                        Icon(Icons.Default.MoreVert, "更多", tint = colorScheme.outline)
                     }
                 }
             }
