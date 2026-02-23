@@ -219,7 +219,7 @@ private fun PostItem(
                         .clip(CircleShape)
                 )
 
-                Column(modifier = Modifier.padding(start = 12.dp)) {
+                Column(modifier = Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.SpaceBetween) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()){
                         Row(verticalAlignment = Alignment.CenterVertically,

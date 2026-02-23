@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
@@ -69,7 +70,7 @@ fun PostItemPlaceholder(modifier: Modifier = Modifier) {
                     .clip(CircleShape)
                     .background(shimmerBrush)
             )
-            Column(modifier = Modifier.padding(start = 12.dp)) {
+            Column(modifier = Modifier.padding(start = 12.dp).align(Alignment.CenterVertically)) {
                 Box(
                     modifier = Modifier
                         .width(120.dp)
