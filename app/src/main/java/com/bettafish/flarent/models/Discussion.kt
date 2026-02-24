@@ -43,6 +43,10 @@ class Discussion {
     @JsonProperty("isSticky")
     var isSticky: Boolean? = null
 
+    @JsonProperty("canReply")
+    var canReply: Boolean? = null
+
+
     @JsonProperty("hasBestAnswer")
     var hasBestAnswer: Boolean? = null
 

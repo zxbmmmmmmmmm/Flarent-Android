@@ -143,7 +143,10 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                         .clip(RoundedCornerShape(64.dp))
                         .background(colorScheme.surfaceContainerHigh)
                         .clickable(){
-                        navigator.navigate(ReplyBottomSheetDestination(discussionId, discussion?.title))
+                        navigator.navigate(ReplyBottomSheetDestination(discussionId = discussionId,
+                            postId = null,
+                            discussionTitle = discussion?.title,
+                            content = null))
                     }) {
                         Text(text = "说点什么吧" ,
                             color = colorScheme.outline,

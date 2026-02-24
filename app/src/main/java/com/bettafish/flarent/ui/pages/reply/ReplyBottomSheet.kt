@@ -3,6 +3,7 @@ package com.bettafish.flarent.ui.pages.reply
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
@@ -58,15 +60,22 @@ import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.App
 import com.bettafish.flarent.firebaseAnalytics
 import com.bettafish.flarent.utils.Analytics
+import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.GlobalPostUpdateManager
 import com.bettafish.flarent.utils.appSettings
 import com.google.firebase.analytics.logEvent
+import com.mikepenz.markdown.compose.components.markdownComponents
+import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
+import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.model.rememberMarkdownState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import dev.snipme.highlights.Highlights
+import dev.snipme.highlights.model.SyntaxThemes
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -159,11 +168,42 @@ fun ReplyBottomSheet(discussionId: String? = null,
                     MarkdownEditBox(replyViewModel, fileViewModel)
                 }
                 1 -> {
-                    Markdown(content,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState()))
+                    val isDarkTheme = isSystemInDarkTheme()
+                    val markdownState = rememberMarkdownState(content, retainState = true) {
+                        content
+                    }
+                    val markdownComponents = remember(isDarkTheme) {
+                        val highlightsBuilder = Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
+                        markdownComponents(
+                            codeBlock = {
+                                MarkdownHighlightedCodeBlock(
+                                    content = it.content,
+                                    node = it.node,
+                                    highlightsBuilder = highlightsBuilder,
+                                    showHeader = true,
+                                )
+                            },
+                            codeFence = {
+                                MarkdownHighlightedCodeFence(
+                                    content = it.content,
+                                    node = it.node,
+                                    highlightsBuilder = highlightsBuilder,
+                                    showHeader = true,
+                                )
+                            },
+                        )
+                    }
+                    SelectionContainer{
+                        Markdown(
+                            markdownState = markdownState,
+                            imageTransformer = ClickableCoil3ImageTransformer(){},
+                            components = markdownComponents,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                                .verticalScroll(rememberScrollState()),
+                        )
+                    }
                 }
             }
         }
