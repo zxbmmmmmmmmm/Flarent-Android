@@ -88,12 +88,13 @@ fun AccountPage(modifier: Modifier = Modifier,
 
 @Composable
 fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick : () -> Unit  = {}){
-    Box(modifier = modifier.fillMaxWidth()){
-        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+    Row(modifier = modifier.fillMaxWidth()){
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp), modifier = Modifier.weight(1f)) {
             Avatar(user?.avatarUrl, user?.displayName, modifier = Modifier
                 .height(64.dp)
                 .width(64.dp)
-                .clip(CircleShape))
+                .clip(CircleShape)
+                .align(Alignment.CenterVertically))
             Column(modifier = Modifier.align(Alignment.CenterVertically),
                 verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(user?.displayName ?: user?.username?: "未登录", style = MaterialTheme.typography.titleLarge)
@@ -115,7 +116,7 @@ fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick
         }
         if(user != null){
             Button(colors = ButtonDefaults.filledTonalButtonColors(),
-                modifier = Modifier.align(Alignment.CenterEnd),
+                modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { onLogoutClick() }){
                 Text("退出登录")
             }
