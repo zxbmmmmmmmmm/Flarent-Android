@@ -107,7 +107,7 @@ fun HomePage(
         val a = innerPadding
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.padding()
+            modifier = Modifier.padding(bottom = 56.dp)
         ) { page ->
             when (tabs[page]) {
                 HomeTab.DiscussionList -> DiscussionListPage(navigator = navigator)
