@@ -39,6 +39,7 @@ import com.bettafish.flarent.ui.widgets.setting.Item.TextPref
 import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.AboutPageDestination
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -81,7 +82,8 @@ fun AccountPage(modifier: Modifier = Modifier,
         )
         TextPref(
             title = "关于",
-            leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
+            leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
+            onClick = { navigator.navigate(AboutPageDestination) }
         )
     }
 }
