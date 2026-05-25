@@ -86,10 +86,10 @@ dependencies {
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
     implementation("androidx.datastore:datastore-preferences:1.2.0")
 
-    implementation("com.mikepenz:multiplatform-markdown-renderer:0.39.1")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.39.1")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-coil3:0.39.1")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-code:0.39.1")
+    implementation(libs.multiplatform.markdown.renderer)
+    implementation(libs.multiplatform.markdown.renderer.m3)
+    implementation(libs.multiplatform.markdown.renderer.coil3)
+    implementation(libs.multiplatform.markdown.renderer.code)
     implementation("dev.snipme:highlights:1.1.0")
 
     implementation("io.github.raamcosta.compose-destinations:core:2.3.0")
