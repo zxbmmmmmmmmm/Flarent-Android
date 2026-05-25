@@ -4,7 +4,9 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.NotificationsRepository
 import com.bettafish.flarent.models.Notification
+import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.NotificationRequest
+import com.bettafish.flarent.utils.HtmlConverter
 
 class NotificationsDataSource(
     private val repository:  NotificationsRepository,
@@ -20,6 +22,14 @@ class NotificationsDataSource(
         return try {
             val offset = params.key ?: 0
             val items = repository.fetchNotifications(NotificationRequest(offset = offset, limit = pageSize))
+            items.forEach { item ->
+                (item.subject as? Post)?.let{
+                    if(it.contentType == "comment" && it.content != null)
+                    {
+                        it.text = HtmlConverter.convertToPlainText(it.content.toString())
+                    }
+                }
+            }
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
             LoadResult.Page(

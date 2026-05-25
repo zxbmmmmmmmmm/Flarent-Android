@@ -5,6 +5,7 @@ import com.vladsch.flexmark.html2md.converter.HtmlMarkdownWriter
 import com.vladsch.flexmark.html2md.converter.HtmlNodeConverterContext
 import com.vladsch.flexmark.html2md.converter.HtmlNodeRenderer
 import com.vladsch.flexmark.html2md.converter.HtmlNodeRendererHandler
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 
@@ -13,6 +14,8 @@ object HtmlConverter {
         PostMentionNodeRenderer()
     }.build()
     fun convert(html: String): String = converter.convert(html)
+
+    fun convertToPlainText(html: String) = Jsoup.parse(html).text()
 }
 
 class PostMentionNodeRenderer : HtmlNodeRenderer {

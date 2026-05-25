@@ -25,6 +25,8 @@ class Post : Section
 
     internal var contentMarkdown: String? = null
 
+    internal var text: String? = null
+
     @JsonProperty("contentHtml")
     val contentHtml: String? = null
 
