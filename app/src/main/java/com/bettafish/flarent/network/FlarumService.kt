@@ -5,6 +5,7 @@ import com.bettafish.flarent.models.File
 import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.request.LoginRequest
 import com.bettafish.flarent.models.LoginResponse
+import com.bettafish.flarent.models.Notification
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.Tag
@@ -93,4 +94,7 @@ interface FlarumService {
     suspend fun uploadFile(
         @Part file: MultipartBody.Part
     ): List<File>
+
+    @GET("api/notifications")
+    suspend fun getNotifications(@QueryMap options:Map<String,String>):List<Notification>
 }

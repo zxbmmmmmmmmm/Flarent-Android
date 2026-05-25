@@ -28,6 +28,7 @@ import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
 import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListViewModel
+import com.bettafish.flarent.ui.pages.notification.NotificationsViewModel
 import com.bettafish.flarent.ui.pages.reaction.PostReactionsViewModel
 import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.bettafish.flarent.ui.pages.reply.FileViewModel
@@ -132,6 +133,7 @@ val viewModelModule = module {
     viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
     viewModel { (id:String, postId:String? , content:String?) -> ReplyViewModel(discussionId = id, postId = postId, initContent = content, get()) }
     viewModel { (id:String) -> VotesViewModel(get(), id) }
+    viewModel {  NotificationsViewModel(get()) }
 }
 
 class AuthInterceptor() : Interceptor {
