@@ -75,16 +75,16 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("com.github.Gurupreet:FontAwesomeCompose:1.0.0")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("com.google.accompanist:accompanist-pager:0.30.1")
+    implementation("com.google.accompanist:accompanist-pager:0.36.0")
     implementation("com.github.jasminb:jsonapi-converter:0.11")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0")
     implementation("com.zmkn.jackson:kotlinx-datetime-jackson-module:1.0.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("androidx.paging:paging-runtime:3.3.6")
-    implementation("androidx.paging:paging-compose:3.3.6")
+    implementation("androidx.paging:paging-runtime:3.5.0")
+    implementation("androidx.paging:paging-compose:3.5.0")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
-    implementation("androidx.datastore:datastore-preferences:1.2.0")
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
 
     implementation(libs.multiplatform.markdown.renderer)
     implementation(libs.multiplatform.markdown.renderer.m3)
@@ -100,20 +100,20 @@ dependencies {
     implementation("com.jvziyaoyao.scale:image-viewer:$scale_version")
 
     // Networking
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
-    implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
+    implementation("com.squareup.retrofit2:converter-jackson:3.0.0")
 
     // Koin (upgrade to 3.x)
-    implementation("io.insert-koin:koin-android:3.4.0")
-    implementation("io.insert-koin:koin-androidx-compose:3.4.0")
+    implementation("io.insert-koin:koin-android:4.2.1")
+    implementation("io.insert-koin:koin-androidx-compose:4.2.1")
 
     // Coroutines (upgrade)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.4.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
     val nav_version = "2.9.6"
 
     // Jetpack Compose integration
@@ -130,7 +130,7 @@ dependencies {
     androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
 
     // JSON serialization library, works with the Kotlin serialization plugin
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))

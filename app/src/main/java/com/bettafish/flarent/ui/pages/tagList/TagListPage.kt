@@ -48,17 +48,18 @@ import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailP
 import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import java.time.ZonedDateTime
 
 @Composable
 @Destination<RootGraph>
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-fun TagListPage(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
-    val viewModel: TagListViewModel = getViewModel()
+fun TagListPage(modifier: Modifier = Modifier,
+                navigator: DestinationsNavigator,
+                viewModel: TagListViewModel = koinViewModel()) {
     val list by viewModel.tags.collectAsState()
-    val typography = MaterialTheme.typography
+    MaterialTheme.typography
     var isRefreshing by remember { mutableStateOf(list.isEmpty()) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -113,7 +114,7 @@ fun TagViewItem(tag : Tag,
                 onDiscussionClick: (Discussion) -> Unit = {}){
     Surface(modifier = modifier.clickable{ onClick(tag) }){
         Column(modifier = Modifier.padding(24.dp)) {
-            Row() {
+            Row {
                 val textStyle = MaterialTheme.typography.headlineLarge
                 val density = LocalDensity.current
                 val textHeightDp = with(density) { textStyle.lineHeight.toDp() }

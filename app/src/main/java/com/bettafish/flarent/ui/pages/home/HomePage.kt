@@ -1,46 +1,31 @@
 package com.bettafish.flarent.ui.pages.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.twotone.AccountCircle
 import androidx.compose.material.icons.twotone.Category
-import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.QuestionAnswer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.pages.account.AccountPage
@@ -48,9 +33,9 @@ import com.bettafish.flarent.ui.pages.discussionList.DiscussionListPage
 import com.bettafish.flarent.ui.pages.tagList.TagListPage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
-import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
@@ -104,7 +89,7 @@ fun HomePage(
 
         }
     ) { innerPadding ->
-        val a = innerPadding
+        innerPadding
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.padding(bottom = 56.dp)

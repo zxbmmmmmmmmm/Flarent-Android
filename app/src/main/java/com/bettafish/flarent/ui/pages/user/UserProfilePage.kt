@@ -55,25 +55,25 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
-import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
-import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.bettafish.flarent.ui.widgets.ProfileHeader
+import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
-import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-fun UserProfilePage(userName: String, navigator: DestinationsNavigator, modifier: Modifier = Modifier){
-    val viewModel: UserProfileViewModel = getViewModel{ parametersOf(userName) }
+fun UserProfilePage(userName: String,
+                    navigator: DestinationsNavigator,
+                    modifier: Modifier = Modifier,
+                    viewModel: UserProfileViewModel = koinViewModel{ parametersOf(userName) }){
     val user by viewModel.user.collectAsState()
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val discussions = viewModel.discussions.collectAsLazyPagingItems()

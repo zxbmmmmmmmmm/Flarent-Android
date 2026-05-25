@@ -6,7 +6,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.bettafish.flarent.App
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.firebaseAnalytics
@@ -16,7 +15,6 @@ import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.pages.detail.PostListDataSource
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListDataSource
 import com.bettafish.flarent.utils.Analytics
-import com.bettafish.flarent.utils.appSettings
 import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +27,7 @@ class UserProfileViewModel(
     val discussionsRepository: DiscussionsRepository
 ): ViewModel() {
     companion object{
-        private const val LOAD_COUNT = 20;
+        private const val LOAD_COUNT = 20
     }
     private val _user = MutableStateFlow<User?>(null)
     val user: StateFlow<User?> = _user.asStateFlow()

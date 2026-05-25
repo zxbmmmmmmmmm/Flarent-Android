@@ -12,7 +12,7 @@ object HtmlConverter {
     private val converter = FlexmarkHtmlConverter.builder().htmlNodeRendererFactory {
         PostMentionNodeRenderer()
     }.build()
-    fun convert(html: String): String = converter.convert(html);
+    fun convert(html: String): String = converter.convert(html)
 }
 
 class PostMentionNodeRenderer : HtmlNodeRenderer {

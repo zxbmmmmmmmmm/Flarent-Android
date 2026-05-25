@@ -2,7 +2,6 @@ package com.bettafish.flarent.utils
 
 import com.bettafish.flarent.models.Post
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 object GlobalPostUpdateManager {

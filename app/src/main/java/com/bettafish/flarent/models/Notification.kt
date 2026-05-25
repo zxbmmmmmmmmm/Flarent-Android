@@ -23,7 +23,7 @@ class Notification{
     var content: Any? = null
 
     @JsonProperty("isRead")
-    var isRead: Boolean? = null;
+    var isRead: Boolean? = null
 
     @JsonProperty("createdAt")
     @Contextual

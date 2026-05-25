@@ -189,9 +189,9 @@ fun DiscussionItem(discussion: Discussion,
 
                 // 触发换行
                 Spacer(modifier = Modifier.weight(1f, fill = true))
-                Row(){
+                Row {
                     discussion.lastPostNumber?.let{
-                        Row(){
+                        Row {
                             val bg = colorScheme.surfaceContainerHighest
                             Canvas(modifier = modifier.width(3.dp).height(4.dp).align(Alignment.Bottom)) {
                                 val path = Path().apply {
@@ -297,7 +297,7 @@ fun DiscussionItemPreview() {
             }
         )
     }
-    FlarentTheme(){
+    FlarentTheme {
         Surface {
             DiscussionItem(discussion)
         }

@@ -3,12 +3,14 @@ package com.bettafish.flarent.ui.pages.welcome
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,9 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavOptions
 import com.bettafish.flarent.App
 import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.navigation.LoginResult
@@ -42,26 +40,24 @@ import com.mikepenz.markdown.compose.extendedspans.RoundedCornerSpanPainter
 import com.mikepenz.markdown.compose.extendedspans.SquigglyUnderlineSpanPainter
 import com.mikepenz.markdown.compose.extendedspans.rememberSquigglyUnderlineAnimator
 import com.mikepenz.markdown.m3.Markdown
-import com.mikepenz.markdown.m3.markdownColor
 import com.mikepenz.markdown.model.markdownExtendedSpans
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HomePageDestination
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavOptionsBuilder
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.onResult
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination<RootGraph>
 fun WelcomePage(navigator: DestinationsNavigator,
-                resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>){
-    val viewModel : WelcomeViewModel = getViewModel()
+                resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>,
+                viewModel: WelcomeViewModel = koinViewModel()){
     val forum = viewModel.forum.collectAsState()
     val canRefreshUser = viewModel.refreshUserCommand.canExecute.collectAsState()
     resultRecipient.onResult(

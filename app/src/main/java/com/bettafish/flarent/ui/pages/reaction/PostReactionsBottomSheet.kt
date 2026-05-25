@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,13 +40,14 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
-fun PostReactionsBottomSheet(postId: String, navigator: DestinationsNavigator){
-    val viewModel: PostReactionsViewModel = getViewModel{ parametersOf(postId) }
+fun PostReactionsBottomSheet(postId: String,
+                             navigator: DestinationsNavigator,
+                             viewModel: PostReactionsViewModel = koinViewModel{ parametersOf(postId) }){
     val reactions = viewModel.reactions.collectAsState()
     val screenHeight = LocalWindowInfo.current.containerDpSize.height
 

@@ -6,5 +6,5 @@ import com.bettafish.flarent.network.FlarumService
 
 class NotificationsRepositoryImpl(private val service: FlarumService): NotificationsRepository {
     override suspend fun fetchNotifications(request: NotificationRequest): List<Notification>  =
-        service.getNotifications(request.toQueryMap());
+        service.getNotifications(request.toQueryMap())
 }

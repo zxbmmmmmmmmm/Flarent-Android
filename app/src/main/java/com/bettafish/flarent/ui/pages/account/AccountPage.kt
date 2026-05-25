@@ -2,7 +2,6 @@ package com.bettafish.flarent.ui.pages.account
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,16 +44,16 @@ import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDe
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import com.ramcosta.composedestinations.result.onResult
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class)
 fun AccountPage(modifier: Modifier = Modifier,
                 navigator: DestinationsNavigator,
-                resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>
+                resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>,
+                viewModel: AccountViewModel = koinViewModel()
 ){
-    val viewModel : AccountViewModel = getViewModel()
     val user by viewModel.user.collectAsState()
     resultRecipient.onResult(
         onValue = { resultValue ->

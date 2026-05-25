@@ -32,16 +32,16 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultBackNavigator
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination<RootGraph>
 fun LoginPage(modifier: Modifier = Modifier,
               navigator: DestinationsNavigator? = null,
-              resultNavigator: ResultBackNavigator<LoginResult>
+              resultNavigator: ResultBackNavigator<LoginResult>,
+              viewModel: LoginViewModel = koinViewModel ()
 ){
-    val viewModel: LoginViewModel = getViewModel()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {

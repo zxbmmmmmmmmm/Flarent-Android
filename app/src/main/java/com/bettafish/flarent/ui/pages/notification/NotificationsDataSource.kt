@@ -1,14 +1,9 @@
 package com.bettafish.flarent.ui.pages.notification
 
 import androidx.paging.PagingSource
-import androidx.paging.PagingSource.LoadParams
-import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingState
-import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.NotificationsRepository
-import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Notification
-import com.bettafish.flarent.models.request.DiscussionListRequest
 import com.bettafish.flarent.models.request.NotificationRequest
 
 class NotificationsDataSource(

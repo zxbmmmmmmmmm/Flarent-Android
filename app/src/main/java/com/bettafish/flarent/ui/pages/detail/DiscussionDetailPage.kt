@@ -1,8 +1,5 @@
 package com.bettafish.flarent.ui.pages.detail
 
-import android.Manifest
-import android.os.Build
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,30 +17,22 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.MoveUp
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.twotone.MoveUp
 import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -70,8 +59,6 @@ import androidx.paging.compose.itemKey
 import com.bettafish.flarent.ui.theme.defaultTypography
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.KnowledgeTopAppBar
-import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
-import com.bettafish.flarent.ui.widgets.SheetIconButton
 import com.bettafish.flarent.ui.widgets.TagList
 import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.bettafish.flarent.ui.widgets.post.PostItemPlaceholder
@@ -80,15 +67,17 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalCoroutinesApi::class)
-fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigator: DestinationsNavigator, modifier: Modifier = Modifier){
-    val viewModel: DiscussionDetailViewModel = getViewModel() { parametersOf(discussionId, targetPosition) }
+fun DiscussionDetailPage(discussionId: String,
+                         targetPosition: Int = 0,
+                         navigator: DestinationsNavigator,
+                         modifier: Modifier = Modifier,
+                         viewModel: DiscussionDetailViewModel = koinViewModel{ parametersOf(discussionId, targetPosition) }){
     val discussion by viewModel.discussion.collectAsState()
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val scrollTarget by viewModel.scrollTarget.collectAsState()
@@ -142,7 +131,7 @@ fun DiscussionDetailPage(discussionId: String, targetPosition: Int = 0, navigato
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
                         .clip(RoundedCornerShape(64.dp))
                         .background(colorScheme.surfaceContainerHigh)
-                        .clickable(){
+                        .clickable {
                         navigator.navigate(ReplyBottomSheetDestination(discussionId = discussionId,
                             postId = null,
                             discussionTitle = discussion?.title,

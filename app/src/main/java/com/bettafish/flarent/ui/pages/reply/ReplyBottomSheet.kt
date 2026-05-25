@@ -57,12 +57,10 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bettafish.flarent.App
 import com.bettafish.flarent.firebaseAnalytics
 import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.GlobalPostUpdateManager
-import com.bettafish.flarent.utils.appSettings
 import com.google.firebase.analytics.logEvent
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
@@ -77,7 +75,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
@@ -87,9 +85,10 @@ fun ReplyBottomSheet(discussionId: String? = null,
                      postId: String? = null,
                      discussionTitle: String? = null,
                      content: String? = null,
-                     navigator: DestinationsNavigator? = null){
-    val replyViewModel : ReplyViewModel = getViewModel{ parametersOf(discussionId, postId, content) }
-    val fileViewModel : FileViewModel = getViewModel()
+                     navigator: DestinationsNavigator? = null,
+                     replyViewModel: ReplyViewModel = koinViewModel { parametersOf(discussionId, postId, content) },
+                     fileViewModel: FileViewModel = koinViewModel()
+){
     val content by replyViewModel.content.collectAsState()
 
     val screenHeight = LocalWindowInfo.current.containerDpSize.height
@@ -196,7 +195,7 @@ fun ReplyBottomSheet(discussionId: String? = null,
                     SelectionContainer{
                         Markdown(
                             markdownState = markdownState,
-                            imageTransformer = ClickableCoil3ImageTransformer(){},
+                            imageTransformer = ClickableCoil3ImageTransformer {},
                             components = markdownComponents,
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -6,7 +6,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.bettafish.flarent.App
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.firebaseAnalytics
@@ -15,7 +14,6 @@ import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.DiscussionRequest
 import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.SuspendCommand
-import com.bettafish.flarent.utils.appSettings
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi

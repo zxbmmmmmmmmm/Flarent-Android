@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -41,14 +40,15 @@ import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomS
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
-fun VotesBottomSheet(postId: String, navigator: DestinationsNavigator){
-    val viewModel: VotesViewModel = getViewModel{ parametersOf(postId) }
+fun VotesBottomSheet(postId: String,
+                     navigator: DestinationsNavigator,
+                     viewModel: VotesViewModel = koinViewModel{ parametersOf(postId) }) {
     val upvotersState = viewModel.upvoters.collectAsState()
     val downvotersState = viewModel.downvoters.collectAsState()
     val screenHeight = LocalWindowInfo.current.containerDpSize.height

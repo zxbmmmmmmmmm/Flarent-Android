@@ -7,5 +7,4 @@ import kotlinx.parcelize.Parcelize
 data class LoginResult(
     val token: String,
     val id: String
-) : Parcelable {
-}
+) : Parcelable

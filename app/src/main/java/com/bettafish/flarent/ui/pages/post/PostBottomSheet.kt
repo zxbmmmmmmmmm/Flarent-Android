@@ -9,25 +9,16 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
-import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.post.PostItem
-import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
-import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
-import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 @ExperimentalMaterial3Api

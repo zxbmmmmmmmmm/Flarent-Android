@@ -50,7 +50,7 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
                     }
                 }
         )
-        Column() {
+        Column {
             Text(
                 text = user.displayName ?: user.username ?: "",
                 style = MaterialTheme.typography.titleLarge

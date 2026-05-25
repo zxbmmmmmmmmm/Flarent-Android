@@ -3,13 +3,13 @@ package com.bettafish.flarent.network
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.File
 import com.bettafish.flarent.models.Forum
-import com.bettafish.flarent.models.request.LoginRequest
 import com.bettafish.flarent.models.LoginResponse
 import com.bettafish.flarent.models.Notification
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.models.request.LoginRequest
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET

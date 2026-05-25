@@ -18,13 +18,13 @@ import com.bettafish.flarent.data.UsersRepository
 import com.bettafish.flarent.data.UsersRepositoryImpl
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.File
-import com.bettafish.flarent.models.Post
-import com.bettafish.flarent.models.Tag
-import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.Notification
+import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.Reaction
+import com.bettafish.flarent.models.Tag
+import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.ui.pages.account.AccountViewModel
@@ -33,13 +33,13 @@ import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListViewModel
 import com.bettafish.flarent.ui.pages.notification.NotificationsViewModel
 import com.bettafish.flarent.ui.pages.reaction.PostReactionsViewModel
-import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.bettafish.flarent.ui.pages.reply.FileViewModel
 import com.bettafish.flarent.ui.pages.reply.ReplyViewModel
 import com.bettafish.flarent.ui.pages.tagList.TagListViewModel
 import com.bettafish.flarent.ui.pages.user.UserProfileViewModel
 import com.bettafish.flarent.ui.pages.vote.VotesViewModel
 import com.bettafish.flarent.ui.pages.welcome.WelcomeViewModel
+import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.bettafish.flarent.utils.appSettings
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -81,7 +81,7 @@ val networkModule = module {
         val objectMapper = ObjectMapper()
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         objectMapper.registerModule(JavaTimeModule())
-        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
         val resourceConverter = com.github.jasminb.jsonapi.ResourceConverter(
             objectMapper,
             Discussion::class.java,
@@ -141,7 +141,7 @@ val viewModelModule = module {
     viewModel {  NotificationsViewModel(get()) }
 }
 
-class AuthInterceptor() : Interceptor {
+class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val token = App.INSTANCE.appSettings.token

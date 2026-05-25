@@ -16,7 +16,7 @@ class DiscussionListViewModel(
     val navArgs: TagNavArgs? = null
 ) : ViewModel() {
     companion object{
-        private const val LOAD_COUNT = 20;
+        private const val LOAD_COUNT = 20
     }
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),

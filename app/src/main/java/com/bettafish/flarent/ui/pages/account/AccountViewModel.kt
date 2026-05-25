@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class AccountViewModel(
     val usersRepository : UsersRepository
 ): ViewModel() {
-    private val _user = MutableStateFlow(App.Companion.INSTANCE.appSettings.user)
+    private val _user = MutableStateFlow(App.INSTANCE.appSettings.user)
     val user: StateFlow<User?> = _user.asStateFlow()
 
     fun refreshUser(id: String, isLogin: Boolean = false){
@@ -25,7 +25,7 @@ class AccountViewModel(
             try {
                 val data = usersRepository.fetchUser(id)
                 _user.value = data
-                App.Companion.INSTANCE.appSettings.user = data
+                App.INSTANCE.appSettings.user = data
                 if(isLogin){
                     firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN) {
                         param("userId", data.id)
@@ -40,8 +40,8 @@ class AccountViewModel(
 
     fun logout(){
         _user.value = null
-        App.Companion.INSTANCE.appSettings.user = null
-        App.Companion.INSTANCE.appSettings.token = null
-        App.Companion.INSTANCE.appSettings.userId = null
+        App.INSTANCE.appSettings.user = null
+        App.INSTANCE.appSettings.token = null
+        App.INSTANCE.appSettings.userId = null
     }
 }
