@@ -96,5 +96,5 @@ interface FlarumService {
     ): List<File>
 
     @GET("api/notifications")
-    suspend fun getNotifications(@QueryMap options:Map<String,String>):List<Notification>
+    suspend fun getNotifications(@QueryMap options:Map<String,String>): List<Notification>
 }

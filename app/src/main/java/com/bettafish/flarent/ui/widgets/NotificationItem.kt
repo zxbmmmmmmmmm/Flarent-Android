@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -23,26 +24,24 @@ import com.bettafish.flarent.utils.relativeTime
 import java.time.ZonedDateTime
 
 @Composable
-fun NotificationItem(notification: Notification){
-    Row(modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)){
+fun NotificationItem(notification: Notification, modifier: Modifier = Modifier){
+    Row(modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)){
         Avatar(
             avatarUrl = notification.fromUser?.avatarUrl,
             name = notification.fromUser?.displayName,
             modifier = Modifier.height(40.dp).width(40.dp).clip(CircleShape),
         )
         Column(modifier = Modifier.fillMaxWidth()) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = notification.fromUser?.displayName ?: notification.fromUser?.username ?: "",
-                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary)
                 Text(
                     text = notification.createdAt?.relativeTime ?: "",
-                    color = MaterialTheme.colorScheme.onSurface)
+                    color = MaterialTheme.colorScheme.outline)
             }
             Text(
-                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 text = when(notification.contentType){
                     "post" -> "mentioned you in a post"

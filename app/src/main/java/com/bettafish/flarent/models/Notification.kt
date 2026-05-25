@@ -34,5 +34,6 @@ class Notification{
     var fromUser: User? = null
 
     @Relationship("subject")
-    var subject: Post? = null
+    @Contextual
+    var subject: Section? = null
 }

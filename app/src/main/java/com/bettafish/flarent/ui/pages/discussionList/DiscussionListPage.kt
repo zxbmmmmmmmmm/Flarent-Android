@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +41,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
+import com.ramcosta.composedestinations.generated.destinations.NotificationsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
@@ -78,7 +80,7 @@ fun DiscussionListPage(
                     actions = {
                         if(tag == null){
                             IconButton(onClick = { navigator.navigate(NotificationsPageDestination()) }) {
-                                Icon(Icons.Default.Notifications,"通知")
+                                Icon(Icons.Outlined.Notifications,"通知")
                             }
                         }
                     }

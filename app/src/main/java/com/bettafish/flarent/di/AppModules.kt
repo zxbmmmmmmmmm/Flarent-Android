@@ -8,6 +8,8 @@ import com.bettafish.flarent.data.FileRepository
 import com.bettafish.flarent.data.FileRepositoryImpl
 import com.bettafish.flarent.data.ForumRepository
 import com.bettafish.flarent.data.ForumRepositoryImpl
+import com.bettafish.flarent.data.NotificationsRepository
+import com.bettafish.flarent.data.NotificationsRepositoryImpl
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.data.PostsRepositoryImpl
 import com.bettafish.flarent.data.TagsRepository
@@ -20,6 +22,7 @@ import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.Forum
+import com.bettafish.flarent.models.Notification
 import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.Reaction
 import com.bettafish.flarent.models.navigation.TagNavArgs
@@ -88,7 +91,8 @@ val networkModule = module {
             File::class.java,
             Forum::class.java,
             Reaction::class.java,
-            PostReactions::class.java
+            PostReactions::class.java,
+            Notification::class.java
         )
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_TYPE_IN_RELATIONSHIP)
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)
@@ -116,6 +120,7 @@ val repositoryModule = module {
     single<PostsRepository> { PostsRepositoryImpl(get()) }
     single<UsersRepository> { UsersRepositoryImpl(get()) }
     single<ForumRepository> { ForumRepositoryImpl(get()) }
+    single<NotificationsRepository> { NotificationsRepositoryImpl(get()) }
     single<FileRepository> { FileRepositoryImpl(get(), context = androidContext()) }
 }
 

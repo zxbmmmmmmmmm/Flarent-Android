@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 
 @Serializable
 @Type("posts")
-class Post
+class Post : Section
 {
     @Id
     lateinit var id: String
