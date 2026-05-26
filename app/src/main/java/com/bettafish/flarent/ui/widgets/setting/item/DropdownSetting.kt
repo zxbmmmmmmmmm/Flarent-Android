@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.widgets.setting.Item
+package com.bettafish.flarent.ui.widgets.setting.item
 
 import androidx.compose.runtime.Composable
 
@@ -70,7 +70,7 @@ fun DropdownSetting(
     }
 
     Column {
-        TextPref(
+        TextSetting(
             title = title,
             modifier = modifier,
             summary = when {

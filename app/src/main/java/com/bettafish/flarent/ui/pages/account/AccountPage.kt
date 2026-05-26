@@ -34,7 +34,7 @@ import com.bettafish.flarent.App
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.widgets.Avatar
-import com.bettafish.flarent.ui.widgets.setting.Item.TextPref
+import com.bettafish.flarent.ui.widgets.setting.item.TextSetting
 import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -76,12 +76,12 @@ fun AccountPage(modifier: Modifier = Modifier,
                 .statusBarsPadding()
                 .padding(16.dp, 48.dp, 16.dp, 32.dp),
             onLogoutClick = { viewModel.logout() })
-        TextPref(
+        TextSetting(
             title = "设置",
             leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
             onClick = {navigator.navigate(SettingsPageDestination)}
         )
-        TextPref(
+        TextSetting(
             title = "关于",
             leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
             onClick = { navigator.navigate(AboutPageDestination) }

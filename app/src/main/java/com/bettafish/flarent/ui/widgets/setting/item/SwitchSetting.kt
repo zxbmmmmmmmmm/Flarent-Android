@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.widgets.setting.Item
+package com.bettafish.flarent.ui.widgets.setting.item
 
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,7 +52,7 @@ fun SwitchSetting(
         }
     }
 
-    TextPref(
+    TextSetting(
         title = title,
         modifier = modifier,
         textColor = textColor,
@@ -125,7 +125,7 @@ fun SwitchPref(
         }
     }
 
-    TextPref(
+    TextSetting(
         title = title,
         modifier = modifier,
         textColor = textColor,

@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.widgets.setting.Item
+package com.bettafish.flarent.ui.widgets.setting.item
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,7 +12,7 @@ import com.bettafish.flarent.ui.widgets.setting.ifNotNullThen
 
 @ExperimentalMaterial3Api
 @Composable
-fun TextPref(
+fun TextSetting(
     title: String,
     modifier: Modifier = Modifier,
     summary: String? = null,

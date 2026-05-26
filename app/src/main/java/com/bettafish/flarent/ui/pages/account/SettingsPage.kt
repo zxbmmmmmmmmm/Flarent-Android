@@ -15,30 +15,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.bettafish.flarent.App
 import com.bettafish.flarent.ui.theme.AppThemeMode
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
-import com.bettafish.flarent.ui.widgets.setting.Item.DropdownSetting
+import com.bettafish.flarent.ui.widgets.setting.item.DropdownSetting
 import com.bettafish.flarent.utils.appSettings
-import com.bettafish.flarent.utils.collectPreferenceAsState
 import com.bettafish.flarent.utils.dataStore
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.launch
 
 val LocalPrefsDataStore: ProvidableCompositionLocal<DataStore<Preferences>> = compositionLocalOf {
     error("LocalPrefsDataStore not provided")

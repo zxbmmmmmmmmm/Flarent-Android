@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.widgets.setting.Item
+package com.bettafish.flarent.ui.widgets.setting.item
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -82,7 +82,7 @@ fun SliderSetting(
         verticalArrangement = Arrangement.Center,
     ) {
 
-        TextPref(
+        TextSetting(
             title = title,
             modifier = modifier,
             textColor = textColor,
