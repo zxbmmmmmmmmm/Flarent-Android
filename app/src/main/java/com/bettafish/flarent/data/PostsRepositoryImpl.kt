@@ -22,7 +22,13 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
         val post = Post().apply {
             id = postId
             this.content = content }
-        return service.editPost(postId, post)
+        return service.patchPost(postId, post)
+    }
+
+    suspend fun patchPost(postId :String, block:Post.() -> Unit):Post{
+        val post = Post().apply { id = postId }
+        block(post)
+        return service.patchPost(postId, post)
     }
 
     override suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) : Post {

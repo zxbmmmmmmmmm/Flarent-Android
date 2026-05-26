@@ -84,7 +84,7 @@ interface FlarumService {
     ) : Post
 
     @PATCH("api/posts/{id}")
-    suspend fun editPost(
+    suspend fun patchPost(
         @Path("id") id: String,
         @Body post: Post
     ) : Post

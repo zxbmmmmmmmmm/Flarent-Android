@@ -8,7 +8,9 @@ class DiscussionsRepositoryImpl(
     private val service: FlarumService
 ) : DiscussionsRepository {
 
-    override suspend fun fetchDiscussionList(request: DiscussionListRequest) = service.getDiscussionList(request.toQueryMap())
+    override suspend fun fetchDiscussionList(request: DiscussionListRequest) =
+        service.getDiscussionList(request.toQueryMap())
 
-    override suspend fun fetchDiscussion(request: DiscussionRequest) = service.getDiscussion(request.id, request.toQueryMap())
+    override suspend fun fetchDiscussion(request: DiscussionRequest) =
+        service.getDiscussion(request.id, request.toQueryMap())
 }
