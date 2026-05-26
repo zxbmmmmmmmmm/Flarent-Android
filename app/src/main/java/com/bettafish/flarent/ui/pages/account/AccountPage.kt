@@ -40,6 +40,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AboutPageDestination
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
@@ -77,7 +78,8 @@ fun AccountPage(modifier: Modifier = Modifier,
             onLogoutClick = { viewModel.logout() })
         TextPref(
             title = "设置",
-            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) }
+            leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
+            onClick = {navigator.navigate(SettingsPageDestination)}
         )
         TextPref(
             title = "关于",
