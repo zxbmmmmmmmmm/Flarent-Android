@@ -12,6 +12,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,18 +20,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.IntOffset
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
+import com.bettafish.flarent.ui.theme.AppThemeMode
 import com.bettafish.flarent.ui.theme.FlarentTheme
 
 import com.bettafish.flarent.ui.widgets.GlobalImagePreviewerProvider
 import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.appSettings
+import com.bettafish.flarent.utils.collectPreferenceAsState
+import com.bettafish.flarent.utils.dataStore
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
@@ -52,14 +59,31 @@ class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            navigationBarStyle = SystemBarStyle.light(
-                Color.TRANSPARENT,
-                Color.TRANSPARENT
-            )
-        )
         setContent {
-            FlarentTheme {
+            val themeModeValue by App.INSTANCE.dataStore.collectPreferenceAsState(
+                key = stringPreferencesKey(AppThemeMode.PreferenceKey),
+                defaultValue = AppThemeMode.SYSTEM.value
+            )
+            val themeMode = AppThemeMode.fromPreference(themeModeValue)
+            val isDarkTheme = when (themeMode) {
+                AppThemeMode.SYSTEM -> isSystemInDarkTheme()
+                AppThemeMode.LIGHT -> false
+                AppThemeMode.DARK -> true
+            }
+
+            SideEffect {
+                val systemBarStyle = if (isDarkTheme) {
+                    SystemBarStyle.dark(Color.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                }
+                enableEdgeToEdge(
+                    statusBarStyle = systemBarStyle,
+                    navigationBarStyle = systemBarStyle
+                )
+            }
+
+            FlarentTheme(darkTheme = isDarkTheme) {
                 FlarentApp()
             }
         }
