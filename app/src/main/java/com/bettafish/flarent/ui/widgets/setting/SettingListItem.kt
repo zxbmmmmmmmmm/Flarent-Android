@@ -90,7 +90,8 @@ private object AnyLine {
     private val MinHeight = 48.dp
     private val MinHeightSmaller = 32.dp
     private val IconMinPaddedWidth = 40.dp
-    private val ContentPadding = 16.dp
+    private val ContentPadding = 24.dp
+    private val VerticalPaddingSmaller = 12.dp
     private val VerticalPadding = 16.dp
     private val SingleLinePadding = 16.dp //used when no secondary text is supplied
 
@@ -105,16 +106,16 @@ private object AnyLine {
     ) {
         Row(
             modifier
-                .heightIn(min = if (minimalHeight) MinHeightSmaller else MinHeight)
                 .padding(
                     start = ContentPadding,
                     end = ContentPadding,
                     top = when {
                         secondaryText == null && !minimalHeight -> SingleLinePadding
+                        minimalHeight -> VerticalPaddingSmaller
                         else -> VerticalPadding
                     },
                     bottom = when {
-                        minimalHeight -> 0.dp
+                        minimalHeight -> VerticalPaddingSmaller
                         secondaryText == null -> SingleLinePadding
                         else -> VerticalPadding
                     }

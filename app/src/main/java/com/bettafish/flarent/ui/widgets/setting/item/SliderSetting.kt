@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,7 +52,7 @@ fun SliderSetting(
     val datastore = LocalPrefsDataStore.current
     val prefs by remember { datastore.data }.collectAsState(initial = null)
 
-    var value by remember { mutableStateOf(defaultValue) }
+    var value by remember { mutableFloatStateOf(defaultValue) }
 
     LaunchedEffect(Unit) {
         prefs?.get(selectionKey)?.also { value = it }

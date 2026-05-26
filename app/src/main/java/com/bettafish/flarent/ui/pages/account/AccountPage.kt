@@ -78,11 +78,13 @@ fun AccountPage(modifier: Modifier = Modifier,
             onLogoutClick = { viewModel.logout() })
         TextSetting(
             title = "设置",
+            minimalHeight = true,
             leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            onClick = {navigator.navigate(SettingsPageDestination)}
+            onClick = { navigator.navigate(SettingsPageDestination) }
         )
         TextSetting(
             title = "关于",
+            minimalHeight = true,
             leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
             onClick = { navigator.navigate(AboutPageDestination) }
         )
