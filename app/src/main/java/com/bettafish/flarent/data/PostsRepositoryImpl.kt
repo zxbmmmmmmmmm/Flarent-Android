@@ -7,6 +7,7 @@ import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.network.FlarumService
 
 class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
+
     override suspend fun fetchPosts(request: PostsRequest)
             = service.getPosts(request.toQueryMap())
 
@@ -19,16 +20,9 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
     }
 
     override suspend fun editPost(postId: String, content: String) : Post {
-        val post = Post().apply {
-            id = postId
-            this.content = content }
-        return service.patchPost(postId, post)
-    }
-
-    suspend fun patchPost(postId :String, block:Post.() -> Unit):Post{
-        val post = Post().apply { id = postId }
-        block(post)
-        return service.patchPost(postId, post)
+       return patchPost(postId,{
+           this.content = content
+       })
     }
 
     override suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) : Post {
@@ -52,5 +46,11 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
 
     override suspend fun fetchReactions(postId: String): List<PostReactions>{
         return service.getReactions(postId)
+    }
+
+    suspend fun patchPost(postId :String, block:Post.() -> Unit):Post{
+        val post = Post().apply { id = postId }
+        block(post)
+        return service.patchPost(postId, post)
     }
 }

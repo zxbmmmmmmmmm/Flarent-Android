@@ -89,6 +89,12 @@ interface FlarumService {
         @Body post: Post
     ) : Post
 
+    @PATCH("api/discussions/{id}")
+    suspend fun patchDiscussion(
+        @Path("id") id: String,
+        @Body discussion: Discussion
+    ) : Discussion?
+
     @Multipart
     @POST("api/fof/upload")
     suspend fun uploadFile(
