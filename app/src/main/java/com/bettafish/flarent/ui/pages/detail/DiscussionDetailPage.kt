@@ -39,6 +39,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,6 +67,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -76,6 +78,7 @@ import org.koin.core.parameter.parametersOf
 fun DiscussionDetailPage(discussionId: String,
                          targetPosition: Int = 0,
                          navigator: DestinationsNavigator,
+                         backNavigator: ResultBackNavigator<Int>,
                          modifier: Modifier = Modifier,
                          viewModel: DiscussionDetailViewModel = koinViewModel{ parametersOf(discussionId, targetPosition) }){
     val discussion by viewModel.discussion.collectAsState()
@@ -87,6 +90,7 @@ fun DiscussionDetailPage(discussionId: String,
     var jumpInput by remember { mutableStateOf("") }
     val canLoadDiscussionCommandExec = viewModel.loadDiscussionCommand.canExecute.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val listState = rememberLazyListState()
 
     PullToRefreshBox(
         isRefreshing = posts.loadState.refresh is LoadState.Loading || !canLoadDiscussionCommandExec.value,
@@ -99,21 +103,34 @@ fun DiscussionDetailPage(discussionId: String,
                 KnowledgeTopAppBar(
                     topLayout = { Text(text = discussion?.title ?: "帖子", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 20.sp) },
                     bottomLayout = {
-                        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)){
-                            Text(text = discussion?.title ?: "帖子", style = defaultTypography.titleLarge )
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically){
+                        Column(
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)){
+                            Text(text = discussion?.title ?: "帖子",
+                                style = defaultTypography.titleLarge )
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically){
                                 discussion?.tags?.let {
                                     TagList(it)
                                 }
                                 discussion?.commentCount?.let {
-                                    Text("$it 条回复", color = colorScheme.outline, style = defaultTypography.bodyMedium)
+                                    Text("$it 条回复", color = colorScheme.outline,
+                                        style = defaultTypography.bodyMedium)
                                 }
                             }
 
                         }
                     },
                     navigationIcon = {
-                        BackNavigationIcon { navigator.navigateUp() }
+                        BackNavigationIcon {
+                            val idx = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index;
+                            if(idx != null && posts[idx]?.number != null){
+                                backNavigator.navigateBack(posts[idx]!!.number!!)
+                            }
+                            else{
+                                backNavigator.navigateBack()
+                            }
+                        }
                     },
                     actions = {},
                     scrollBehavior = scrollBehavior

@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
@@ -43,6 +44,8 @@ import com.ramcosta.composedestinations.generated.destinations.DiscussionListPag
 import com.ramcosta.composedestinations.generated.destinations.NotificationsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.ResultRecipient
+import com.ramcosta.composedestinations.result.onResult
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -55,11 +58,17 @@ fun DiscussionListPage(
     modifier: Modifier = Modifier,
     tag: TagNavArgs? = null,
     navigator: DestinationsNavigator,
-    viewModel: DiscussionListViewModel = koinViewModel { parametersOf(tag) }
+    viewModel: DiscussionListViewModel = koinViewModel { parametersOf(tag) },
+    resultRecipient: ResultRecipient<DiscussionDetailPageDestination, Int>
 ) {
     val pagingItems = viewModel.discussions.collectAsLazyPagingItems()
-
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    var navigatedDiscussionIndex: Int? = null
+
+    resultRecipient.onResult(onValue = { lastReadPost ->
+
+    })
+
     PullToRefreshBox(
         isRefreshing = pagingItems.loadState.refresh is LoadState.Loading,
         onRefresh = { pagingItems.refresh() },
@@ -95,7 +104,10 @@ fun DiscussionListPage(
                     val discussion = pagingItems[index]
                     discussion?.let { item ->
                         DiscussionItem(item, click = {
-                            navigator.navigate(DiscussionDetailPageDestination(it.id, it.lastReadPostNumber?:0))
+                            navigatedDiscussionIndex = index
+                            navigator.navigate(DiscussionDetailPageDestination(
+                                discussion.id,
+                                it.lastReadPostNumber?:0))
                         }, tagClick = {
                             navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
                         }, userClick = {

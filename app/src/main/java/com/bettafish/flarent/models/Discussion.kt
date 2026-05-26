@@ -12,7 +12,7 @@ import java.time.ZonedDateTime
 @Type("discussions")
 class Discussion {
     @Id
-    lateinit var id: String
+    var id: String = ""
 
     @JsonProperty("title")
     var title: String? = null
