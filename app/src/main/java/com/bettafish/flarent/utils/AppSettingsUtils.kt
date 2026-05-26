@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.ui.theme.AppThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -52,6 +53,7 @@ open class AppSettingsUtils private constructor(ctx: Context) {
 
     var forum by DataStoreDelegates.any<Forum>(key = "forum")
 
+    var themeMode by DataStoreDelegates.string(key = "themeMode", defaultValue = AppThemeMode.SYSTEM.value)
 
     private object DataStoreDelegates {
         fun int(

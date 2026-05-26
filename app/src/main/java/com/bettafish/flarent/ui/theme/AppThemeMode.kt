@@ -9,10 +9,10 @@ enum class AppThemeMode(
     DARK("dark", "暗色");
 
     companion object {
-        const val PreferenceKey = "theme_mode"
+        const val PreferenceKey = "themeMode"
 
         fun fromPreference(value: String?): AppThemeMode {
-            return values().firstOrNull { it.value == value } ?: SYSTEM
+            return entries.firstOrNull { it.value == value } ?: SYSTEM
         }
     }
 }
