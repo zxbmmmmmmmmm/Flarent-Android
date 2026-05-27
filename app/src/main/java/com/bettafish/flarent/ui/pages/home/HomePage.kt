@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.pages.account.AccountPage
-import com.bettafish.flarent.ui.pages.discussionList.DiscussionListPage
+import com.bettafish.flarent.ui.pages.discussionList.DiscussionListContent
 import com.bettafish.flarent.ui.pages.tagList.TagListPage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -95,7 +95,9 @@ fun HomePage(
             modifier = Modifier.padding(bottom = 56.dp)
         ) { page ->
             when (tabs[page]) {
-                HomeTab.DiscussionList -> DiscussionListPage(navigator = navigator)
+                HomeTab.DiscussionList -> DiscussionListContent(
+                    navigator = navigator
+                )
                 HomeTab.Tags -> TagListPage(navigator = navigator)
                 HomeTab.Account -> AccountPage(navigator = navigator, resultRecipient = resultRecipient)
             }

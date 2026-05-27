@@ -1,6 +1,7 @@
 package com.bettafish.flarent
 
 import android.app.Application
+import com.bettafish.flarent.di.databaseModule
 import com.bettafish.flarent.di.networkModule
 import com.bettafish.flarent.di.repositoryModule
 import com.bettafish.flarent.di.viewModelModule
@@ -16,7 +17,7 @@ class App : Application() {
         startKoin {
             androidLogger()
             androidContext(this@App)
-            modules(listOf(networkModule, repositoryModule, viewModelModule))
+            modules(listOf(networkModule, databaseModule, repositoryModule, viewModelModule))
         }
     }
     companion object{

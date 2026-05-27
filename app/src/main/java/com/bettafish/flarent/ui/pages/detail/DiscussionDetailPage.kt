@@ -54,6 +54,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.NavigationEventTransitionState
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -91,6 +97,34 @@ fun DiscussionDetailPage(discussionId: String,
     val canLoadDiscussionCommandExec = viewModel.loadDiscussionCommand.canExecute.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberLazyListState()
+    val navigateBackWithRead = {
+        val idx = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        val lastReadPostNumber = idx?.let { posts[it]?.number }
+        if (lastReadPostNumber != null) {
+            viewModel.markDiscussionAsRead(lastReadPostNumber) {
+                backNavigator.navigateBack(lastReadPostNumber)
+            }
+        } else {
+            backNavigator.navigateBack()
+        }
+    }
+
+    val navState = rememberNavigationEventState(NavigationEventInfo.None)
+
+    NavigationBackHandler(
+        state = navState,
+        isBackEnabled = true,
+        onBackCompleted = {
+            navigateBackWithRead();
+        }
+    )
+    LaunchedEffect(navState.transitionState) {
+        val transitionState = navState.transitionState
+        if (transitionState is NavigationEventTransitionState.InProgress) {
+            val progress = transitionState.latestEvent.progress
+            // Animate according to progress
+        }
+    }
 
     PullToRefreshBox(
         isRefreshing = posts.loadState.refresh is LoadState.Loading || !canLoadDiscussionCommandExec.value,
@@ -123,13 +157,7 @@ fun DiscussionDetailPage(discussionId: String,
                     },
                     navigationIcon = {
                         BackNavigationIcon {
-                            val idx = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index;
-                            if(idx != null && posts[idx]?.number != null){
-                                backNavigator.navigateBack(posts[idx]!!.number!!)
-                            }
-                            else{
-                                backNavigator.navigateBack()
-                            }
+                            navigateBackWithRead()
                         }
                     },
                     actions = {},
@@ -171,8 +199,6 @@ fun DiscussionDetailPage(discussionId: String,
                 .fillMaxSize()){
 
                 if (target != null && canLoadDiscussionCommandExec.value) {
-                    val listState = rememberLazyListState(initialFirstVisibleItemIndex = target)
-
                     LaunchedEffect(target) {
                         listState.scrollToItem(target)
                     }

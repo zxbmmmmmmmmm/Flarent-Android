@@ -85,6 +85,10 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.5.0")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
+    val roomVersion = "2.8.4"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     implementation(libs.multiplatform.markdown.renderer)
     implementation(libs.multiplatform.markdown.renderer.m3)

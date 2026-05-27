@@ -1,4 +1,4 @@
-package com.bettafish.flarent.ui.pages.discussionList
+package com.bettafish.flarent.ui.pages.user
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -6,13 +6,12 @@ import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.request.DiscussionListRequest
 
-class DiscussionListDataSource(
+class UserDiscussionListDataSource(
     private val repository: DiscussionsRepository,
     private val pageSize: Int,
-    private val tag: String? = null,
-    private val author: String? = null,
+    private val author: String,
     private val sort: String? = null
-) : PagingSource<Int, Discussion>(){
+) : PagingSource<Int, Discussion>() {
     override fun getRefreshKey(state: PagingState<Int, Discussion>): Int? {
         val anchor = state.anchorPosition ?: return null
         val page = state.closestPageToPosition(anchor) ?: return null
@@ -22,13 +21,18 @@ class DiscussionListDataSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Discussion> {
         return try {
             val offset = params.key ?: 0
-            val items = repository.fetchDiscussionList(DiscussionListRequest(offset, tag, author, sort))
-            val nextKey = if (items.size < pageSize) null else offset + pageSize
-            val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
+            val items = repository.fetchDiscussionList(
+                DiscussionListRequest(
+                    offset = offset,
+                    author = author,
+                    sort = sort,
+                    limit = pageSize
+                )
+            )
             LoadResult.Page(
                 data = items,
-                prevKey = prevKey,
-                nextKey = nextKey
+                prevKey = if (offset == 0) null else maxOf(0, offset - pageSize),
+                nextKey = if (items.size < pageSize) null else offset + pageSize
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

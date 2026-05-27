@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.launch
 
 data class ScrollTarget(val index: Int, val version: Int)
 
@@ -78,6 +79,13 @@ class DiscussionDetailViewModel(
     fun jumpToPosition(position: Int) {
         targetPosition = position
         _scrollTarget.value = position
+    }
+
+    fun markDiscussionAsRead(lastReadPostNumber: Int, onLocalUpdated: () -> Unit = {}) {
+        viewModelScope.launch {
+            discussionsRepository.readDiscussion(discussionId, lastReadPostNumber)
+            onLocalUpdated()
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

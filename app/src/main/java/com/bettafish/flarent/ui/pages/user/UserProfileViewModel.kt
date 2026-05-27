@@ -13,7 +13,6 @@ import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.pages.detail.PostListDataSource
-import com.bettafish.flarent.ui.pages.discussionList.DiscussionListDataSource
 import com.bettafish.flarent.utils.Analytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +34,9 @@ class UserProfileViewModel(
     val discussions: Flow<PagingData<Discussion>> = Pager(
         config = PagingConfig(pageSize = LOAD_COUNT, enablePlaceholders = false),
         pagingSourceFactory = {
-            DiscussionListDataSource(
+            UserDiscussionListDataSource(
                 discussionsRepository,
                 LOAD_COUNT,
-                null,
                 userName,
                 "-createdAt"
             )

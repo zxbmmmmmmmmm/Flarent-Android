@@ -1,9 +1,11 @@
 package com.bettafish.flarent.di
 
+import androidx.room.Room
 import com.bettafish.flarent.App
 import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
+import com.bettafish.flarent.data.DiscussionListMemoryCache
 import com.bettafish.flarent.data.FileRepository
 import com.bettafish.flarent.data.FileRepositoryImpl
 import com.bettafish.flarent.data.ForumRepository
@@ -16,6 +18,7 @@ import com.bettafish.flarent.data.TagsRepository
 import com.bettafish.flarent.data.TagsRepositoryImpl
 import com.bettafish.flarent.data.UsersRepository
 import com.bettafish.flarent.data.UsersRepositoryImpl
+import com.bettafish.flarent.data.local.FlarentDatabase
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.File
 import com.bettafish.flarent.models.Forum
@@ -45,6 +48,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.jasminb.jsonapi.retrofit.JSONAPIConverterFactory
 import okhttp3.Interceptor
@@ -73,7 +77,9 @@ val networkModule = module {
 
     single {
         jacksonObjectMapper().apply {
-            // register modules if needed
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            registerModule(JavaTimeModule())
+            setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
         }
     }
 
@@ -81,6 +87,7 @@ val networkModule = module {
         val objectMapper = ObjectMapper()
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         objectMapper.registerModule(JavaTimeModule())
+        objectMapper.registerModule(KotlinModule.Builder().build())
         objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
         val resourceConverter = com.github.jasminb.jsonapi.ResourceConverter(
             objectMapper,
@@ -114,8 +121,23 @@ val networkModule = module {
     single { get<Retrofit>().create(FlarumService::class.java) }
 }
 
+val databaseModule = module {
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            FlarentDatabase::class.java,
+            "flarent.db"
+        )
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
+    }
+
+    single { get<FlarentDatabase>().discussionCacheDao() }
+    single { DiscussionListMemoryCache() }
+}
+
 val repositoryModule = module {
-    single<DiscussionsRepository> { DiscussionsRepositoryImpl(get()) }
+    single<DiscussionsRepository> { DiscussionsRepositoryImpl(get(), get(), get(), get()) }
     single<TagsRepository> { TagsRepositoryImpl(get()) }
     single<PostsRepository> { PostsRepositoryImpl(get()) }
     single<UsersRepository> { UsersRepositoryImpl(get()) }
