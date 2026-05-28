@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PostItemViewModel(
-    private val id: String,
+    val id: String,
     initPost: Post? = null,
     private val repository: PostsRepository
 ) : ViewModel() {
     private val _post = MutableStateFlow(initPost)
     val post: StateFlow<Post?> = _post
-
+    
     init {
         if (initPost == null) {
             load()

@@ -37,6 +37,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,6 +54,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -62,6 +66,7 @@ import com.bettafish.flarent.ui.widgets.KnowledgeTopAppBar
 import com.bettafish.flarent.ui.widgets.TagList
 import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.bettafish.flarent.ui.widgets.post.PostItemPlaceholder
+import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
@@ -87,6 +92,7 @@ fun DiscussionDetailPage(discussionId: String,
     var jumpInput by remember { mutableStateOf("") }
     val canLoadDiscussionCommandExec = viewModel.loadDiscussionCommand.canExecute.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val storeProvider = rememberViewModelStoreProvider()
 
     PullToRefreshBox(
         isRefreshing = posts.loadState.refresh is LoadState.Loading || !canLoadDiscussionCommandExec.value,
@@ -169,13 +175,20 @@ fun DiscussionDetailPage(discussionId: String,
                             key = posts.itemKey { it.id }
                         ) { index ->
                             val post = posts[index]
+
                             if (post != null) {
-                                PostItem(post,
-                                    null,
-                                    navigator,
-                                    modifier = Modifier.padding(16.dp),
-                                    isOp = post.user?.id == discussion?.user?.id,
-                                )
+                                val owner = rememberViewModelStoreOwner(
+                                    provider = storeProvider,
+                                    key = post.id)
+                                CompositionLocalProvider(LocalViewModelStoreOwner provides owner ) {
+                                    val viewModel: PostItemViewModel = koinViewModel<PostItemViewModel>( key = post.id ){ parametersOf(post.id, post) }
+                                    PostItem(viewModel,
+                                        navigator,
+                                        modifier = Modifier.padding(16.dp),
+                                        isOp = post.user?.id == discussion?.user?.id,
+                                    )
+                                }
+
                             } else {
                                 PostItemPlaceholder(modifier = Modifier.padding(16.dp))
                             }

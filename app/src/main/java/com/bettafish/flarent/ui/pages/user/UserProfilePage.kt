@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,6 +50,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -57,6 +61,7 @@ import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
 import com.bettafish.flarent.ui.widgets.ProfileHeader
 import com.bettafish.flarent.ui.widgets.post.PostItem
+import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
@@ -80,6 +85,8 @@ fun UserProfilePage(userName: String,
     val headerColor: Color = MaterialTheme.colorScheme.surfaceContainer
     val scrollState = rememberScrollState()
     var headerHeight by remember { mutableIntStateOf(0) }
+    val storeProvider = rememberViewModelStoreProvider()
+
 
     val showTitle by remember {
         derivedStateOf {
@@ -179,12 +186,17 @@ fun UserProfilePage(userName: String,
                                                 navigator.navigate(DiscussionDetailPageDestination(post.discussion!!.id, post.discussion?.lastReadPostNumber?:0))
                                             })
                                 }
-                                PostItem(post,
-                                    null,
-                                    navigator,
-                                    modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
-                                    userClickEnabled = false
-                                )
+                                val owner = rememberViewModelStoreOwner(
+                                    provider = storeProvider,
+                                    key = post.id)
+
+                                CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
+                                    val viewModel: PostItemViewModel = koinViewModel<PostItemViewModel>( key = post.id ){ parametersOf(post.id, post) }
+                                    PostItem(viewModel,
+                                        navigator,
+                                        modifier = Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp))
+                                }
+
                             }
                             1 -> PagingDataList(discussions) { discussion ->
                                 DiscussionItem(discussion,

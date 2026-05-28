@@ -95,8 +95,6 @@ import com.ramcosta.composedestinations.generated.destinations.VotesBottomSheetD
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dev.snipme.highlights.Highlights
 import dev.snipme.highlights.model.SyntaxThemes
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import java.time.ZonedDateTime
 
 val allReactions = App.INSTANCE.appSettings.forum?.reactions ?: emptyList()
@@ -104,24 +102,22 @@ val allReactionsMap = allReactions.associateBy { it.id }
 
 @Composable
 fun PostItem(
-    initPost: Post?,
-    postId: String?,
+    viewModel: PostItemViewModel,
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     userClickEnabled: Boolean = true,
     isOp: Boolean = false,
 ) {
-    val id = initPost?.id ?: postId!!
-    val vm = koinViewModel<PostItemViewModel>( key = id ){ parametersOf(id, initPost) }
-    val post = vm.post.collectAsState()
+    val post = viewModel.post.collectAsState()
+    val id = viewModel.id
     val imagePreviewer = LocalImagePreviewer.current
-    val canVoteCommandExec = vm.voteCommand.canExecute.collectAsState()
-    val canReactCommandExec = vm.reactCommand.canExecute.collectAsState()
+    val canVoteCommandExec = viewModel.voteCommand.canExecute.collectAsState()
+    val canReactCommandExec = viewModel.reactCommand.canExecute.collectAsState()
 
     LaunchedEffect(Unit) {
         GlobalPostUpdateManager.events.collect { updatedPost ->
             if (updatedPost.id == id) {
-                vm.updatePost(updatedPost)
+                viewModel.updatePost(updatedPost)
             }
         }
     }
@@ -140,11 +136,11 @@ fun PostItem(
                         navigator.navigate(ReplyBottomSheetDestination(it, content = content))
                     }},
                 onVote = { isUpvoted, isDownvoted ->
-                    vm.voteCommand.execute(post.value!!.id, isUpvoted, isDownvoted)
+                    viewModel.voteCommand.execute(post.value!!.id, isUpvoted, isDownvoted)
                 },
                 isVoting = !canVoteCommandExec.value,
                 onReact = {
-                    vm.reactCommand.execute(post.value!!.id, it)
+                    viewModel.reactCommand.execute(post.value!!.id, it)
                 },
                 isReacting = !canReactCommandExec.value,
                 onReactionLongClicked = {
