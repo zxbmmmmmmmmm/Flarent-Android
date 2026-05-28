@@ -10,7 +10,7 @@ import java.time.ZonedDateTime
 
 @Serializable
 @Type("discussions")
-class Discussion {
+class Discussion: Section {
     @Id
     lateinit var id: String
 

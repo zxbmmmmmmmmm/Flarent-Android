@@ -2,8 +2,10 @@ package com.bettafish.flarent.ui.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalGridApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Grid
 import androidx.compose.foundation.layout.GridTrackSize
 import androidx.compose.foundation.layout.Row
@@ -32,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,19 +70,22 @@ fun NotificationItem(notification: Notification,
             modifier = Modifier.height(28.dp).width(28.dp).clip(CircleShape)
                 .clickable{userClick(notification.fromUser!!)},
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxHeight()) {
+
             Text(
                 text = notification.fromUser?.displayName ?: notification.fromUser?.username ?: "",
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable{userClick(notification.fromUser!!)})
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .clickable{userClick(notification.fromUser!!)})
             Text(
                 text = notification.createdAt?.relativeTime ?: "",
                 color = MaterialTheme.colorScheme.outline)
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        FlowRow (horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.gridItem(row = 2, column = 2)){
             val density = LocalDensity.current
             val textStyle = MaterialTheme.typography.bodyLarge
@@ -93,7 +99,7 @@ fun NotificationItem(notification: Notification,
                     else -> Icons.Default.Notifications
                 },
                 null,
-                modifier = Modifier.height(textHeightDp  * 0.8F)
+                modifier = Modifier.height(textHeightDp  * 0.8F).align(Alignment.CenterVertically)
             )
             CompositionLocalProvider(
                 LocalTextStyle provides textStyle
@@ -122,6 +128,7 @@ fun NotificationItem(notification: Notification,
             Surface(color = MaterialTheme.colorScheme.surfaceContainer,
                     modifier = Modifier
                         .gridItem(row = 3, column = 2)
+                        .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .clickable{postClick(notification.subject as Post)}) {
                 Text(
@@ -132,6 +139,7 @@ fun NotificationItem(notification: Notification,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp,8.dp)
                 )
+
             }
         }
     }
@@ -154,6 +162,26 @@ fun NotificationItemPreview(){
         subject = Post().apply {
             id = "1"
             text = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+        }
+    }, modifier = Modifier.padding(12.dp))
+}
+@Preview(showBackground = true)
+@Composable
+fun NotificationItemPreview2(){
+    NotificationItem(notification = Notification().apply{
+        id = "1"
+        contentType = "postMentioned"
+        content = "This is a notification content"
+        isRead = false
+        createdAt = ZonedDateTime.now()
+        fromUser = User().apply {
+            displayName = "John Doe"
+            username = "AA"
+            id = "1"
+        }
+        subject = Post().apply {
+            id = "1"
+            text = "Lorem ipsum dolor sit"
         }
     }, modifier = Modifier.padding(12.dp))
 }
