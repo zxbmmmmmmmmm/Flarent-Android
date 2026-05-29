@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,14 +57,37 @@ import java.time.ZonedDateTime
 
 private val imageWidth = 40.dp
 @Composable
-fun DiscussionItem(discussion: Discussion,
-                   modifier: Modifier = Modifier,
-                   click : (Discussion) -> Unit = {},
-                   tagClick : (Tag) -> Unit = {},
-                   userClick : (User) -> Unit = {}){
+fun DiscussionItem(
+    viewModel: DiscussionItemViewModel,
+    modifier: Modifier = Modifier,
+    click : (Discussion) -> Unit = {},
+    tagClick : (Tag) -> Unit = {},
+    userClick : (User) -> Unit = {}
+) {
+    val discussion = viewModel.discussion.collectAsState()
+
+    discussion.value?.let {
+        DiscussionItem(
+            discussion = it,
+            modifier = modifier,
+            click = click,
+            tagClick = tagClick,
+            userClick = userClick
+        )
+    }
+}
+
+@Composable
+private fun DiscussionItem(
+    discussion: Discussion,
+    modifier: Modifier = Modifier,
+    click : (Discussion) -> Unit = {},
+    tagClick : (Tag) -> Unit = {},
+    userClick : (User) -> Unit = {}
+){
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { click(discussion) }
             .padding(16.dp)

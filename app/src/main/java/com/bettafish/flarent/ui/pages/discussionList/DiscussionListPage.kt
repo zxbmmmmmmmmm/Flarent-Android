@@ -22,18 +22,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
+import com.bettafish.flarent.ui.widgets.DiscussionItemViewModel
 import com.bettafish.flarent.utils.toFaIcon
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
@@ -58,6 +63,7 @@ fun DiscussionListPage(
     viewModel: DiscussionListViewModel = koinViewModel { parametersOf(tag) }
 ) {
     val pagingItems = viewModel.discussions.collectAsLazyPagingItems()
+    val storeProvider = rememberViewModelStoreProvider()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     PullToRefreshBox(
@@ -77,9 +83,9 @@ fun DiscussionListPage(
                     },
                     scrollBehavior = scrollBehavior,
                     actions = {
-                        if(tag == null){
+                        if (tag == null) {
                             IconButton(onClick = { navigator.navigate(NotificationsPageDestination()) }) {
-                                Icon(Icons.Outlined.Notifications,"通知")
+                                Icon(Icons.Outlined.Notifications, "通知")
                             }
                         }
                     }
@@ -91,16 +97,34 @@ fun DiscussionListPage(
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                items(count = pagingItems.itemCount) { index ->
+                items(
+                    count = pagingItems.itemCount,
+                    key = { index -> pagingItems[index]?.id ?: index }
+                ) { index ->
                     val discussion = pagingItems[index]
                     discussion?.let { item ->
-                        DiscussionItem(item, click = {
-                            navigator.navigate(DiscussionDetailPageDestination(it.id, it.lastReadPostNumber?:0))
-                        }, tagClick = {
-                            navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
-                        }, userClick = {
-                            navigator.navigate(UserProfilePageDestination(it.username!!))
-                        })
+                        val owner = rememberViewModelStoreOwner(
+                            provider = storeProvider,
+                            key = item.id
+                        )
+                        CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
+                            val itemViewModel: DiscussionItemViewModel =
+                                koinViewModel<DiscussionItemViewModel>(key = item.id) {
+                                    parametersOf(item.id, item)
+                                }
+                            DiscussionItem(itemViewModel, click = {
+                                navigator.navigate(
+                                    DiscussionDetailPageDestination(
+                                        it.id,
+                                        it.lastReadPostNumber ?: 0
+                                    )
+                                )
+                            }, tagClick = {
+                                navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
+                            }, userClick = {
+                                navigator.navigate(UserProfilePageDestination(it.username!!))
+                            })
+                        }
                     }
                 }
                 item {
@@ -118,7 +142,7 @@ fun DiscussionListPage(
 }
 
 @Composable
-fun TagHeader(tag: TagNavArgs){
+fun TagHeader(tag: TagNavArgs) {
     Surface(color = colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
         Column {
             Row {
@@ -141,7 +165,7 @@ fun TagHeader(tag: TagNavArgs){
                     style = textStyle,
                 )
             }
-            tag.description?.let{
+            tag.description?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyLarge,
@@ -155,7 +179,7 @@ fun TagHeader(tag: TagNavArgs){
 
 @Composable
 @Preview
-fun TagHeaderPreview(){
+fun TagHeaderPreview() {
     TagHeader(TagNavArgs.from(Tag().apply {
         name = "Windows"
         slug = "ai"

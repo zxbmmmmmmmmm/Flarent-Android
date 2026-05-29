@@ -39,6 +39,7 @@ import com.bettafish.flarent.ui.pages.tagList.TagListViewModel
 import com.bettafish.flarent.ui.pages.user.UserProfileViewModel
 import com.bettafish.flarent.ui.pages.vote.VotesViewModel
 import com.bettafish.flarent.ui.pages.welcome.WelcomeViewModel
+import com.bettafish.flarent.ui.widgets.DiscussionItemViewModel
 import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.bettafish.flarent.utils.appSettings
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -135,6 +136,7 @@ val viewModelModule = module {
     viewModel { FileViewModel(get()) }
     viewModel { (postId : String) -> PostReactionsViewModel(get(), postId) }
     viewModel { WelcomeViewModel(get(),get()) }
+    viewModel { (id:String, initDiscussion: Discussion?) -> DiscussionItemViewModel(id, initDiscussion, get()) }
     viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
     viewModel { (id:String, postId:String? , content:String?) -> ReplyViewModel(discussionId = id, postId = postId, initContent = content, get()) }
     viewModel { (id:String) -> VotesViewModel(get(), id) }

@@ -59,6 +59,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
+import com.bettafish.flarent.ui.widgets.DiscussionItemViewModel
 import com.bettafish.flarent.ui.widgets.ProfileHeader
 import com.bettafish.flarent.ui.widgets.post.PostItem
 import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
@@ -199,18 +200,28 @@ fun UserProfilePage(userName: String,
 
                             }
                             1 -> PagingDataList(discussions) { discussion ->
-                                DiscussionItem(discussion,
-                                    userClick = {
-                                        if(it.id != user?.id){
-                                            navigator.navigate(UserProfilePageDestination(it.username!!))
-                                        }
-                                    },
-                                    tagClick = {
-                                        navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
-                                    },
-                                    click = {
-                                        navigator.navigate(DiscussionDetailPageDestination(it.id))
-                                    })
+                                val owner = rememberViewModelStoreOwner(
+                                    provider = storeProvider,
+                                    key = discussion.id
+                                )
+
+                                CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
+                                    val itemViewModel: DiscussionItemViewModel = koinViewModel<DiscussionItemViewModel>(key = discussion.id) {
+                                        parametersOf(discussion.id, discussion)
+                                    }
+                                    DiscussionItem(itemViewModel,
+                                        userClick = {
+                                            if(it.id != user?.id){
+                                                navigator.navigate(UserProfilePageDestination(it.username!!))
+                                            }
+                                        },
+                                        tagClick = {
+                                            navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
+                                        },
+                                        click = {
+                                            navigator.navigate(DiscussionDetailPageDestination(it.id))
+                                        })
+                                }
                             }
                         }
                     }
