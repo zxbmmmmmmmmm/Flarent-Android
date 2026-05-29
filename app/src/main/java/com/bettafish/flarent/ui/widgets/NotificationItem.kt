@@ -2,13 +2,10 @@ package com.bettafish.flarent.ui.widgets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalGridApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Grid
 import androidx.compose.foundation.layout.GridTrackSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +18,6 @@ import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.AddReaction
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material.icons.filled.Reply
 import androidx.compose.material.icons.filled.ThumbsUpDown
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -34,29 +30,53 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.PlatformTextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.Notification
 import com.bettafish.flarent.models.Post
-import com.bettafish.flarent.models.Reaction
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.utils.relativeTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.time.ZonedDateTime
-import javax.annotation.meta.When
+
+private const val LongWordWrapChunkSize = 16
+private const val ZeroWidthSpace = "\u200B"
+
+private fun String.withWrapOpportunities(chunkSize: Int = LongWordWrapChunkSize): String {
+    if (length <= chunkSize) return this
+
+    val builder = StringBuilder(length + length / chunkSize)
+    var consecutiveNonWhitespace = 0
+
+    codePoints().forEach { codePoint ->
+        builder.appendCodePoint(codePoint)
+
+        if (Character.isWhitespace(codePoint)) {
+            consecutiveNonWhitespace = 0
+        } else {
+            consecutiveNonWhitespace++
+            if (consecutiveNonWhitespace >= chunkSize) {
+                builder.append(ZeroWidthSpace)
+                consecutiveNonWhitespace = 0
+            }
+        }
+    }
+
+    return builder.toString()
+}
 
 @OptIn(ExperimentalGridApi::class)
 @Composable
-fun NotificationItem(notification: Notification,
-                     modifier: Modifier = Modifier,
-                     userClick : (User) -> Unit = {},
-                     postClick: (Post) -> Unit = {}){
+fun NotificationItem(
+    notification: Notification,
+    modifier: Modifier = Modifier,
+    userClick: (User) -> Unit = {},
+    postClick: (Post) -> Unit = {}
+) {
     Grid(config = {
-        repeat(3){
+        repeat(3) {
             row(GridTrackSize.Auto)
         }
         column(GridTrackSize.Auto)
@@ -67,31 +87,39 @@ fun NotificationItem(notification: Notification,
         Avatar(
             avatarUrl = notification.fromUser?.avatarUrl,
             name = notification.fromUser?.displayName,
-            modifier = Modifier.height(28.dp).width(28.dp).clip(CircleShape)
-                .clickable{userClick(notification.fromUser!!)},
+            modifier = Modifier
+                .height(28.dp)
+                .width(28.dp)
+                .clip(CircleShape)
+                .clickable { userClick(notification.fromUser!!) },
         )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp),
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxHeight()) {
+            modifier = Modifier.fillMaxHeight()
+        ) {
 
             Text(
                 text = notification.fromUser?.displayName ?: notification.fromUser?.username ?: "",
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .clickable{userClick(notification.fromUser!!)})
+                    .clickable { userClick(notification.fromUser!!) })
             Text(
                 text = notification.createdAt?.relativeTime ?: "",
-                color = MaterialTheme.colorScheme.outline)
+                color = MaterialTheme.colorScheme.outline
+            )
         }
-        FlowRow (horizontalArrangement = Arrangement.spacedBy(8.dp),
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.gridItem(row = 2, column = 2)){
+            modifier = Modifier.gridItem(row = 2, column = 2)
+        ) {
             val density = LocalDensity.current
             val textStyle = MaterialTheme.typography.bodyLarge
             val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
             Icon(
-                when(notification.contentType){
+                when (notification.contentType) {
                     "postMentioned" -> Icons.AutoMirrored.Filled.Reply
                     "vote" -> Icons.Default.ThumbsUpDown
                     "postReacted" -> Icons.Default.AddReaction
@@ -99,47 +127,52 @@ fun NotificationItem(notification: Notification,
                     else -> Icons.Default.Notifications
                 },
                 null,
-                modifier = Modifier.height(textHeightDp  * 0.8F).align(Alignment.CenterVertically)
+                modifier = Modifier
+                    .height(textHeightDp * 0.8F)
+                    .align(Alignment.CenterVertically)
             )
             CompositionLocalProvider(
                 LocalTextStyle provides textStyle
             ) {
-                when(notification.contentType){
+                when (notification.contentType) {
                     "postMentioned" -> Text("回复了你")
-                    "vote" -> Text(if(notification.content == 1)"赞同了你的帖子" else "反对了你的帖子")
+                    "vote" -> Text(if (notification.content == 1) "赞同了你的帖子" else "反对了你的帖子")
                     "postReacted" -> {
-                        val jsonObject: JsonObject = Json.decodeFromString(notification.content.toString())
-                        val emoji = if(jsonObject["type"].toString() == "\"emoji\""){
-                            val identifier =  jsonObject["identifier"].toString()
+                        val jsonObject: JsonObject =
+                            Json.decodeFromString(notification.content.toString())
+                        val emoji = if (jsonObject["type"].toString() == "\"emoji\"") {
+                            val identifier = jsonObject["identifier"].toString()
                             getEmoji(identifier.substring(1, identifier.length - 1))
-                        }
-                        else{
-                            jsonObject["display"].toString() ?: ""
+                        } else {
+                            jsonObject["display"].toString()
                         }
                         Text(
-                            text = "戳了一个 $emoji")
+                            text = "戳了一个 $emoji"
+                        )
                     }
+
                     "newFollower" -> Text("关注了你")
                 }
             }
         }
 
-        (notification.subject as? Post)?.text?.let{
-            Surface(color = MaterialTheme.colorScheme.surfaceContainer,
-                    modifier = Modifier
-                        .gridItem(row = 3, column = 2)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable{postClick(notification.subject as Post)}) {
+        (notification.subject as? Post)?.text?.let {
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                modifier = Modifier
+                    .gridItem(row = 3, column = 2)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { postClick(notification.subject as Post) }) {
                 Text(
-                    it,
+                    it.withWrapOpportunities(),
                     color = MaterialTheme.colorScheme.outline,
+                    softWrap = true,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp,8.dp)
+                    modifier = Modifier.padding(16.dp, 8.dp)
                 )
-
             }
         }
     }
@@ -147,8 +180,8 @@ fun NotificationItem(notification: Notification,
 
 @Preview(showBackground = true)
 @Composable
-fun NotificationItemPreview(){
-    NotificationItem(notification = Notification().apply{
+fun NotificationItemPreview() {
+    NotificationItem(notification = Notification().apply {
         id = "1"
         contentType = "postMentioned"
         content = "This is a notification content"
@@ -161,14 +194,16 @@ fun NotificationItemPreview(){
         }
         subject = Post().apply {
             id = "1"
-            text = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+            text =
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
         }
     }, modifier = Modifier.padding(12.dp))
 }
+
 @Preview(showBackground = true)
 @Composable
-fun NotificationItemPreview2(){
-    NotificationItem(notification = Notification().apply{
+fun NotificationItemPreview2() {
+    NotificationItem(notification = Notification().apply {
         id = "1"
         contentType = "postMentioned"
         content = "This is a notification content"
@@ -181,7 +216,7 @@ fun NotificationItemPreview2(){
         }
         subject = Post().apply {
             id = "1"
-            text = "Lorem ipsum dolor sit"
+            text = "SupercalifragilisticexpialidociousSupercalifragilisticexpialidocious"
         }
     }, modifier = Modifier.padding(12.dp))
 }
