@@ -52,17 +52,19 @@ import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.theme.FlarentTheme
+import com.bettafish.flarent.utils.DiscussionLastReadPostNumberStore
 import com.bettafish.flarent.utils.relativeTime
 import java.time.ZonedDateTime
 
 private val imageWidth = 40.dp
+
 @Composable
 fun DiscussionItem(
     viewModel: DiscussionItemViewModel,
     modifier: Modifier = Modifier,
-    click : (Discussion) -> Unit = {},
-    tagClick : (Tag) -> Unit = {},
-    userClick : (User) -> Unit = {}
+    click: (Discussion) -> Unit = {},
+    tagClick: (Tag) -> Unit = {},
+    userClick: (User) -> Unit = {}
 ) {
     val discussion = viewModel.discussion.collectAsState()
 
@@ -81,18 +83,27 @@ fun DiscussionItem(
 private fun DiscussionItem(
     discussion: Discussion,
     modifier: Modifier = Modifier,
-    click : (Discussion) -> Unit = {},
-    tagClick : (Tag) -> Unit = {},
-    userClick : (User) -> Unit = {}
-){
-
+    click: (Discussion) -> Unit = {},
+    tagClick: (Tag) -> Unit = {},
+    userClick: (User) -> Unit = {}
+) {
+    val localLastReadPostNumber = DiscussionLastReadPostNumberStore
+        .observe(discussion.id)
+        .collectAsState(initial = null)
+    val displayedLastReadPostNumber = localLastReadPostNumber.value ?: discussion.lastReadPostNumber
+    val hasUnreadPosts =
+        displayedLastReadPostNumber != null && discussion.lastPostNumber!! - displayedLastReadPostNumber > 0
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { click(discussion) }
+            .clickable {
+                displayedLastReadPostNumber?.let { discussion.lastReadPostNumber = it }
+                click(discussion)
+            }
             .padding(16.dp)
-            .alpha(if(discussion.isHidden == true) 0.38f else 1f),) {
-        Box{
+            .alpha(if (discussion.isHidden == true) 0.38f else 1f),
+    ) {
+        Box {
             discussion.user?.let {
                 Avatar(
                     avatarUrl = it.avatarUrl,
@@ -104,34 +115,38 @@ private fun DiscussionItem(
                         .clickable { userClick(it) }
                 )
             }
-            if(discussion.lastReadPostNumber != null && discussion.lastPostNumber!! - discussion.lastReadPostNumber!! > 0){
-                val badgeText = discussion.lastPostNumber!! - discussion.lastReadPostNumber!!
+            if (hasUnreadPosts) {
+                val badgeText = discussion.lastPostNumber!! - displayedLastReadPostNumber
                 Badge(
                     containerColor = colorScheme.primary,
-                    modifier = Modifier.align(Alignment.TopEnd)){
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
                     Text(badgeText.toString())
                 }
             }
         }
         val density = LocalDensity.current
 
-        Column(modifier = Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.SpaceEvenly) {
+        Column(
+            modifier = Modifier.padding(start = 12.dp),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
             discussion.title?.let {
                 val annotatedString = buildAnnotatedString {
-                    if(discussion.isSticky == true){
+                    if (discussion.isSticky == true) {
                         appendInlineContent("pinned")
                     }
-                    if(discussion.frontpage == true){
+                    if (discussion.frontpage == true) {
                         appendInlineContent("front")
                     }
 
-                    if(discussion.isLocked == true){
+                    if (discussion.isLocked == true) {
                         appendInlineContent("locked")
                     }
-                    if(discussion.hasBestAnswer == true){
+                    if (discussion.hasBestAnswer == true) {
                         appendInlineContent("hasBestAnswer")
                     }
-                    if(discussion.isHidden == true){
+                    if (discussion.isHidden == true) {
                         appendInlineContent("hidden")
                     }
                     append(it)
@@ -139,10 +154,16 @@ private fun DiscussionItem(
                 val textMeasurer = androidx.compose.ui.text.rememberTextMeasurer()
                 val badgeStyle = MaterialTheme.typography.bodySmall
 
-                fun getAutoInlineContent(text: String, containerColor: Color, contentColor: Color): InlineTextContent {
+                fun getAutoInlineContent(
+                    text: String,
+                    containerColor: Color,
+                    contentColor: Color
+                ): InlineTextContent {
                     val textLayoutResult = textMeasurer.measure(text, badgeStyle)
-                    val width = with(density) { (textLayoutResult.size.width.toDp() + 20.dp).toSp() }
-                    val height = with(density) { (textLayoutResult.size.height.toDp() + 4.dp).toSp() }
+                    val width =
+                        with(density) { (textLayoutResult.size.width.toDp() + 20.dp).toSp() }
+                    val height =
+                        with(density) { (textLayoutResult.size.height.toDp() + 4.dp).toSp() }
 
                     return InlineTextContent(
                         Placeholder(
@@ -156,14 +177,39 @@ private fun DiscussionItem(
                 }
 
                 val inlineContent = mapOf(
-                    "pinned" to getAutoInlineContent("置顶", colorScheme.secondaryContainer, colorScheme.secondary),
-                    "front" to getAutoInlineContent("精", colorScheme.errorContainer, colorScheme.onErrorContainer),
-                    "locked" to getAutoInlineContent("已锁定", colorScheme.surfaceContainerHighest, colorScheme.onSurface),
-                    "hasBestAnswer" to getAutoInlineContent("已有最佳回复", colorScheme.surfaceContainerHighest, colorScheme.onSurface),
-                    "hidden" to getAutoInlineContent("隐藏", colorScheme.surfaceContainerHighest, colorScheme.onSurface)
+                    "pinned" to getAutoInlineContent(
+                        "置顶",
+                        colorScheme.secondaryContainer,
+                        colorScheme.secondary
+                    ),
+                    "front" to getAutoInlineContent(
+                        "精",
+                        colorScheme.errorContainer,
+                        colorScheme.onErrorContainer
+                    ),
+                    "locked" to getAutoInlineContent(
+                        "已锁定",
+                        colorScheme.surfaceContainerHighest,
+                        colorScheme.onSurface
+                    ),
+                    "hasBestAnswer" to getAutoInlineContent(
+                        "已有最佳回复",
+                        colorScheme.surfaceContainerHighest,
+                        colorScheme.onSurface
+                    ),
+                    "hidden" to getAutoInlineContent(
+                        "隐藏",
+                        colorScheme.surfaceContainerHighest,
+                        colorScheme.onSurface
+                    )
                 )
-
-                Text(text = annotatedString, inlineContent = inlineContent,)
+                Text(
+                    text = annotatedString,
+                    inlineContent = inlineContent,
+                    style = if (hasUnreadPosts)
+                        MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                    else MaterialTheme.typography.bodyLarge,
+                )
             }
 
             val textStyle = MaterialTheme.typography.bodyMedium
@@ -192,20 +238,29 @@ private fun DiscussionItem(
                     discussion.lastPostedUser?.displayName?.let {
                         Text(
                             text = it,
-                            style = textStyle.copy(platformStyle = PlatformTextStyle(includeFontPadding = false)),
+                            style = textStyle.copy(
+                                platformStyle = PlatformTextStyle(
+                                    includeFontPadding = false
+                                )
+                            ),
                             color = colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f, fill = false)
-                                .clickable{ userClick(discussion.lastPostedUser!!) }
+                            modifier = Modifier
+                                .weight(1f, fill = false)
+                                .clickable { userClick(discussion.lastPostedUser!!) }
                         )
                     }
                     discussion.lastPostedAt?.let { lastPostedAt ->
-                        val displayTime = remember(lastPostedAt) { (lastPostedAt.relativeTime)}
+                        val displayTime = remember(lastPostedAt) { (lastPostedAt.relativeTime) }
                         Text(
                             text = displayTime,
                             modifier = Modifier.padding(start = 8.dp),
-                            style = textStyle.copy(platformStyle = PlatformTextStyle(includeFontPadding = false)),
+                            style = textStyle.copy(
+                                platformStyle = PlatformTextStyle(
+                                    includeFontPadding = false
+                                )
+                            ),
                             color = colorScheme.outline
                         )
                     }
@@ -214,10 +269,15 @@ private fun DiscussionItem(
                 // 触发换行
                 Spacer(modifier = Modifier.weight(1f, fill = true))
                 Row {
-                    discussion.lastPostNumber?.let{
+                    discussion.lastPostNumber?.let {
                         Row {
                             val bg = colorScheme.surfaceContainerHighest
-                            Canvas(modifier = modifier.width(3.dp).height(4.dp).align(Alignment.Bottom)) {
+                            Canvas(
+                                modifier = modifier
+                                    .width(3.dp)
+                                    .height(4.dp)
+                                    .align(Alignment.Bottom)
+                            ) {
                                 val path = Path().apply {
                                     moveTo(0f, size.height)
                                     lineTo(size.width, 0f)
@@ -226,24 +286,27 @@ private fun DiscussionItem(
                                 }
                                 drawPath(path, color = bg)
                             }
-                            Surface (
+                            Surface(
                                 color = bg,
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
-                                    .clip(RoundedCornerShape(4.dp,4.dp,4.dp,0.dp))
+                                    .clip(RoundedCornerShape(4.dp, 4.dp, 4.dp, 0.dp))
                             )
                             {
-                                if(it / 10 > 0){
-                                    Text(text = it.toString(),
-                                        modifier = Modifier.padding(4.dp,1.dp),
+                                if (it / 10 > 0) {
+                                    Text(
+                                        text = it.toString(),
+                                        modifier = Modifier.padding(4.dp, 1.dp),
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.SemiBold)
-                                }
-                                else{
-                                    Text(text = it.toString(),
-                                        modifier = Modifier.padding(5.dp,1.dp),
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                } else {
+                                    Text(
+                                        text = it.toString(),
+                                        modifier = Modifier.padding(5.dp, 1.dp),
                                         style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.SemiBold)
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                 }
                             }
                         }
@@ -254,7 +317,8 @@ private fun DiscussionItem(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .align(Alignment.CenterVertically)
-                                .height(IntrinsicSize.Min).padding(start = 4.dp)
+                                .height(IntrinsicSize.Min)
+                                .padding(start = 4.dp)
                         ) {
                             TagList(it, click = tagClick)
                         }
@@ -270,9 +334,11 @@ private fun DiscussionItem(
 }
 
 @Composable
-fun InlineTag(text: String,
-              containerColor: Color = colorScheme.surfaceContainerHighest,
-              contentColor: Color = colorScheme.onSurface){
+fun InlineTag(
+    text: String,
+    containerColor: Color = colorScheme.surfaceContainerHighest,
+    contentColor: Color = colorScheme.onSurface
+) {
     Box(
         modifier = Modifier
             .padding(end = 6.dp)
@@ -289,6 +355,7 @@ fun InlineTag(text: String,
 @Composable
 fun DiscussionItemPreview() {
     val discussion: Discussion = Discussion().apply {
+        id = "discussion-1"
         title = "Discussion Title"
         slug = "discussion-slug"
         commentCount = 10

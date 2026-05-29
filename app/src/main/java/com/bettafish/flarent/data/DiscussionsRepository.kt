@@ -7,4 +7,5 @@ import com.bettafish.flarent.models.request.DiscussionRequest
 interface DiscussionsRepository {
     suspend fun fetchDiscussionList(request: DiscussionListRequest): List<Discussion>
     suspend fun fetchDiscussion(request: DiscussionRequest): Discussion
+    suspend fun updateLastReadPostNumber(id: String, lastReadPostNumber: Int)
 }

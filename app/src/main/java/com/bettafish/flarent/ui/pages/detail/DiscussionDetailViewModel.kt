@@ -72,9 +72,6 @@ class DiscussionDetailViewModel(
         } catch (e: Exception) {
         }
     }
-
-
-
     fun jumpToPosition(position: Int) {
         targetPosition = position
         _scrollTarget.value = position
@@ -111,7 +108,9 @@ class DiscussionDetailViewModel(
                 initialKey = startKey,
                 pagingSourceFactory = {
                     DiscussionDetailPostListDataSource(
+                        discussionId = discussion.id,
                         postsRepository = postsRepository,
+                        discussionsRepository = discussionsRepository,
                         posts = discussion.posts!!
                     ).also { currentPagingSource = it }
                 }

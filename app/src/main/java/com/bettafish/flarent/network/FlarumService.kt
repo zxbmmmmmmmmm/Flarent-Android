@@ -35,6 +35,11 @@ interface FlarumService {
         @QueryMap options: Map<String, String>
     ): Discussion
 
+    @PATCH("api/discussion/{id}")
+    suspend fun patchDiscussion(
+        @Path("id") id: String,
+        @Body discussion: Discussion
+    ) : Discussion?
     @GET("api/tags")
     suspend fun getTags(
         @Query("include") include: String? = "children,lastPostedDiscussion,parent"
