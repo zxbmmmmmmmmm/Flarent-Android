@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.pages.detail
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -17,6 +18,7 @@ import com.bettafish.flarent.utils.SuspendCommand
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -111,6 +113,7 @@ class DiscussionDetailViewModel(
                         discussionId = discussion.id,
                         postsRepository = postsRepository,
                         discussionsRepository = discussionsRepository,
+                        coroutineScope = viewModelScope,
                         posts = discussion.posts!!
                     ).also { currentPagingSource = it }
                 }

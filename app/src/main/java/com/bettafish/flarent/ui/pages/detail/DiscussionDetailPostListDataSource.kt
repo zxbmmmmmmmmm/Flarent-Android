@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.pages.detail
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.bettafish.flarent.data.DiscussionsRepository
@@ -8,6 +9,12 @@ import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.utils.DiscussionLastReadPostNumberStore
 import com.bettafish.flarent.utils.HtmlConverter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 
@@ -15,6 +22,7 @@ class DiscussionDetailPostListDataSource(
     val discussionId: String,
     val postsRepository: PostsRepository,
     val discussionsRepository: DiscussionsRepository,
+    val coroutineScope: CoroutineScope,
     val posts: List<Post>) : PagingSource<Int, Post>() {
 
     override val jumpingSupported = true
@@ -59,12 +67,16 @@ class DiscussionDetailPostListDataSource(
             items.mapNotNull(Post::number).maxOrNull()?.let { maxPostNumber ->
                 val resolvedLastReadPostNumber =
                     DiscussionLastReadPostNumberStore.update(discussionId, maxPostNumber)
-                runCatching {
-                    discussionsRepository.updateLastReadPostNumber(
-                        discussionId,
-                        resolvedLastReadPostNumber
-                    )
+                coroutineScope.launch {
+                    runCatching {
+                        discussionsRepository.updateLastReadPostNumber(
+                            discussionId,
+                            resolvedLastReadPostNumber
+                        )
+                    }
+
                 }
+
             }
             // Next Key: Only if we haven't reached the end of the list
             val nextKey = if (actualEnd >= posts.size) null else offset + loadSize
