@@ -68,6 +68,9 @@ class Post : Section
     @Contextual
     var editedAt: ZonedDateTime? = null
 
+    @JsonProperty("fof-necrobumping")
+    var necrobumping: Boolean? = null
+
     @JsonProperty("isHidden")
     var isHidden: Boolean? = null
 

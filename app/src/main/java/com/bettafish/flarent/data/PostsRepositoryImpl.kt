@@ -14,6 +14,7 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
         val post = Post().apply {
             id = String()
             this.content = content
+            necrobumping = true
             discussion = Discussion().apply { id = discussionId } }
         return service.sendPost(post)
     }
