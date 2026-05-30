@@ -34,7 +34,7 @@ import com.guru.fontawesomecomposelib.FaIcon
 import java.time.ZonedDateTime
 
 @Composable
-fun ProfileHeader(user: User, modifier: Modifier = Modifier){
+fun ProfileHeader(user: User, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         val imagePreviewer = LocalImagePreviewer.current
         Avatar(
@@ -44,9 +44,9 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
                 .width(64.dp)
                 .height(64.dp)
                 .clip(CircleShape)
-                .clickable{
+                .clickable {
                     user.avatarUrl?.let {
-                        imagePreviewer(listOf(it),0)
+                        imagePreviewer(listOf(it), 0)
                     }
                 }
         )
@@ -68,7 +68,10 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
                 if (isOnline) {
                     Surface(
                         shape = CircleShape,
-                        modifier = Modifier.padding(end = 4.dp).height(8.dp).width(8.dp)
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .height(8.dp)
+                            .width(8.dp)
                             .align(Alignment.CenterVertically),
                         color = "#00E600".toComposeColor()!!
                     ) { }
@@ -92,15 +95,18 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
             }
         }
 
-        if(user.groups?.size != 0){
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (user.groups?.size != 0) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 user.groups!!.forEach {
                     GroupBadge(it)
                 }
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)){
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             val baseTextStyle = MaterialTheme.typography.bodyMedium.copy(
                 platformStyle = androidx.compose.ui.text.PlatformTextStyle(
                     includeFontPadding = false
@@ -133,15 +139,23 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
 
             StatItem("粉丝", user.followerCount.toString())
 
-            VerticalDivider(modifier = Modifier.height(dividerHeight).align(Alignment.CenterVertically))
+            VerticalDivider(
+                modifier = Modifier
+                    .height(dividerHeight)
+                    .align(Alignment.CenterVertically)
+            )
 
             StatItem("关注", user.followingCount.toString())
 
-            VerticalDivider(modifier = Modifier.height(dividerHeight).align(Alignment.CenterVertically))
+            VerticalDivider(
+                modifier = Modifier
+                    .height(dividerHeight)
+                    .align(Alignment.CenterVertically)
+            )
 
             StatItem("获赞", user.points.toString())
         }
-        if(!user.bio.isNullOrEmpty()){
+        if (!user.bio.isNullOrEmpty()) {
             Text(user.bio!!)
         }
     }
@@ -149,23 +163,26 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier){
 
 
 @Composable
-fun GroupBadge(group: Group, modifier: Modifier = Modifier){
-    val bgColor = remember { group.color?.toComposeColor() } ?: MaterialTheme.colorScheme.secondaryContainer
+fun GroupBadge(group: Group, modifier: Modifier = Modifier) {
+    val bgColor =
+        remember { group.color?.toComposeColor() } ?: MaterialTheme.colorScheme.secondaryContainer
     val contentColor = remember { if (bgColor.luminance() < 0.5f) Color.White else Color.Black }
     Surface(
         color = bgColor,
         shape = CircleShape,
         modifier = modifier
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)){
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+        ) {
             val textStyle = MaterialTheme.typography.labelMedium
             group.icon?.let {
                 val density = LocalDensity.current
                 val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
                 val icon = it.toFaIcon()
-                if(icon != null){
+                if (icon != null) {
                     FaIcon(icon, size = textHeightDp, tint = contentColor)
                 }
             }
@@ -176,11 +193,12 @@ fun GroupBadge(group: Group, modifier: Modifier = Modifier){
                 color = contentColor
             )
         }
-    }}
+    }
+}
 
 @Preview
 @Composable
-fun GroupBadgePreview(){
+fun GroupBadgePreview() {
     GroupBadge(Group().apply {
         nameSingular = "Admin"
         color = "#3A75EE"
@@ -191,7 +209,7 @@ fun GroupBadgePreview(){
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileHeaderPreview(){
+fun ProfileHeaderPreview() {
     ProfileHeader(User().apply {
         displayName = "Betta_Fish"
         username = "zxbmmmmmmmmm"
@@ -204,11 +222,11 @@ fun ProfileHeaderPreview(){
         bio = "这个人很懒，什么都没有写"
         groups = listOf(
             Group().apply {
-            nameSingular = "Admin"
-            color = "#3A75EE"
-            icon = "fas fa-wrench"
-            isHidden = 0
-        },
+                nameSingular = "Admin"
+                color = "#3A75EE"
+                icon = "fas fa-wrench"
+                isHidden = 0
+            },
             Group().apply {
                 nameSingular = "User"
                 color = "#763D99"

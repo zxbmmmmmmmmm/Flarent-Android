@@ -24,10 +24,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -76,10 +75,12 @@ import org.koin.core.parameter.parametersOf
 @Composable
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-fun UserProfilePage(userName: String,
-                    navigator: DestinationsNavigator,
-                    modifier: Modifier = Modifier,
-                    viewModel: UserProfileViewModel = koinViewModel{ parametersOf(userName) }){
+fun UserProfilePage(
+    userName: String,
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
+    viewModel: UserProfileViewModel = koinViewModel { parametersOf(userName) }
+) {
     val user by viewModel.user.collectAsState()
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val discussions = viewModel.discussions.collectAsLazyPagingItems()
@@ -103,7 +104,7 @@ fun UserProfilePage(userName: String,
                         visible = showTitle,
                         enter = fadeIn(),
                         exit = fadeOut()
-                    )  {
+                    ) {
                         Text(user?.displayName ?: userName)
                     }
                 },
@@ -112,13 +113,16 @@ fun UserProfilePage(userName: String,
             )
 
         }
-    ){  padding ->
+    ) { padding ->
         BoxWithConstraints(
-            modifier = Modifier.padding(padding)){
+            modifier = Modifier.padding(padding)
+        ) {
             val screenHeight = maxHeight
-            Column(modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(state = scrollState)){
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = scrollState)
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,10 +131,15 @@ fun UserProfilePage(userName: String,
                         }
                 ) {
                     user?.let {
-                        ProfileHeader(it, modifier = Modifier.background(headerColor).padding(16.dp))
+                        ProfileHeader(
+                            it,
+                            modifier = Modifier
+                                .background(headerColor)
+                                .padding(16.dp)
+                        )
                     }
                 }
-                Column(modifier = Modifier.height(screenHeight)){
+                Column(modifier = Modifier.height(screenHeight)) {
                     val tabs = listOf(
                         "回复 ${user?.commentCount ?: ""}",
                         "主题 ${user?.discussionCount ?: ""}"
@@ -138,26 +147,28 @@ fun UserProfilePage(userName: String,
                     val coroutineScope = rememberCoroutineScope()
                     val pagerState = rememberPagerState { tabs.size }
 
-                    TabRow(
-                        selectedTabIndex = pagerState.currentPage,
-                        indicator = { tabPositions ->
+                    SecondaryTabRow(
+                        pagerState.currentPage,
+                        Modifier,
+                        headerColor,
+                        TabRowDefaults.primaryContentColor,
+                        {
                             TabRowDefaults.SecondaryIndicator(
-                                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                                Modifier.tabIndicatorOffset(pagerState.currentPage),
                             )
                         },
-                        containerColor = headerColor,
-                        divider = {}
-                    ) {
-                        tabs.forEachIndexed { index, title ->
-                            Tab(
-                                selected = pagerState.currentPage == index,
-                                onClick = {
-                                    coroutineScope.launch { pagerState.animateScrollToPage(index) }
-                                },
-                                text = { Text(title, fontSize = 14.sp) }
-                            )
-                        }
-                    }
+                        {},
+                        {
+                            tabs.forEachIndexed { index, title ->
+                                Tab(
+                                    selected = pagerState.currentPage == index,
+                                    onClick = {
+                                        coroutineScope.launch { pagerState.animateScrollToPage(index) }
+                                    },
+                                    text = { Text(title, fontSize = 14.sp) }
+                                )
+                            }
+                        })
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier
@@ -180,25 +191,50 @@ fun UserProfilePage(userName: String,
                         when (page) {
                             0 -> PagingDataList(posts) { post ->
                                 post.discussion?.title?.let {
-                                    Text(it,
+                                    Text(
+                                        it,
                                         color = MaterialTheme.colorScheme.secondary,
-                                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                                            .clickable{
-                                                navigator.navigate(DiscussionDetailPageDestination(post.discussion!!.id, post.discussion?.lastReadPostNumber?:0))
+                                        modifier = Modifier
+                                            .padding(
+                                                start = 16.dp,
+                                                end = 16.dp,
+                                                top = 16.dp
+                                            )
+                                            .clickable {
+                                                navigator.navigate(
+                                                    DiscussionDetailPageDestination(
+                                                        post.discussion!!.id,
+                                                        post.discussion?.lastReadPostNumber ?: 0
+                                                    )
+                                                )
                                             })
                                 }
                                 val owner = rememberViewModelStoreOwner(
                                     provider = storeProvider,
-                                    key = post.id)
+                                    key = post.id
+                                )
 
                                 CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
-                                    val viewModel: PostItemViewModel = koinViewModel<PostItemViewModel>( key = post.id ){ parametersOf(post.id, post) }
-                                    PostItem(viewModel,
+                                    val viewModel: PostItemViewModel =
+                                        koinViewModel<PostItemViewModel>(key = post.id) {
+                                            parametersOf(
+                                                post.id,
+                                                post
+                                            )
+                                        }
+                                    PostItem(
+                                        viewModel,
                                         navigator,
-                                        modifier = Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp))
+                                        modifier = Modifier.padding(
+                                            start = 16.dp,
+                                            end = 16.dp,
+                                            bottom = 16.dp
+                                        )
+                                    )
                                 }
 
                             }
+
                             1 -> PagingDataList(discussions) { discussion ->
                                 val owner = rememberViewModelStoreOwner(
                                     provider = storeProvider,
@@ -206,17 +242,23 @@ fun UserProfilePage(userName: String,
                                 )
 
                                 CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
-                                    val itemViewModel: DiscussionItemViewModel = koinViewModel<DiscussionItemViewModel>(key = discussion.id) {
-                                        parametersOf(discussion.id, discussion)
-                                    }
-                                    DiscussionItem(itemViewModel,
+                                    val itemViewModel: DiscussionItemViewModel =
+                                        koinViewModel<DiscussionItemViewModel>(key = discussion.id) {
+                                            parametersOf(discussion.id, discussion)
+                                        }
+                                    DiscussionItem(
+                                        itemViewModel,
                                         userClick = {
-                                            if(it.id != user?.id){
+                                            if (it.id != user?.id) {
                                                 navigator.navigate(UserProfilePageDestination(it.username!!))
                                             }
                                         },
                                         tagClick = {
-                                            navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
+                                            navigator.navigate(
+                                                DiscussionListPageDestination(
+                                                    TagNavArgs.from(it)
+                                                )
+                                            )
                                         },
                                         click = {
                                             navigator.navigate(DiscussionDetailPageDestination(it.id))
@@ -245,8 +287,17 @@ fun <T : Any> PagingDataList(
         items.apply {
             when {
                 loadState.refresh is LoadState.Loading -> {
-                    item { Box(Modifier.fillParentMaxSize()) { CircularProgressIndicator(Modifier.align(Alignment.Center)) } }
+                    item {
+                        Box(Modifier.fillParentMaxSize()) {
+                            CircularProgressIndicator(
+                                Modifier.align(
+                                    Alignment.Center
+                                )
+                            )
+                        }
+                    }
                 }
+
                 loadState.append is LoadState.Loading -> {
                     item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
                 }

@@ -20,9 +20,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -73,19 +75,30 @@ fun VotesBottomSheet(postId: String,
             ) { 2 }
             val tabs = listOf("赞同 ${upvotersState.value?.size ?: 0}", "反对 ${downvotersState.value?.size ?: 0}")
             Column(modifier = Modifier.fillMaxSize()) {
-                TabRow(selectedTabIndex = pagerState.currentPage) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = { Text(title) }
+                SecondaryTabRow(
+                    pagerState.currentPage,
+                    Modifier,
+                    TabRowDefaults.primaryContainerColor,
+                    TabRowDefaults.primaryContentColor,
+                    @Composable {
+                        TabRowDefaults.SecondaryIndicator(
+                            Modifier.tabIndicatorOffset(pagerState.currentPage)
                         )
-                    }
-                }
+                    },
+                    @Composable { HorizontalDivider() },
+                    {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                                text = { Text(title) }
+                            )
+                        }
+                    })
 
                 HorizontalPager(
                     state = pagerState,
