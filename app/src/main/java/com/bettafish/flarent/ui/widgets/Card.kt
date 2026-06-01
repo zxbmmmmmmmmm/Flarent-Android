@@ -29,6 +29,7 @@ fun Card(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
+    onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Surface(
@@ -36,6 +37,7 @@ fun Card(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
+            .clickable { onClick() }
     ) {
         Box(modifier = Modifier.padding(16.dp)) {
             content()

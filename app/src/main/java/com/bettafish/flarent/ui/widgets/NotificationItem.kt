@@ -60,7 +60,8 @@ fun NotificationItem(
 ) {
     Card(
         shape = shape,
-        modifier = modifier.clickable { onClick() },
+        onClick = { onClick() },
+        modifier = modifier
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

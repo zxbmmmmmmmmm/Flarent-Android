@@ -1,6 +1,5 @@
 package com.bettafish.flarent.ui.pages.notification
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -31,38 +29,59 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 
 private const val DefaultNotificationGroupKey = "__default__"
-private const val DefaultNotificationGroupTitle = "其他通知"
 
 private data class NotificationGroup(
     val key: String,
     val title: String,
-    val notifications: List<IndexedValue<com.bettafish.flarent.models.Notification>>,
+    val showHeader: Boolean,
+    val notifications: MutableList<IndexedValue<com.bettafish.flarent.models.Notification>>,
 )
 
 private fun buildNotificationGroups(
     notifications: List<com.bettafish.flarent.models.Notification>
 ): List<NotificationGroup> {
-    val groupedNotifications =
-        LinkedHashMap<String, MutableList<IndexedValue<com.bettafish.flarent.models.Notification>>>()
-    val titles = LinkedHashMap<String, String>()
+    val groupedNotifications = mutableListOf<NotificationGroup>()
+    val discussionGroupIndices = LinkedHashMap<String, Int>()
+    var defaultGroupCounter = 0
+    var activeDefaultGroupIndex: Int? = null
+
     notifications.forEachIndexed { index, notification ->
         val discussion = (notification.subject as? Post)?.discussion
 
-        val key = discussion?.id ?: DefaultNotificationGroupKey
-        val title = discussion?.title?.takeIf { it.isNotBlank() } ?: DefaultNotificationGroupTitle
+        if (discussion == null) {
+            val groupIndex =
+                activeDefaultGroupIndex ?: groupedNotifications.size.also {
+                    groupedNotifications +=
+                        NotificationGroup(
+                            key = "$DefaultNotificationGroupKey-${defaultGroupCounter++}",
+                            title = "",
+                            showHeader = false,
+                            notifications = mutableListOf(),
+                        )
+                }
 
-        groupedNotifications.getOrPut(key) { mutableListOf() }
-            .add(IndexedValue(index, notification))
-        titles.putIfAbsent(key, title)
+            groupedNotifications[groupIndex].notifications += IndexedValue(index, notification)
+            activeDefaultGroupIndex = groupIndex
+            return@forEachIndexed
+        }
+
+        activeDefaultGroupIndex = null
+        val groupIndex =
+            discussionGroupIndices[discussion.id] ?: groupedNotifications.size.also {
+                groupedNotifications +=
+                    NotificationGroup(
+                        key = discussion.id,
+                            title = discussion.title?.takeIf { it.isNotBlank() } ?: "未命名讨论",
+                        showHeader = true,
+                        notifications = mutableListOf(),
+                    )
+                discussionGroupIndices[discussion.id] = it
+            }
+
+        groupedNotifications[groupIndex].notifications += IndexedValue(index, notification)
     }
 
-    return groupedNotifications.map { (key, items) ->
-        NotificationGroup(
-            key = key,
-            title = titles[key] ?: DefaultNotificationGroupTitle,
-            notifications = items,
-        )
-    }
+    return groupedNotifications
 }
 
 @Composable
@@ -104,16 +123,18 @@ fun NotificationsPage(
                 .padding(innerPadding)
         ) {
             groupedNotifications.forEach { group ->
-                item(key = "header-${group.key}") {
-                    NotificationGroupHeader(
-                        group.title,
-                        modifier = Modifier.padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 0.dp,
-                            bottom = 1.dp
+                if (group.showHeader) {
+                    item(key = "header-${group.key}") {
+                        NotificationGroupHeader(
+                            group.title,
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 0.dp,
+                                bottom = 1.dp
+                            )
                         )
-                    )
+                    }
                 }
                 items(
                     count = group.notifications.size,
@@ -122,17 +143,43 @@ fun NotificationsPage(
                     val indexedNotification = group.notifications[position]
                     val notification =
                         notifications[indexedNotification.index] ?: indexedNotification.value
+                    val isFirst = position == 0
                     val isLast = position == group.notifications.size - 1
                     NotificationItem(
                         notification = notification,
                         shape =
-                            if (isLast) RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
-                            else RoundedCornerShape(
-                                2.dp
-                            ),
+                            when {
+                                group.showHeader && isLast -> {
+                                    RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                                }
+
+                                group.showHeader -> RoundedCornerShape(2.dp)
+                                isFirst && isLast -> RoundedCornerShape(12.dp)
+                                isFirst -> RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp)
+                                isLast -> RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                                else -> RoundedCornerShape(2.dp)
+                            },
                         modifier =
-                            if (isLast) Modifier.padding(16.dp, 1.dp,16.dp,16.dp)
-                            else Modifier.padding(horizontal = 16.dp, vertical = 1.dp),
+                            when {
+                                group.showHeader && isLast -> {
+                                    Modifier.padding(16.dp, 1.dp, 16.dp, 16.dp)
+                                }
+
+                                group.showHeader -> {
+                                    Modifier.padding(horizontal = 16.dp, vertical = 1.dp)
+                                }
+
+                                isFirst && isLast -> Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                                isFirst -> {
+                                    Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 1.dp)
+                                }
+
+                                isLast -> {
+                                    Modifier.padding(start = 16.dp, end = 16.dp, top = 1.dp, bottom = 16.dp)
+                                }
+
+                                else -> Modifier.padding(horizontal = 16.dp, vertical = 1.dp)
+                            },
                         onClick = {
                             when (notification.contentType) {
                                 "postMentioned" -> {
