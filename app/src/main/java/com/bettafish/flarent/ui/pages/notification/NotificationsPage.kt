@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LinearProgressIndicator
@@ -19,6 +20,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
+import com.bettafish.flarent.ui.widgets.Card
 import com.bettafish.flarent.ui.widgets.NotificationItem
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -62,9 +64,8 @@ private fun buildNotificationGroups(
 
 @Composable
 private fun NotificationGroupHeader(title: String) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = Modifier.fillMaxWidth(),
+    Card(
+        shape = RoundedCornerShape(4.dp,4.dp,0.dp,0.dp)
     ) {
         Text(
             text = title,

@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.R
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
+import com.bettafish.flarent.ui.widgets.Card
+import com.bettafish.flarent.ui.widgets.StandardLargeCard
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 
@@ -112,47 +114,3 @@ fun ForumCard(){
     }
 }
 
-@Composable
-fun Card(shape: Shape = RoundedCornerShape(4.dp), content : @Composable () -> Unit){
-    Surface(color = MaterialTheme.colorScheme.surfaceContainer,
-        modifier = Modifier
-        .fillMaxWidth()
-        .clip(shape)) {
-        Box(modifier = Modifier.padding(16.dp)){
-            content()
-        }
-    }
-}
-
-@Composable
-fun LargeCard(shape: Shape = RoundedCornerShape(4.dp), onClick : () -> Unit = {}, content : @Composable () -> Unit){
-    Surface(color = MaterialTheme.colorScheme.surfaceContainer,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .clickable{ onClick() }) {
-        Box(modifier = Modifier.padding(16.dp)){
-            content()
-        }
-    }
-}
-
-@Composable
-fun StandardLargeCard(icon: ImageVector,
-                      title: String,
-                      description: String? = null,
-                      shape: Shape = RoundedCornerShape(4.dp),
-                      onClick : () -> Unit = {}){
-    LargeCard(shape, onClick){
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically){
-            Icon(icon, null, tint = MaterialTheme.colorScheme.primary,  modifier = Modifier.size(28.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium)
-                description?.let {
-                    Text(it, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.outline)
-                }
-            }
-            Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.outline)
-        }
-    }
-}
