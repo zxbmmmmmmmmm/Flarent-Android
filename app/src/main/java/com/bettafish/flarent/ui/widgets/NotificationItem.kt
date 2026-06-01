@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbsUpDown
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
@@ -35,6 +37,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,7 +76,6 @@ fun NotificationItem(
                         .height(40.dp)
                         .width(40.dp)
                         .clip(CircleShape)
-                        .clickable { userClick(notification.fromUser!!) },
                 )
                 Column(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -83,7 +85,6 @@ fun NotificationItem(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.Center,
                     ) {
-
                         Text(
                             text = notification.fromUser?.displayName
                                 ?: notification.fromUser?.username
@@ -92,12 +93,19 @@ fun NotificationItem(
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
-                                .clickable { userClick(notification.fromUser!!) })
+                        )
                         Text(
                             text = notification.createdAt?.relativeTime ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
+                        if(notification.isRead == false){
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(8.dp).align(Alignment.CenterVertically)
+                            ) { }
+                        }
                     }
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -112,6 +120,7 @@ fun NotificationItem(
                                 "newFollower" -> Icons.Default.PersonAdd
                                 "newPostByUser" -> Icons.Default.Person
                                 "userMentioned" -> Icons.Default.AlternateEmail
+                                "newPost" -> Icons.Default.Star
                                 else -> Icons.Default.Notifications
                             },
                             null,
@@ -150,6 +159,7 @@ fun NotificationItem(
                                 "newFollower" -> Text("关注了你")
                                 "newPostByUser" -> Text("发表回复")
                                 "userMentioned" -> Text("提及了你")
+                                "newPost" -> Text("回复了你关注的主题")
                                 else -> Text(notification.contentType.toString())
                             }
                         }

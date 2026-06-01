@@ -249,7 +249,6 @@ private fun DiscussionItem(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
                                 .weight(1f, fill = false)
-                                .clickable { userClick(discussion.lastPostedUser!!) }
                         )
                     }
                     discussion.lastPostedAt?.let { lastPostedAt ->
