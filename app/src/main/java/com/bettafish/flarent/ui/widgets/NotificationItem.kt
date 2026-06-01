@@ -16,7 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.filled.AddReaction
+import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.ThumbsUpDown
 import androidx.compose.material3.Icon
@@ -124,6 +126,8 @@ fun NotificationItem(
                     "vote" -> Icons.Default.ThumbsUpDown
                     "postReacted" -> Icons.Default.AddReaction
                     "newFollower" -> Icons.Default.PersonAdd
+                    "newPostByUser" -> Icons.Default.Person
+                    "userMentioned" -> Icons.Default.AlternateEmail
                     else -> Icons.Default.Notifications
                 },
                 null,
@@ -152,6 +156,9 @@ fun NotificationItem(
                     }
 
                     "newFollower" -> Text("关注了你")
+                    "newPostByUser" -> Text("发表回复")
+                    "userMentioned" -> Text("提及了你")
+                    else -> Text(notification.contentType.toString())
                 }
             }
         }
