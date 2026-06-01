@@ -28,7 +28,9 @@ class NotificationsDataSource(
                     {
                         it.text = HtmlConverter.convertToPlainText(it.content.toString())
                     }
+                    it.discussion
                 }
+
             }
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
