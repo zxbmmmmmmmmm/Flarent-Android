@@ -56,8 +56,8 @@ fun AboutPage() {
                     BackNavigationIcon { }
                 },
             )
-        },) {
-            innerPadding ->
+        },
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -66,18 +66,32 @@ fun AboutPage() {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             ForumCard()
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)){
-                StandardLargeCard(Icons.Default.Language, "官方网站", shape = RoundedCornerShape(12.dp,12.dp,4.dp,4.dp)){
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                StandardLargeCard(
+                    Icons.Default.Language,
+                    "官方网站",
+                    shape = RoundedCornerShape(12.dp, 12.dp, 4.dp, 4.dp)
+                ) {
 
                 }
-                StandardLargeCard(Icons.Default.Code, "源代码"){
+                StandardLargeCard(Icons.Default.Code, "源代码") {
 
                 }
-                StandardLargeCard(Icons.Default.Sync, "版本更新", "已是最新版本", shape = RoundedCornerShape(4.dp,4.dp,12.dp,12.dp)){
+                StandardLargeCard(
+                    Icons.Default.Sync,
+                    "版本更新",
+                    "已是最新版本",
+                    shape = RoundedCornerShape(4.dp, 4.dp, 12.dp, 12.dp)
+                ) {
 
                 }
             }
-            StandardLargeCard(Icons.TwoTone.Info, "基于 Flarent 开发", "GPL-3  License", shape = RoundedCornerShape(12.dp)){
+            StandardLargeCard(
+                Icons.TwoTone.Info,
+                "基于 Flarent 开发",
+                "GPL-3  License",
+                shape = RoundedCornerShape(12.dp)
+            ) {
 
             }
         }
@@ -85,30 +99,46 @@ fun AboutPage() {
 }
 
 @Composable
-fun ForumCard(){
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)){
-        Card(RoundedCornerShape(12.dp,12.dp,4.dp,4.dp)){
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
+fun ForumCard() {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Card(shape = RoundedCornerShape(12.dp, 12.dp, 4.dp, 4.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Image(
-                    painter = painterResource(id  = R.drawable.guest),
+                    painter = painterResource(id = R.drawable.guest),
                     null,
-                    modifier = Modifier.size(64.dp).clip(CircleShape))
-                Column(modifier = Modifier.align(Alignment.CenterVertically),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)){
-                    Text("wvbCommunity", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                )
+                Column(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        "wvbCommunity",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Text("@wvbtech", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
-        Card(RoundedCornerShape(4.dp,4.dp,12.dp,12.dp)){
-            Row(verticalAlignment = Alignment.CenterVertically,){
-                Row(Modifier.weight(1f),
+        Card(shape = RoundedCornerShape(4.dp, 4.dp, 12.dp, 12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    Modifier.weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically){
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text("1.1.0")
-                    Text("已是最新版本",  color = MaterialTheme.colorScheme.outline)
+                    Text("已是最新版本", color = MaterialTheme.colorScheme.outline)
                 }
-                Icon(Icons.Default.Sync, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Default.Sync,
+                    null,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

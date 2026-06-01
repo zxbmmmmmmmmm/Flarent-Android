@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -41,15 +42,17 @@ private data class NotificationGroup(
 private fun buildNotificationGroups(
     notifications: List<com.bettafish.flarent.models.Notification>
 ): List<NotificationGroup> {
-    val groupedNotifications = LinkedHashMap<String, MutableList<IndexedValue<com.bettafish.flarent.models.Notification>>>()
+    val groupedNotifications =
+        LinkedHashMap<String, MutableList<IndexedValue<com.bettafish.flarent.models.Notification>>>()
     val titles = LinkedHashMap<String, String>()
-
     notifications.forEachIndexed { index, notification ->
         val discussion = (notification.subject as? Post)?.discussion
+
         val key = discussion?.id ?: DefaultNotificationGroupKey
         val title = discussion?.title?.takeIf { it.isNotBlank() } ?: DefaultNotificationGroupTitle
 
-        groupedNotifications.getOrPut(key) { mutableListOf() }.add(IndexedValue(index, notification))
+        groupedNotifications.getOrPut(key) { mutableListOf() }
+            .add(IndexedValue(index, notification))
         titles.putIfAbsent(key, title)
     }
 
@@ -63,14 +66,14 @@ private fun buildNotificationGroups(
 }
 
 @Composable
-private fun NotificationGroupHeader(title: String) {
+private fun NotificationGroupHeader(title: String, modifier: Modifier = Modifier) {
     Card(
-        shape = RoundedCornerShape(4.dp,4.dp,0.dp,0.dp)
-    ) {
+        shape = RoundedCornerShape(12.dp, 12.dp, 2.dp, 2.dp),
+        modifier = modifier) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            fontWeight = FontWeight.SemiBold,
         )
     }
 }
@@ -80,7 +83,8 @@ private fun NotificationGroupHeader(title: String) {
 @Destination<RootGraph>
 fun NotificationsPage(
     viewModel: NotificationsViewModel = koinViewModel(),
-    navigator: DestinationsNavigator) {
+    navigator: DestinationsNavigator
+) {
     val notifications = viewModel.notifications.collectAsLazyPagingItems()
     val groupedNotifications = buildNotificationGroups(notifications.itemSnapshotList.items)
 
@@ -93,70 +97,86 @@ fun NotificationsPage(
                 },
             )
         }
-    )  {innerPadding->
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)) {
+                .padding(innerPadding)
+        ) {
             groupedNotifications.forEach { group ->
                 item(key = "header-${group.key}") {
-                    NotificationGroupHeader(group.title)
+                    NotificationGroupHeader(
+                        group.title,
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 0.dp,
+                            bottom = 1.dp
+                        )
+                    )
                 }
-
                 items(
                     count = group.notifications.size,
                     key = { position -> group.notifications[position].value.id },
                 ) { position ->
                     val indexedNotification = group.notifications[position]
-                    val notification = notifications[indexedNotification.index] ?: indexedNotification.value
-
+                    val notification =
+                        notifications[indexedNotification.index] ?: indexedNotification.value
+                    val isLast = position == group.notifications.size - 1
                     NotificationItem(
                         notification = notification,
-                        modifier = Modifier
-                            .clickable {
-                                when (notification.contentType) {
-                                    "postMentioned" -> {
-                                        val map = notification.content as? Map<*, *>
-                                        val replyNumber = map?.get("replyNumber").toString()
-                                        val post = notification.subject as Post
-                                        navigator.navigate(
-                                            DiscussionDetailPageDestination(
-                                                discussionId = post.discussion!!.id,
-                                                targetPosition = replyNumber.toIntOrNull() ?: post.number ?: 0,
-                                            )
+                        shape =
+                            if (isLast) RoundedCornerShape(2.dp, 2.dp, 12.dp, 12.dp)
+                            else RoundedCornerShape(
+                                2.dp
+                            ),
+                        modifier =
+                            if (isLast) Modifier.padding(16.dp, 1.dp,16.dp,16.dp)
+                            else Modifier.padding(horizontal = 16.dp, vertical = 1.dp),
+                        onClick = {
+                            when (notification.contentType) {
+                                "postMentioned" -> {
+                                    val map = notification.content as? Map<*, *>
+                                    val replyNumber = map?.get("replyNumber").toString()
+                                    val post = notification.subject as Post
+                                    navigator.navigate(
+                                        DiscussionDetailPageDestination(
+                                            discussionId = post.discussion!!.id,
+                                            targetPosition = replyNumber.toIntOrNull()
+                                                ?: post.number ?: 0,
                                         )
-                                    }
+                                    )
+                                }
 
-                                    "vote" -> {
-                                        val post = notification.subject as Post
-                                        navigator.navigate(
-                                            DiscussionDetailPageDestination(
-                                                post.discussion!!.id,
-                                                post.number ?: 0,
-                                            )
+                                "vote" -> {
+                                    val post = notification.subject as Post
+                                    navigator.navigate(
+                                        DiscussionDetailPageDestination(
+                                            post.discussion!!.id,
+                                            post.number ?: 0,
                                         )
-                                    }
+                                    )
+                                }
 
-                                    "postReacted" -> {
-                                        val post = notification.subject as Post
-                                        navigator.navigate(
-                                            DiscussionDetailPageDestination(
-                                                post.discussion!!.id,
-                                                post.number ?: 0,
-                                            )
+                                "postReacted" -> {
+                                    val post = notification.subject as Post
+                                    navigator.navigate(
+                                        DiscussionDetailPageDestination(
+                                            post.discussion!!.id,
+                                            post.number ?: 0,
                                         )
-                                    }
+                                    )
+                                }
 
-                                    "newFollower" -> {
-                                        navigator.navigate(
-                                            UserProfilePageDestination(
-                                                notification.fromUser!!.username!!,
-                                            )
+                                "newFollower" -> {
+                                    navigator.navigate(
+                                        UserProfilePageDestination(
+                                            notification.fromUser!!.username!!,
                                         )
-                                    }
+                                    )
                                 }
                             }
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        },
                         userClick = { user ->
                             navigator.navigate(
                                 UserProfilePageDestination(
