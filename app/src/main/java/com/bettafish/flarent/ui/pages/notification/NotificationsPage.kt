@@ -34,6 +34,7 @@ import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.Notification
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
+import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
@@ -224,10 +225,10 @@ fun NotificationsPage(
                                         val replyNumber = map?.get("replyNumber").toString()
                                         val post = notification.subject as Post
                                         navigator.navigate(
-                                            DiscussionDetailPageDestination(
+                                            PostBottomSheetDestination(
+                                                id = post.id,
                                                 discussionId = post.discussion!!.id,
-                                                targetPosition = replyNumber.toIntOrNull()
-                                                    ?: post.number ?: 0,
+                                                discussionTitle = post.discussion?.title
                                             )
                                         )
                                     }
@@ -235,9 +236,10 @@ fun NotificationsPage(
                                     "vote" -> {
                                         val post = notification.subject as Post
                                         navigator.navigate(
-                                            DiscussionDetailPageDestination(
-                                                post.discussion!!.id,
-                                                post.number ?: 0,
+                                            PostBottomSheetDestination(
+                                                id = post.id,
+                                                discussionId = post.discussion!!.id,
+                                                discussionTitle = post.discussion?.title
                                             )
                                         )
                                     }
@@ -245,9 +247,10 @@ fun NotificationsPage(
                                     "postReacted" -> {
                                         val post = notification.subject as Post
                                         navigator.navigate(
-                                            DiscussionDetailPageDestination(
-                                                post.discussion!!.id,
-                                                post.number ?: 0,
+                                            PostBottomSheetDestination(
+                                                id = post.id,
+                                                discussionId = post.discussion!!.id,
+                                                discussionTitle = post.discussion?.title
                                             )
                                         )
                                     }
@@ -270,9 +273,10 @@ fun NotificationsPage(
                             },
                             postClick = { post ->
                                 navigator.navigate(
-                                    DiscussionDetailPageDestination(
+                                    PostBottomSheetDestination(
+                                        id = post.id,
                                         discussionId = post.discussion!!.id,
-                                        targetPosition = post.number ?: 0,
+                                        discussionTitle = post.discussion?.title
                                     )
                                 )
                             }
