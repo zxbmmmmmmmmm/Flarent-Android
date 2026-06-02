@@ -48,7 +48,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
@@ -130,7 +129,7 @@ private fun DiscussionItem(
 
         Column(
             modifier = Modifier.padding(start = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
             discussion.title?.let {
                 val annotatedString = buildAnnotatedString {
@@ -140,6 +139,7 @@ private fun DiscussionItem(
                     if (discussion.frontpage == true) {
                         appendInlineContent("front")
                     }
+
                     if (discussion.isLocked == true) {
                         appendInlineContent("locked")
                     }
@@ -209,7 +209,6 @@ private fun DiscussionItem(
                     style = if (hasUnreadPosts)
                         MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
                     else MaterialTheme.typography.bodyLarge,
-                    color = if (hasUnreadPosts) colorScheme.onSurface else colorScheme.outline,
                 )
             }
 
@@ -233,7 +232,7 @@ private fun DiscussionItem(
                             modifier = Modifier
                                 .size(textHeightDp)
                                 .padding(end = 4.dp),
-                            tint = if (hasUnreadPosts) colorScheme.onSurfaceVariant else colorScheme.outline,
+                            tint = colorScheme.onSurfaceVariant,
                         )
                     }
                     discussion.lastPostedUser?.displayName?.let {
@@ -244,7 +243,7 @@ private fun DiscussionItem(
                                     includeFontPadding = false
                                 )
                             ),
-                            color = if (hasUnreadPosts) colorScheme.onSurfaceVariant else colorScheme.outline,
+                            color = colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
@@ -268,7 +267,7 @@ private fun DiscussionItem(
 
                 // 触发换行
                 Spacer(modifier = Modifier.weight(1f, fill = true))
-                Row(modifier = Modifier.alpha(if (hasUnreadPosts) 1f else 0.6f),) {
+                Row {
                     discussion.lastPostNumber?.let {
                         Row {
                             val bg = colorScheme.surfaceContainerHighest

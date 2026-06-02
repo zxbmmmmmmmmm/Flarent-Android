@@ -35,7 +35,7 @@ interface FlarumService {
         @QueryMap options: Map<String, String>
     ): Discussion
 
-    @PATCH("api/discussions/{id}")
+    @PATCH("api/discussion/{id}")
     suspend fun patchDiscussion(
         @Path("id") id: String,
         @Body discussion: Discussion
