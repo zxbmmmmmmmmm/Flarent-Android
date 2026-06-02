@@ -106,35 +106,37 @@ fun NotificationsPage(
     val notifications = viewModel.notifications.collectAsLazyPagingItems()
     val groupedNotifications = buildNotificationGroups(notifications.itemSnapshotList.items)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("通知") },
-                navigationIcon = {
-                    BackNavigationIcon { navigator.navigateUp() }
-                },
-                actions = {
-                    val canMarkAsAll = viewModel.markAllAsReadCommand.canExecute.collectAsState()
-                    IconButton(onClick = {
-                        viewModel.markAllAsReadCommand.execute(notifications.itemSnapshotList.items)
-                    }, enabled = canMarkAsAll.value) {
-                        if (canMarkAsAll.value)
-                            Icon(Icons.Default.Check, "全部标记为已读")
-                        else
-                            CircularProgressIndicator(Modifier.padding(8.dp))
+    PullToRefreshBox(
+        isRefreshing = notifications.loadState.refresh is LoadState.Loading,
+        onRefresh = { notifications.refresh() },
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("通知") },
+                    navigationIcon = {
+                        BackNavigationIcon { navigator.navigateUp() }
+                    },
+                    actions = {
+                        val canMarkAsAll =
+                            viewModel.markAllAsReadCommand.canExecute.collectAsState()
+                        IconButton(onClick = {
+                            viewModel.markAllAsReadCommand.execute(notifications.itemSnapshotList.items)
+                        }, enabled = canMarkAsAll.value) {
+                            if (canMarkAsAll.value)
+                                Icon(Icons.Default.Check, "全部标记为已读")
+                            else
+                                CircularProgressIndicator(Modifier.padding(8.dp))
+                        }
                     }
-                }
-            )
-        }
-    ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = notifications.loadState.refresh is LoadState.Loading,
-            onRefresh = { notifications.refresh() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            LazyColumn {
+                )
+            }
+        ) { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
                 groupedNotifications.forEach { group ->
                     if (group.discussion != null) {
                         item(key = "header-${group.key}") {
@@ -284,7 +286,5 @@ fun NotificationsPage(
                 }
             }
         }
-
     }
-
 }
