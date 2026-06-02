@@ -15,6 +15,10 @@ class NotificationsRepositoryImpl(private val service: FlarumService): Notificat
         }
     }
 
+    override suspend fun markAllNotificationsAsRead() {
+        service.markAllNotificationsAsRead()
+    }
+
     suspend fun patchNotification(notificationId: String, block: (Notification) -> Unit): Notification? {
         val post = Notification().apply { id = notificationId }
         block(post)

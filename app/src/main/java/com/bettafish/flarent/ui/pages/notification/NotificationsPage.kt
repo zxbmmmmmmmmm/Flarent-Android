@@ -6,7 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -108,6 +113,17 @@ fun NotificationsPage(
                 navigationIcon = {
                     BackNavigationIcon { navigator.navigateUp() }
                 },
+                actions = {
+                    val canMarkAsAll = viewModel.markAllAsReadCommand.canExecute.collectAsState()
+                    IconButton(onClick = {
+                        viewModel.markAllAsReadCommand.execute(notifications.itemSnapshotList.items)
+                    }, enabled = canMarkAsAll.value) {
+                        if (canMarkAsAll.value)
+                            Icon(Icons.Default.Check, "全部标记为已读")
+                        else
+                            CircularProgressIndicator(Modifier.padding(8.dp))
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -199,7 +215,6 @@ fun NotificationsPage(
                                     else -> Modifier.padding(horizontal = 16.dp, vertical = 1.dp)
                                 },
                             onClick = {
-                                NotificationIsReadStore.update(notification.id, true)
                                 viewModel.markAsRead(notification.id)
                                 when (notification.contentType) {
                                     "postMentioned" -> {

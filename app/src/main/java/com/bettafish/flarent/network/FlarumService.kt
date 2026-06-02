@@ -100,6 +100,9 @@ interface FlarumService {
         @Body post: Notification
     ) : Notification?
 
+    @POST("api/notifications/read")
+    suspend fun markAllNotificationsAsRead()
+
     @Multipart
     @POST("api/fof/upload")
     suspend fun uploadFile(

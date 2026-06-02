@@ -249,8 +249,7 @@ fun MarkdownEditBox(replyViewModel: ReplyViewModel, fileViewModel: FileViewModel
         Row(horizontalArrangement = Arrangement.SpaceEvenly){
             Box(modifier = Modifier.width(48.dp).height(48.dp)){
                 if(isUploading.value){
-                    CircularProgressIndicator(modifier = Modifier.padding(12.dp))
-
+                    CircularProgressIndicator(modifier = Modifier.padding(8.dp))
                 }
                 else{
                     ToolbarButton(Icons.Default.Upload, "上传") {

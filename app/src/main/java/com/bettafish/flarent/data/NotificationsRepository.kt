@@ -7,4 +7,5 @@ interface NotificationsRepository {
     suspend fun fetchNotifications (request: NotificationRequest): List<Notification>
 
     suspend fun markNotificationAsRead(notificationId: String)
+    suspend fun markAllNotificationsAsRead()
 }
