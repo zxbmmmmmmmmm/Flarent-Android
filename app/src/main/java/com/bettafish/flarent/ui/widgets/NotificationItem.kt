@@ -79,6 +79,7 @@ fun NotificationItem(
                     name = notification.fromUser?.displayName,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
+                        .clickable { userClick(notification.fromUser!!) }
                         .height(40.dp)
                         .width(40.dp)
                         .clip(CircleShape)
@@ -105,11 +106,13 @@ fun NotificationItem(
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
-                        if(!(isRead.value == true || notification.isRead == true)){
+                        if (!(isRead.value == true || notification.isRead == true)) {
                             Surface(
                                 shape = CircleShape,
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(8.dp).align(Alignment.CenterVertically)
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .align(Alignment.CenterVertically)
                             ) { }
                         }
                     }
