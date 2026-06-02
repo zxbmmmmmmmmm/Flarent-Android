@@ -9,6 +9,7 @@ import androidx.paging.cachedIn
 import com.bettafish.flarent.data.NotificationsRepository
 import com.bettafish.flarent.models.Notification
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class NotificationsViewModel(val repository: NotificationsRepository): ViewModel() {
     companion object{
@@ -23,4 +24,13 @@ class NotificationsViewModel(val repository: NotificationsRepository): ViewModel
             )
         }
     ).flow.cachedIn(viewModelScope)
+
+    fun markAsRead(notificationId: String){
+        viewModelScope.launch {
+            try {
+                repository.markNotificationAsRead(notificationId)
+            } catch (e: Exception) {
+            }
+        }
+    }
 }

@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,11 +37,13 @@ import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.bettafish.flarent.App
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.TagNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
 import com.bettafish.flarent.ui.widgets.DiscussionItemViewModel
+import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.toFaIcon
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
@@ -84,9 +89,30 @@ fun DiscussionListPage(
                     scrollBehavior = scrollBehavior,
                     actions = {
                         if (tag == null) {
-                            IconButton(onClick = { navigator.navigate(NotificationsPageDestination()) }) {
-                                Icon(Icons.Outlined.Notifications, "通知")
+                            val user = App.INSTANCE.appSettings.user
+                            user?.newNotificationCount?.let {
+                                IconButton(onClick = {
+                                    navigator.navigate(NotificationsPageDestination())
+                                    App.INSTANCE.appSettings.user!!.newNotificationCount = 0
+                                }) {
+                                    if (it > 0) {
+                                        BadgedBox(badge = {
+                                            Badge { Text(it.toString()) }
+                                        }) {
+                                            Icon(
+                                                Icons.Filled.Notifications,
+                                                "通知",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    } else {
+                                        Icon(Icons.Outlined.Notifications, "通知")
+                                    }
+                                }
+
                             }
+
+
                         }
                     }
                 )

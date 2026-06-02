@@ -94,6 +94,12 @@ interface FlarumService {
         @Body post: Post
     ) : Post
 
+    @PATCH("api/notifications/{id}")
+    suspend fun patchNotification(
+        @Path("id") id: String,
+        @Body post: Notification
+    ) : Notification?
+
     @Multipart
     @POST("api/fof/upload")
     suspend fun uploadFile(

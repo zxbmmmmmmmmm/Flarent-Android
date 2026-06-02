@@ -42,6 +42,12 @@ class User : Section {
     @JsonProperty("points")
     var points: Int? = null
 
+    @JsonProperty("unreadNotificationCount")
+    var unreadNotificationCount: Int? = null
+
+    @JsonProperty("newNotificationCount")
+    var newNotificationCount: Int? = null
+
     @JsonProperty("joinTime")
     @Contextual
     @Serializable(with = ZonedDateTimeSerializer::class)

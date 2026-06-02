@@ -34,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.Notification
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.DiscussionLastReadPostNumberStore
+import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.NotificationIsReadStore
 import com.bettafish.flarent.utils.relativeTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -61,6 +64,9 @@ fun NotificationItem(
     postClick: (Post) -> Unit = {},
     shape: RoundedCornerShape = RoundedCornerShape(2.dp)
 ) {
+    val isRead = NotificationIsReadStore
+        .observe(notification.id)
+        .collectAsState(initial = null)
     Card(
         shape = shape,
         onClick = { onClick() },
@@ -99,7 +105,7 @@ fun NotificationItem(
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
-                        if(notification.isRead == false){
+                        if(!(isRead.value == true || notification.isRead == true)){
                             Surface(
                                 shape = CircleShape,
                                 color = MaterialTheme.colorScheme.primary,

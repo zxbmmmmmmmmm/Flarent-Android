@@ -1,3 +1,4 @@
+
 package com.bettafish.flarent.ui.pages.home
 
 import androidx.compose.foundation.background
@@ -22,6 +23,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +40,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 @Destination<RootGraph>(start=true)
@@ -45,7 +48,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 fun HomePage(
     navigator: DestinationsNavigator,
-    resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>
+    resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>,
+    viewModel: HomeViewModel = koinViewModel()
 ){
     val tabs = listOf(
         HomeTab.DiscussionList,
@@ -54,7 +58,6 @@ fun HomePage(
     )
     val pagerState = rememberPagerState { tabs.size }
     val scope = rememberCoroutineScope()
-
     Scaffold(
         bottomBar = {
             Surface(

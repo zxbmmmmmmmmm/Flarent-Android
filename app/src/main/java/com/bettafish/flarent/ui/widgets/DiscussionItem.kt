@@ -53,7 +53,7 @@ import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.theme.FlarentTheme
-import com.bettafish.flarent.utils.DiscussionLastReadPostNumberStore
+import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.DiscussionLastReadPostNumberStore
 import com.bettafish.flarent.utils.relativeTime
 import java.time.ZonedDateTime
 

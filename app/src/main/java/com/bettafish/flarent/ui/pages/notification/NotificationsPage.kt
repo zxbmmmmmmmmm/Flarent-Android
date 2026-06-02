@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.Card
 import com.bettafish.flarent.ui.widgets.NotificationItem
+import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.NotificationIsReadStore
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
@@ -177,6 +179,8 @@ fun NotificationsPage(
                                 else -> Modifier.padding(horizontal = 16.dp, vertical = 1.dp)
                             },
                         onClick = {
+                            NotificationIsReadStore.update(notification.id, true)
+                            viewModel.markAsRead(notification.id)
                             when (notification.contentType) {
                                 "postMentioned" -> {
                                     val map = notification.content as? Map<*, *>

@@ -7,8 +7,8 @@ import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.request.PostsRequest
-import com.bettafish.flarent.utils.DiscussionLastReadPostNumberStore
 import com.bettafish.flarent.utils.HtmlConverter
+import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.DiscussionLastReadPostNumberStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -65,13 +65,13 @@ class DiscussionDetailPostListDataSource(
             }
 
             items.mapNotNull(Post::number).maxOrNull()?.let { maxPostNumber ->
-                val resolvedLastReadPostNumber =
-                    DiscussionLastReadPostNumberStore.update(discussionId, maxPostNumber)
+                if((DiscussionLastReadPostNumberStore.get(discussionId) ?: 0) >= maxPostNumber) return@let
+                DiscussionLastReadPostNumberStore.update(discussionId, maxPostNumber)
                 coroutineScope.launch {
                     runCatching {
                         discussionsRepository.updateLastReadPostNumber(
                             discussionId,
-                            resolvedLastReadPostNumber
+                            maxPostNumber
                         )
                     }
 
