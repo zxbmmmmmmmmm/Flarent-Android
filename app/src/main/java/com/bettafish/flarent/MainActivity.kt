@@ -35,6 +35,7 @@ import com.bettafish.flarent.ui.theme.FlarentTheme
 
 import com.bettafish.flarent.ui.widgets.GlobalImagePreviewerProvider
 import com.bettafish.flarent.utils.Analytics
+import com.bettafish.flarent.utils.AppUriHandler
 import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.collectPreferenceAsState
 import com.bettafish.flarent.utils.dataStore
@@ -106,44 +107,7 @@ fun FlarentApp() {
     val navigator = navController.toDestinationsNavigator()
     val defaultUriHandler = LocalUriHandler.current
 
-
-    val uriHandler = object : UriHandler {
-        override fun openUri(uri: String) {
-            if (uri.contains(BuildConfig.FLARUM_BASE_URL)) {
-                val httpUrl = uri.toHttpUrl()
-                val segments = httpUrl.pathSegments
-                val queryMap = httpUrl.query?.split("&")?.associate {
-                    val (key, value) = it.split("=")
-                    key to value
-                } ?: emptyMap()
-                when (segments.getOrNull(0)) {
-                    "d" -> {
-                        val discussion = segments.getOrNull(1)
-                        val number = segments.getOrNull(2)
-                        val post = queryMap["post"]
-                        if(post != null){
-                            navigator.navigate(PostBottomSheetDestination(post))
-                        }
-                        else if (discussion != null){
-                            navigator.navigate(DiscussionDetailPageDestination(discussion,number?.toIntOrNull() ?: 0))
-                        }
-                    }
-                    "u" -> {
-                        val user = segments.getOrNull(1)
-                        user?.let {
-                            navigator.navigate(UserProfilePageDestination(it))
-                        }
-                    }
-                    else ->{
-                        defaultUriHandler.openUri(uri)
-                    }
-                }
-            } else {
-                defaultUriHandler.openUri(uri)
-            }
-        }
-    }
-
+    val uriHandler = AppUriHandler(navigator, defaultUriHandler)
 
     GlobalImagePreviewerProvider {
         CompositionLocalProvider(LocalUriHandler provides uriHandler) {

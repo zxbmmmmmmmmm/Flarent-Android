@@ -226,8 +226,8 @@ fun NotificationsPage(
                                         val post = notification.subject as Post
                                         navigator.navigate(
                                             PostBottomSheetDestination(
-                                                id = post.id,
                                                 discussionId = post.discussion!!.id,
+                                                postNumber = replyNumber,
                                                 discussionTitle = post.discussion?.title
                                             )
                                         )
@@ -237,7 +237,7 @@ fun NotificationsPage(
                                         val post = notification.subject as Post
                                         navigator.navigate(
                                             PostBottomSheetDestination(
-                                                id = post.id,
+                                                postId = post.id,
                                                 discussionId = post.discussion!!.id,
                                                 discussionTitle = post.discussion?.title
                                             )
@@ -248,7 +248,7 @@ fun NotificationsPage(
                                         val post = notification.subject as Post
                                         navigator.navigate(
                                             PostBottomSheetDestination(
-                                                id = post.id,
+                                                postId = post.id,
                                                 discussionId = post.discussion!!.id,
                                                 discussionTitle = post.discussion?.title
                                             )
@@ -274,7 +274,7 @@ fun NotificationsPage(
                             postClick = { post ->
                                 navigator.navigate(
                                     PostBottomSheetDestination(
-                                        id = post.id,
+                                        postId = post.id,
                                         discussionId = post.discussion!!.id,
                                         discussionTitle = post.discussion?.title
                                     )

@@ -7,6 +7,8 @@ data class PostsRequest(
     val limit: Int? = null,
     val offset: Int? = null,
     val sort: String? = null,
+    val discussionId: String? = null,
+    val number: String? = null,
     val include: List<String>? = null
 ) {
     fun toQueryMap(): Map<String, String> {
@@ -14,6 +16,8 @@ data class PostsRequest(
         ids?.let { map["filter[id]"] = it.joinToString(",") }
         author?.let { map["filter[author]"] = it }
         type?.let { map["filter[type]"] = it }
+        discussionId?.let { map["filter[discussion]"] = it }
+        number?.let { map["filter[number]"] = it }
         limit?.let { map["page[limit]"] = it.toString() }
         offset?.let { map["page[offset]"] = it.toString() }
         sort?.let { map["sort"] = it }

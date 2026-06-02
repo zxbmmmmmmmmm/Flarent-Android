@@ -79,10 +79,9 @@ fun NotificationItem(
                     name = notification.fromUser?.displayName,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .clickable { userClick(notification.fromUser!!) }
-                        .height(40.dp)
-                        .width(40.dp)
+                        .size(36.dp)
                         .clip(CircleShape)
+                        .clickable { userClick(notification.fromUser!!) }
                 )
                 Column(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
