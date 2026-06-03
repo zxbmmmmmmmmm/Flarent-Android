@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flarent</string>
+    <string name="flarum_base_url">https://community.wvbtech.com/</string>
+    <string name="check_update_url">https://community.wvbtech.com/d/4731</string>
+    <string name="user_agreement_url">https://community.wvbtech.com/p/1</string>
+    <string name="privacy_policy_url">https://community.wvbtech.com/p/9-privacy</string>
+</resources>
