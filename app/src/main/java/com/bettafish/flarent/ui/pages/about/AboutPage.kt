@@ -1,12 +1,9 @@
 package com.bettafish.flarent.ui.pages.about
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Sync
@@ -23,27 +19,27 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.bettafish.flarent.App
 import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.R
 import com.bettafish.flarent.config.ForumConfig
+import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.Card
 import com.bettafish.flarent.ui.widgets.StandardLargeCard
+import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 
@@ -53,10 +49,6 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 @Preview
 fun AboutPage() {
     val uriHandler = LocalUriHandler.current
-    val forumName = stringResource(ForumConfig.nameRes)
-    val forumHandle = stringResource(ForumConfig.handleRes)
-    val websiteUrl = stringResource(ForumConfig.websiteUrlRes)
-    val sourceCodeUrl = stringResource(ForumConfig.sourceCodeUrlRes)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -74,27 +66,27 @@ fun AboutPage() {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            val forum = App.INSTANCE.appSettings.forum!!
             ForumCard(
-                forumName = forumName,
-                forumHandle = forumHandle
+                forum
             ) {
-                uriHandler.openUri(websiteUrl)
+                uriHandler.openUri(ForumConfig.websiteUrl)
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 StandardLargeCard(
                     Icons.Default.Language,
                     "官方网站",
-                    websiteUrl,
+                    ForumConfig.websiteUrl,
                     shape = RoundedCornerShape(12.dp, 12.dp, 4.dp, 4.dp)
                 ) {
-                    uriHandler.openUri(websiteUrl)
+                    uriHandler.openUri(ForumConfig.websiteUrl)
                 }
                 StandardLargeCard(
                     Icons.Default.Code,
                     "源代码",
-                    sourceCodeUrl
+                    ForumConfig.sourceCodeUrl
                 ) {
-                    uriHandler.openUri(sourceCodeUrl)
+                    uriHandler.openUri(ForumConfig.sourceCodeUrl)
                 }
                 StandardLargeCard(
                     Icons.Default.Sync,
@@ -111,7 +103,7 @@ fun AboutPage() {
                 "GPL-3  License",
                 shape = RoundedCornerShape(12.dp)
             ) {
-                uriHandler.openUri(sourceCodeUrl)
+                uriHandler.openUri(ForumConfig.sourceCodeUrl)
             }
         }
     }
@@ -119,8 +111,7 @@ fun AboutPage() {
 
 @Composable
 fun ForumCard(
-    forumName: String = stringResource(ForumConfig.nameRes),
-    forumHandle: String = stringResource(ForumConfig.handleRes),
+    forum: Forum,
     onClick: (() -> Unit)? = null
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -128,27 +119,31 @@ fun ForumCard(
             shape = RoundedCornerShape(12.dp, 12.dp, 4.dp, 4.dp),
             onClick = onClick
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.guest),
+            Row(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalArrangement = Arrangement.Center,
+
+            ) {
+                AsyncImage(
+                    model = forum.faviconUrl,
                     null,
                     modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
+                        .padding(end = 16.dp)
+                        .size(32.dp)
                 )
-                Column(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        forumName,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(forumHandle, style = MaterialTheme.typography.bodyMedium)
-                }
+                Text(
+                    forum.title!!,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
         }
+        forum.description?.let {
+            Card {
+                Text(forum.description!!, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+
         Card(shape = RoundedCornerShape(4.dp, 4.dp, 12.dp, 12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Row(

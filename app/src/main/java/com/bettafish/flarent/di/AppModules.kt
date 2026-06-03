@@ -1,6 +1,7 @@
 package com.bettafish.flarent.di
 
 import com.bettafish.flarent.App
+import com.bettafish.flarent.BuildConfig
 import com.bettafish.flarent.config.ForumConfig
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
@@ -101,10 +102,9 @@ val networkModule = module {
         resourceConverter.enableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.ALLOW_UNKNOWN_INCLUSIONS)
         resourceConverter.disableDeserializationOption(com.github.jasminb.jsonapi.DeserializationFeature.REQUIRE_RESOURCE_ID)
         resourceConverter.disableSerializationOption(com.github.jasminb.jsonapi.SerializationFeature.INCLUDE_ID)
-
         Retrofit.Builder()
             .client(get())
-            .baseUrl(App.INSTANCE.getString(ForumConfig.baseUrlRes))
+            .baseUrl(ForumConfig.baseUrl)
             .addConverterFactory(
                 JSONAPIConverterFactory(resourceConverter)
             )

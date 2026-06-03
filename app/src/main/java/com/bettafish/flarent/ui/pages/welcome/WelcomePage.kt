@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.App
@@ -96,8 +95,6 @@ fun WelcomePage(forum: Forum,
                 modifier: Modifier = Modifier,
                 navigator: DestinationsNavigator? = null,
                 onSave : () -> Unit = {}){
-    val userAgreementUrl = stringResource(ForumConfig.userAgreementUrlRes)
-    val privacyPolicyUrl = stringResource(ForumConfig.privacyPolicyUrlRes)
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(24.dp)){
@@ -156,8 +153,8 @@ fun WelcomePage(forum: Forum,
                         Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                     })
             }
-            LinkCard("用户许可", userAgreementUrl)
-            LinkCard("隐私政策", privacyPolicyUrl)
+            LinkCard("用户许可", ForumConfig.userAgreementUrl)
+            LinkCard("隐私政策", ForumConfig.privacyPolicyUrl)
         }
 
 
@@ -208,12 +205,10 @@ fun LinkCard(title: String,
 @Composable
 @Preview(showBackground = true)
 fun WelcomePagePreview(){
-    val forumName = stringResource(ForumConfig.nameRes)
-    val baseUrl = stringResource(ForumConfig.baseUrlRes)
+    val forumName = ForumConfig.name
     WelcomePage(Forum().apply {
         title = forumName
         description = "$forumName: where Vista booms! 这里是一个正在成为电脑数码技术乐园的小圈子。"
-        baseUrl = baseUrl
         guidelinesUrl = "${baseUrl}d/22/3"
         welcomeTitle = "欢迎来到 $forumName！"
         welcomeMessage = "在开始之前，请先阅读我们的\u003Ca href=/d/22\u003E导航贴\u003C/a\u003E，了解有关论坛的基本信息。\n\u003Cbr/\u003E\u003Cb\u003E声明：本站用户言论只代表其个人意见，并不代表 $forumName 的观点。\u003C/b\u003E"
