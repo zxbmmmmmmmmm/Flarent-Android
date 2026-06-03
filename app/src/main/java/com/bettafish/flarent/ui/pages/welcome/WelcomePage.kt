@@ -205,7 +205,7 @@ fun LinkCard(title: String,
 @Composable
 @Preview(showBackground = true)
 fun WelcomePagePreview(){
-    val forumName = ForumConfig.name
+    val forumName = "wvbCommunity"
     WelcomePage(Forum().apply {
         title = forumName
         description = "$forumName: where Vista booms! 这里是一个正在成为电脑数码技术乐园的小圈子。"

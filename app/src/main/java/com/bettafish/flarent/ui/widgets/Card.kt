@@ -73,6 +73,7 @@ fun StandardLargeCard(
     title: String,
     description: String? = null,
     shape: Shape = RoundedCornerShape(4.dp),
+    actionIcon: ImageVector = Icons.Default.ChevronRight,
     onClick: () -> Unit = {}
 ) {
     LargeCard(shape, onClick) {
@@ -96,7 +97,7 @@ fun StandardLargeCard(
                     )
                 }
             }
-            Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.outline)
+            Icon(actionIcon, null, tint = MaterialTheme.colorScheme.outline)
         }
     }
 }
