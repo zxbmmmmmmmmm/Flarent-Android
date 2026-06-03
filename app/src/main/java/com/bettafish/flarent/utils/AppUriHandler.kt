@@ -2,7 +2,8 @@ package com.bettafish.flarent.utils
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.platform.UriHandler
-import com.bettafish.flarent.BuildConfig
+import com.bettafish.flarent.App
+import com.bettafish.flarent.config.ForumConfig
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.PostBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
@@ -16,7 +17,7 @@ class AppUriHandler(
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun openUri(uri: String) {
-        if (uri.contains(BuildConfig.FLARUM_BASE_URL)) {
+        if (uri.contains(App.INSTANCE.getString(ForumConfig.baseUrlRes))) {
             val httpUrl = uri.toHttpUrl()
             val segments = httpUrl.pathSegments
             val queryMap = httpUrl.query?.split("&")?.associate {

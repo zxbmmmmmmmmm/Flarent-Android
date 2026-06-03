@@ -1,7 +1,7 @@
 package com.bettafish.flarent.di
 
 import com.bettafish.flarent.App
-import com.bettafish.flarent.BuildConfig
+import com.bettafish.flarent.config.ForumConfig
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.data.DiscussionsRepositoryImpl
 import com.bettafish.flarent.data.FileRepository
@@ -104,7 +104,7 @@ val networkModule = module {
 
         Retrofit.Builder()
             .client(get())
-            .baseUrl(BuildConfig.FLARUM_BASE_URL)
+            .baseUrl(App.INSTANCE.getString(ForumConfig.baseUrlRes))
             .addConverterFactory(
                 JSONAPIConverterFactory(resourceConverter)
             )

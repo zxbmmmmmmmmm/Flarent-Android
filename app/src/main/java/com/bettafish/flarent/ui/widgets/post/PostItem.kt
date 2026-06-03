@@ -70,8 +70,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bettafish.flarent.App
-import com.bettafish.flarent.BuildConfig.FLARUM_BASE_URL
 import com.bettafish.flarent.R
+import com.bettafish.flarent.config.ForumConfig
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.widgets.Avatar
@@ -622,7 +622,7 @@ private fun PostItem(
                                     leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
                                     onClick = {
                                         showMoreMenu = false
-                                        shareLink(context, "${FLARUM_BASE_URL}d/${it.id}/${post.id}", "${post.user?.displayName ?: post.user?.username } 在 ${it.title} 的回复")
+                                        shareLink(context, "${context.getString(ForumConfig.baseUrlRes)}d/${it.id}/${post.id}", "${post.user?.displayName ?: post.user?.username } 在 ${it.title} 的回复")
                                     }
                                 )
                             }
