@@ -14,6 +14,7 @@ class HomeViewModel(val forumRepository: ForumRepository): ViewModel() {
     fun updateUser(){
         viewModelScope.launch {
             val forum = forumRepository.fetchForum()
+            App.INSTANCE.appSettings.forum = forum
             App.INSTANCE.appSettings.user = forum.actor
         }
     }

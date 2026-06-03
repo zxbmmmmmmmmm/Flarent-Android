@@ -23,9 +23,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Flarum base URL for API calls (override in gradle.properties if needed)
-        buildConfigField("String", "FLARUM_BASE_URL", "\"https://community.wvbtech.com/\"")
     }
 
     buildTypes {

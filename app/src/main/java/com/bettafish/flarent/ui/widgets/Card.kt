@@ -3,6 +3,7 @@ package com.bettafish.flarent.ui.widgets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +31,7 @@ fun Card(
     shape: Shape = RoundedCornerShape(4.dp),
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
     onClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
     val modifier = modifier
         .fillMaxWidth()
@@ -72,6 +73,7 @@ fun StandardLargeCard(
     title: String,
     description: String? = null,
     shape: Shape = RoundedCornerShape(4.dp),
+    actionIcon: ImageVector = Icons.Default.ChevronRight,
     onClick: () -> Unit = {}
 ) {
     LargeCard(shape, onClick) {
@@ -95,7 +97,7 @@ fun StandardLargeCard(
                     )
                 }
             }
-            Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.outline)
+            Icon(actionIcon, null, tint = MaterialTheme.colorScheme.outline)
         }
     }
 }

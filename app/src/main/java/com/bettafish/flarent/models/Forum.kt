@@ -54,6 +54,9 @@ class Forum {
     @JsonProperty("maxSecondaryTags")
     var maxSecondaryTags: Int? = null
 
+    @JsonProperty("fof-forum-stats-widget.stats")
+    var stats : ForumStats? = null
+
     @Relationship("actor")
     var actor: User? = null
 

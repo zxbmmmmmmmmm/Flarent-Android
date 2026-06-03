@@ -622,7 +622,7 @@ private fun PostItem(
                                     leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
                                     onClick = {
                                         showMoreMenu = false
-                                        shareLink(context, "${context.getString(ForumConfig.baseUrlRes)}d/${it.id}/${post.id}", "${post.user?.displayName ?: post.user?.username } 在 ${it.title} 的回复")
+                                        shareLink(context, "${ForumConfig.baseUrl}d/${it.id}/${post.id}", "${post.user?.displayName ?: post.user?.username } 在 ${it.title} 的回复")
                                     }
                                 )
                             }
