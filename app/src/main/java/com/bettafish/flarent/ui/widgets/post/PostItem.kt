@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,6 +70,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bettafish.flarent.App
 import com.bettafish.flarent.R
 import com.bettafish.flarent.config.ForumConfig
@@ -83,10 +85,13 @@ import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.GlobalPostUpdateManager
 import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.relativeTime
+import com.mikepenz.markdown.compose.LazyMarkdownSuccess
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.model.MarkdownState
+import com.mikepenz.markdown.model.State
 import com.mikepenz.markdown.model.rememberMarkdownState
 import com.ramcosta.composedestinations.generated.destinations.LikesBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.PostReactionsBottomSheetDestination
@@ -125,6 +130,7 @@ fun PostItem(
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (post.value != null) {
+            val markdown by viewModel.parsedMarkdown.collectAsStateWithLifecycle()
             PostItem(
                 post.value!!,
                 modifier,
@@ -165,7 +171,9 @@ fun PostItem(
                 },
                 onEditClick = { postId, content ->
                     navigator.navigate(ReplyBottomSheetDestination(null, postId, null, content))
-                })
+                },
+                markdownState = markdown
+            )
         } else {
             PostItemPlaceholder(modifier = Modifier.padding(16.dp))
         }
@@ -189,6 +197,7 @@ private fun PostItem(
     isReacting: Boolean = false,
     onReactionLongClicked: (reactionId: String) -> Unit = { },
     onVoteLongClicked: () -> Unit = { },
+    markdownState: State
 ) {
     var showReactionMenu by remember { mutableStateOf(false) }
     var showMoreMenu by remember { mutableStateOf(false) }
@@ -499,44 +508,40 @@ private fun PostItem(
         }
 
         if (isComment) {
-            post.contentMarkdown?.let { markdown ->
-                val isDarkTheme = isSystemInDarkTheme()
-                val markdownState =
-                    rememberMarkdownState(post.id, post.editedAt, retainState = true) {
-                        markdown
-                    }
-                val markdownComponents = remember(isDarkTheme) {
-                    val highlightsBuilder =
-                        Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
-                    markdownComponents(
-                        codeBlock = {
-                            MarkdownHighlightedCodeBlock(
-                                content = it.content,
-                                node = it.node,
-                                highlightsBuilder = highlightsBuilder,
-                                showHeader = true,
-                            )
-                        },
-                        codeFence = {
-                            MarkdownHighlightedCodeFence(
-                                content = it.content,
-                                node = it.node,
-                                highlightsBuilder = highlightsBuilder,
-                                showHeader = true,
-                            )
-                        },
-                    )
-                }
-                SelectionContainer {
-                    Markdown(
-                        markdownState = markdownState,
-                        imageTransformer = ClickableCoil3ImageTransformer(imageClick),
-                        components = markdownComponents,
-                        modifier = Modifier
-                            .padding(vertical = 12.dp)
-                            .fillMaxWidth(),
-                    )
-                }
+
+            val isDarkTheme = isSystemInDarkTheme()
+            val markdownState = markdownState
+            val markdownComponents = remember(isDarkTheme) {
+                val highlightsBuilder =
+                    Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
+                markdownComponents(
+                    codeBlock = {
+                        MarkdownHighlightedCodeBlock(
+                            content = it.content,
+                            node = it.node,
+                            highlightsBuilder = highlightsBuilder,
+                            showHeader = true,
+                        )
+                    },
+                    codeFence = {
+                        MarkdownHighlightedCodeFence(
+                            content = it.content,
+                            node = it.node,
+                            highlightsBuilder = highlightsBuilder,
+                            showHeader = true,
+                        )
+                    },
+                )
+            }
+            SelectionContainer {
+                Markdown(
+                    state = markdownState,
+                    imageTransformer = ClickableCoil3ImageTransformer(imageClick),
+                    components = markdownComponents,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth(),
+                )
             }
             val reactions = post.reactionCounts?.mapNotNull { (id, value) ->
                 val reaction = allReactionsMap[id]
@@ -714,7 +719,7 @@ private fun PostItem(
                                         showMoreMenu = false
                                         onEditClick(
                                             post.id,
-                                            post.content?.toString() ?: post.contentMarkdown ?: ""
+                                            post.content?.toString() ?: ""
                                         )
                                     }
                                 )
@@ -736,56 +741,56 @@ fun shareLink(context: Context, url: String, title: String = "分享") {
     context.startActivity(Intent.createChooser(intent, title))
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PostItemPreview() {
-    val sampleUser = User().apply {
-        displayName = "User"
-        username = "user"
-        avatarUrl = null
-    }
-    val samplePost = Post().apply {
-        id = "1"
-        contentType = "comment"
-        user = sampleUser
-        createdAt = ZonedDateTime.now().minusHours(1)
-        number = 2
-        votes = 1
-        contentMarkdown = """
-### Hello Markdown
-
-This is a simple markdown example with:
-
-- Bullet points
-- **Bold text**
-- *Italic text*
-
-[Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
-"""
-    }
-    MaterialTheme {
-        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PostItemRenamePreview() {
-    val sampleUser = User().apply {
-        displayName = "User"
-        username = "user"
-        avatarUrl = null
-    }
-    val samplePost = Post().apply {
-        id = "1"
-        contentType = "discussionRenamed"
-        user = sampleUser
-        createdAt = ZonedDateTime.now().minusHours(1)
-        number = 2
-        content = listOf("11111111", "22222222")
-    }
-    MaterialTheme {
-        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PostItemPreview() {
+//    val sampleUser = User().apply {
+//        displayName = "User"
+//        username = "user"
+//        avatarUrl = null
+//    }
+//    val samplePost = Post().apply {
+//        id = "1"
+//        contentType = "comment"
+//        user = sampleUser
+//        createdAt = ZonedDateTime.now().minusHours(1)
+//        number = 2
+//        votes = 1
+//        contentMarkdown = """
+//### Hello Markdown
+//
+//This is a simple markdown example with:
+//
+//- Bullet points
+//- **Bold text**
+//- *Italic text*
+//
+//[Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
+//"""
+//    }
+//    MaterialTheme {
+//        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+//    }
+//}
+//
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PostItemRenamePreview() {
+//    val sampleUser = User().apply {
+//        displayName = "User"
+//        username = "user"
+//        avatarUrl = null
+//    }
+//    val samplePost = Post().apply {
+//        id = "1"
+//        contentType = "discussionRenamed"
+//        user = sampleUser
+//        createdAt = ZonedDateTime.now().minusHours(1)
+//        number = 2
+//        content = listOf("11111111", "22222222")
+//    }
+//    MaterialTheme {
+//        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+//    }
+//}

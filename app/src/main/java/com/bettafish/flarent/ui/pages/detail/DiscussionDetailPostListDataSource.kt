@@ -58,12 +58,6 @@ class DiscussionDetailPostListDataSource(
                 postsRepository.fetchPosts(PostsRequest(postIds))
             }
 
-            items.forEach { item ->
-                if (item.contentHtml != null) {
-                    item.contentMarkdown = HtmlConverter.convert(item.contentHtml)
-                }
-            }
-
             items.mapNotNull(Post::number).maxOrNull()?.let { maxPostNumber ->
                 if((DiscussionLastReadPostNumberStore.get(discussionId) ?: 0) >= maxPostNumber) return@let
                 DiscussionLastReadPostNumberStore.update(discussionId, maxPostNumber)

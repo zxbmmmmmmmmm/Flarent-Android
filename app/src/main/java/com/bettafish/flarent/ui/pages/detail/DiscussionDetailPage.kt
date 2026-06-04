@@ -48,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +64,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigationevent.NavigationEventInfo
@@ -81,6 +83,7 @@ import com.bettafish.flarent.ui.widgets.post.PostItemPlaceholder
 import com.bettafish.flarent.ui.widgets.post.PostItemViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -90,12 +93,20 @@ import kotlin.math.roundToInt
 
 @Composable
 @Destination<RootGraph>
-@OptIn(ExperimentalMaterial3Api::class,ExperimentalCoroutinesApi::class)
-fun DiscussionDetailPage(discussionId: String,
-                         targetPosition: Int = 0,
-                         navigator: DestinationsNavigator,
-                         modifier: Modifier = Modifier,
-                         viewModel: DiscussionDetailViewModel = koinViewModel{ parametersOf(discussionId, targetPosition) }){
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
+fun DiscussionDetailPage(
+    discussionId: String,
+    targetPosition: Int = 0,
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: DiscussionDetailViewModel = koinViewModel {
+        parametersOf(
+            discussionId,
+            targetPosition
+        )
+    }
+) {
     val discussion by viewModel.discussion.collectAsState()
     val posts = viewModel.posts.collectAsLazyPagingItems()
     val scrollTarget by viewModel.scrollTarget.collectAsState()
@@ -103,6 +114,8 @@ fun DiscussionDetailPage(discussionId: String,
     var showSheet by remember { mutableStateOf(false) }
     var showJumpDialog by remember { mutableStateOf(false) }
     var jumpInput by remember { mutableStateOf("") }
+    var initialScrollConsumed by rememberSaveable(discussionId) { mutableStateOf(false) }
+    var pendingJumpTarget by remember { mutableStateOf<Int?>(null) }
     val canLoadDiscussionCommandExec = viewModel.loadDiscussionCommand.canExecute.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val storeProvider = rememberViewModelStoreProvider()
@@ -116,16 +129,39 @@ fun DiscussionDetailPage(discussionId: String,
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 KnowledgeTopAppBar(
-                    topLayout = { Text(text = discussion?.title ?: "帖子", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 20.sp) },
+                    topLayout = {
+                        Text(
+                            text = discussion?.title ?: "帖子",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 20.sp
+                        )
+                    },
                     bottomLayout = {
-                        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)){
-                            Text(text = discussion?.title ?: "帖子", style = defaultTypography.titleLarge )
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically){
+                        Column(
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                bottom = 24.dp
+                            ), verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = discussion?.title ?: "帖子",
+                                style = defaultTypography.titleLarge
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 discussion?.tags?.let {
                                     TagList(it)
                                 }
                                 discussion?.commentCount?.let {
-                                    Text("$it 条回复", color = colorScheme.outline, style = defaultTypography.bodyMedium)
+                                    Text(
+                                        "$it 条回复",
+                                        color = colorScheme.outline,
+                                        style = defaultTypography.bodyMedium
+                                    )
                                 }
                             }
 
@@ -139,50 +175,75 @@ fun DiscussionDetailPage(discussionId: String,
                 )
             },
             bottomBar = {
-                Row(modifier = Modifier
-                    .background(colorScheme.surfaceContainer)
-                    .padding(horizontal = 8.dp)
-                    .navigationBarsPadding()
-                    .height(56.dp)) {
-                    Box(modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
-                        .clip(RoundedCornerShape(64.dp))
-                        .background(colorScheme.surfaceContainerHigh)
-                        .clickable {
-                        navigator.navigate(ReplyBottomSheetDestination(discussionId = discussionId,
-                            postId = null,
-                            discussionTitle = discussion?.title,
-                            content = null))
-                    }) {
-                        Text(text = "说点什么吧" ,
+                Row(
+                    modifier = Modifier
+                        .background(colorScheme.surfaceContainer)
+                        .padding(horizontal = 8.dp)
+                        .navigationBarsPadding()
+                        .height(56.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
+                            .clip(RoundedCornerShape(64.dp))
+                            .background(colorScheme.surfaceContainerHigh)
+                            .clickable {
+                                navigator.navigate(
+                                    ReplyBottomSheetDestination(
+                                        discussionId = discussionId,
+                                        postId = null,
+                                        discussionTitle = discussion?.title,
+                                        content = null
+                                    )
+                                )
+                            }) {
+                        Text(
+                            text = "说点什么吧",
                             color = colorScheme.outline,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(start = 20.dp).align(Alignment.CenterStart))
+                            modifier = Modifier
+                                .padding(start = 20.dp)
+                                .align(Alignment.CenterStart)
+                        )
                     }
-                    IconButton(onClick = { showSheet = true }, modifier = Modifier.align(Alignment.CenterVertically)) {
+                    IconButton(
+                        onClick = { showSheet = true },
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
                         Icon(Icons.Default.MoreVert, "更多", tint = colorScheme.outline)
                     }
                 }
             }
         ) { innerPadding ->
             val target = scrollTarget
-            Box(modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()){
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
 
                 if (target != null && canLoadDiscussionCommandExec.value) {
-                    val listState = rememberLazyListState(initialFirstVisibleItemIndex = target)
+                    val listState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = if (initialScrollConsumed) 0 else target
+                    )
 
-                    LaunchedEffect(target) {
-                        listState.scrollToItem(target)
+                    LaunchedEffect(target, pendingJumpTarget) {
+                        val jumpTarget = pendingJumpTarget
+                        if (!initialScrollConsumed) {
+                            listState.scrollToItem(target)
+                            initialScrollConsumed = true
+                        } else if (jumpTarget == target) {
+                            listState.scrollToItem(target)
+                            pendingJumpTarget = null
+                        }
                     }
 
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize()
-                    ){
+                    ) {
                         items(
                             count = posts.itemCount,
                             key = posts.itemKey { it.id }
@@ -190,18 +251,23 @@ fun DiscussionDetailPage(discussionId: String,
                             val post = posts[index]
 
                             if (post != null) {
-                                val owner = rememberViewModelStoreOwner(
-                                    provider = storeProvider,
-                                    key = post.id)
-                                CompositionLocalProvider(LocalViewModelStoreOwner provides owner ) {
-                                    val viewModel: PostItemViewModel = koinViewModel<PostItemViewModel>( key = post.id ){ parametersOf(post.id, post) }
-                                    PostItem(viewModel,
-                                        navigator,
-                                        modifier = Modifier.padding(16.dp),
-                                        isOp = post.user?.id == discussion?.user?.id,
-                                    )
-                                }
-
+                                val parentEntry =
+                                    remember(navController.currentBackStackEntry) {
+                                        navController.getBackStackEntry(
+                                            DiscussionDetailPageDestination.route
+                                        )
+                                    }
+                                val viewModel: PostItemViewModel =
+                                    koinViewModel<PostItemViewModel>(
+                                        key = post.id,
+                                        viewModelStoreOwner = parentEntry
+                                    ) { parametersOf(post.id, post) }
+                                PostItem(
+                                    viewModel,
+                                    navigator,
+                                    modifier = Modifier.padding(16.dp),
+                                    isOp = post.user?.id == discussion?.user?.id,
+                                )
                             } else {
                                 PostItemPlaceholder(modifier = Modifier.padding(16.dp))
                             }
@@ -210,21 +276,27 @@ fun DiscussionDetailPage(discussionId: String,
                     if (posts.loadState.prepend is LoadState.Loading) {
                         LinearProgressIndicator(
                             color = colorScheme.secondary,
-                            modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth().zIndex(1f)
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .fillMaxWidth()
+                                .zIndex(1f)
                         )
                     }
                     if (posts.loadState.append is LoadState.Loading) {
                         LinearProgressIndicator(
                             color = colorScheme.secondary,
-                            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().zIndex(1f)
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .zIndex(1f)
                         )
                     }
 
-                }
-                else
-                {
-                    Column(modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceAround) {
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceAround
+                    ) {
                         PostItemPlaceholder(modifier = Modifier.padding(16.dp))
                         PostItemPlaceholder(modifier = Modifier.padding(16.dp))
                         PostItemPlaceholder(modifier = Modifier.padding(16.dp))
@@ -236,7 +308,7 @@ fun DiscussionDetailPage(discussionId: String,
     }
     val sheetState = rememberModalBottomSheetState()
 
-    if(showSheet){
+    if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
             sheetState = sheetState,
@@ -293,7 +365,9 @@ fun DiscussionDetailPage(discussionId: String,
                     onClick = {
                         val floor = jumpInput.toIntOrNull()
                         if (floor != null && floor >= 1) {
-                            viewModel.jumpToPosition(floor - 1)
+                            val position = floor - 1
+                            pendingJumpTarget = position
+                            viewModel.jumpToPosition(position)
                         }
                         showJumpDialog = false
                     }
@@ -311,12 +385,14 @@ fun BottomSheetMenuItem(
     icon: ImageVector,
     text: String,
     onClick: () -> Unit
-){
-    Row(modifier =
-        Modifier.fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp)){
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         Icon(icon, contentDescription = text, tint = colorScheme.secondary)
         Text(text = text)
     }

@@ -23,8 +23,6 @@ class Post : Section
     @Contextual
     var content: Any? = null
 
-    internal var contentMarkdown: String? = null
-
     internal var text: String? = null
 
     @JsonProperty("contentHtml")
