@@ -16,7 +16,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.bettafish.flarent"
+        applicationId = "com.wvbtech.community"
         minSdk = 26
         targetSdk = 36
         versionCode = 4
