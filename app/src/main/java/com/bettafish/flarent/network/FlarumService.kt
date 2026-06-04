@@ -55,6 +55,11 @@ interface FlarumService {
         @Path("id") id: String
     ): User
 
+    @GET("api/users")
+    suspend fun getUsers(
+        @QueryMap request: Map<String, String>
+    ): List<User>
+
     @GET("api")
     suspend fun getForum(): Forum
 
@@ -92,6 +97,13 @@ interface FlarumService {
     suspend fun patchPost(
         @Path("id") id: String,
         @Body post: Post
+    ) : Post
+
+    @PATCH("api/posts/{id}")
+    @JvmSuppressWildcards(true)
+    suspend fun patchPost(
+        @Path("id") id: String,
+        @Body request: Map<String, Any?>
     ) : Post
 
     @PATCH("api/notifications/{id}")

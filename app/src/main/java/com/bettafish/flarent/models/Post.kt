@@ -23,8 +23,6 @@ class Post : Section
     @Contextual
     var content: Any? = null
 
-    internal var contentMarkdown: String? = null
-
     internal var text: String? = null
 
     @JsonProperty("contentHtml")
@@ -41,6 +39,15 @@ class Post : Section
 
     @JsonProperty("hasDownvoted")
     var hasDownvoted: Boolean? = null
+
+    @JsonProperty("likesCount")
+    var likesCount: Int? = null
+
+    @JsonProperty("canLike")
+    var canLike: Boolean? = null
+
+    @JsonProperty("isLiked")
+    var isLiked: Boolean? = null
 
     @JsonProperty("canVote")
     var canVote: Boolean? = null
@@ -79,6 +86,9 @@ class Post : Section
 
     @Relationship("downvotes")
     var downvotes: List<User>? = null
+
+    @Relationship("likes")
+    var likes: List<User>? = null
 
     @Relationship("user")
     var user: User? = null

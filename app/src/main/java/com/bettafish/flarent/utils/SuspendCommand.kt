@@ -82,3 +82,21 @@ class SuspendCommand3<T1,T2,T3>(val func: suspend (arg1:T1, arg2:T2, arg3:T3) ->
         }
     }
 }
+class SuspendCommand4<T1,T2,T3,T4>(val func: suspend (arg1:T1, arg2:T2, arg3:T3, arg4:T4) -> Unit, val coroutineScope: CoroutineScope){
+    val canExecute = MutableStateFlow(true)
+
+    fun execute(arg1:T1, arg2:T2, arg3:T3, arg4:T4){
+        if(!canExecute.value) return
+        canExecute.value = false
+        coroutineScope.launch {
+            try {
+                func(arg1, arg2, arg3, arg4)
+            }
+            catch (e: Exception) {
+            }
+            finally {
+                canExecute.value = true
+            }
+        }
+    }
+}

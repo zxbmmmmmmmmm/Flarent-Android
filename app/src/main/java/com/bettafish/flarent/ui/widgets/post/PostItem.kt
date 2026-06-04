@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,6 +70,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bettafish.flarent.App
 import com.bettafish.flarent.R
 import com.bettafish.flarent.config.ForumConfig
@@ -83,11 +85,15 @@ import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.GlobalPostUpdateManager
 import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.relativeTime
+import com.mikepenz.markdown.compose.LazyMarkdownSuccess
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.model.MarkdownState
+import com.mikepenz.markdown.model.State
 import com.mikepenz.markdown.model.rememberMarkdownState
+import com.ramcosta.composedestinations.generated.destinations.LikesBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.PostReactionsBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
@@ -122,21 +128,29 @@ fun PostItem(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()){
-        if(post.value != null){
-            PostItem(post.value!!,
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (post.value != null) {
+            val markdown by viewModel.parsedMarkdown.collectAsStateWithLifecycle()
+            PostItem(
+                post.value!!,
                 modifier,
                 isOp,
                 userClickEnabled = userClickEnabled,
                 userClick = { navigator.navigate(UserProfilePageDestination(it)) },
-                imageClick = { url-> imagePreviewer(listOf(url),0) },
+                imageClick = { url -> imagePreviewer(listOf(url), 0) },
                 replyClick = { name, postId ->
                     post.value?.discussion?.id?.let {
                         val content = "@\"$name\"#p$postId "
                         navigator.navigate(ReplyBottomSheetDestination(it, content = content))
-                    }},
+                    }
+                },
                 onVote = { isUpvoted, isDownvoted ->
-                    viewModel.voteCommand.execute(post.value!!.id, isUpvoted, isDownvoted)
+                    viewModel.voteCommand.execute(
+                        post.value!!.id,
+                        isUpvoted,
+                        isDownvoted,
+                        post.value?.canLike != true
+                    )
                 },
                 isVoting = !canVoteCommandExec.value,
                 onReact = {
@@ -144,16 +158,23 @@ fun PostItem(
                 },
                 isReacting = !canReactCommandExec.value,
                 onReactionLongClicked = {
-                    navigator.navigate(PostReactionsBottomSheetDestination(id)
-                    )},
+                    navigator.navigate(
+                        PostReactionsBottomSheetDestination(id)
+                    )
+                },
                 onVoteLongClicked = {
-                    navigator.navigate(VotesBottomSheetDestination(id))
+                    if (post.value?.likesCount != null) {
+                        navigator.navigate(LikesBottomSheetDestination(id))
+                    } else {
+                        navigator.navigate(VotesBottomSheetDestination(id))
+                    }
                 },
                 onEditClick = { postId, content ->
                     navigator.navigate(ReplyBottomSheetDestination(null, postId, null, content))
-                })
-        }
-        else{
+                },
+                markdownState = markdown
+            )
+        } else {
             PostItemPlaceholder(modifier = Modifier.padding(16.dp))
         }
     }
@@ -166,16 +187,17 @@ private fun PostItem(
     modifier: Modifier = Modifier,
     isOp: Boolean = false,
     userClickEnabled: Boolean = true,
-    userClick: (username: String) -> Unit = {  },
+    userClick: (username: String) -> Unit = { },
     imageClick: ((String) -> Unit) = {},
-    replyClick: (name: String, postId:String) -> Unit = { _,_ -> },
-    onEditClick: (postId: String, content: String) -> Unit = { _,_ -> },
-    onVote: (isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _,_ -> },
+    replyClick: (name: String, postId: String) -> Unit = { _, _ -> },
+    onEditClick: (postId: String, content: String) -> Unit = { _, _ -> },
+    onVote: (isUpvoted: Boolean, isDownvoted: Boolean) -> Unit = { _, _ -> },
     isVoting: Boolean = false,
-    onReact: (reactionId: String) -> Unit = {  },
+    onReact: (reactionId: String) -> Unit = { },
     isReacting: Boolean = false,
-    onReactionLongClicked : (reactionId: String) -> Unit = {  },
-    onVoteLongClicked : () -> Unit = {  },
+    onReactionLongClicked: (reactionId: String) -> Unit = { },
+    onVoteLongClicked: () -> Unit = { },
+    markdownState: State
 ) {
     var showReactionMenu by remember { mutableStateOf(false) }
     var showMoreMenu by remember { mutableStateOf(false) }
@@ -183,18 +205,17 @@ private fun PostItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .alpha(if(post.isHidden == true) 0.38f else 1f)
+            .alpha(if (post.isHidden == true) 0.38f else 1f)
     ) {
         val isComment = post.contentType == "comment"
         // Header
-        if(isComment){
+        if (isComment) {
 
-            val rowModifier = if(userClickEnabled){
+            val rowModifier = if (userClickEnabled) {
                 Modifier
                     .fillMaxWidth()
                     .clickable { post.user?.username?.let { username -> userClick(username) } }
-            }
-            else{
+            } else {
                 Modifier.fillMaxWidth()
             }
 
@@ -210,18 +231,25 @@ private fun PostItem(
                         .clip(CircleShape)
                 )
 
-                Column(modifier = Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                    Row(horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()){
-                        Row(verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f, fill = false)){
+                Column(
+                    modifier = Modifier.padding(start = 12.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f, fill = false)
+                        ) {
                             Text(
                                 text = post.user?.displayName ?: post.user?.username ?: "",
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.weight(1f,fill = false)
+                                modifier = Modifier.weight(1f, fill = false)
                             )
                             if (isOp) {
                                 Surface(
@@ -235,17 +263,28 @@ private fun PostItem(
                                         text = stringResource(R.string.op_badge),
                                         color = colorScheme.onPrimary,
                                         style = MaterialTheme.typography.labelSmall,
-                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                        modifier = Modifier.padding(
+                                            horizontal = 4.dp,
+                                            vertical = 2.dp
+                                        )
                                     )
                                 }
                             }
                         }
-                        Row(modifier = Modifier.align(Alignment.CenterVertically), horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                            if(post.isHidden == true){
+                        Row(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (post.isHidden == true) {
                                 val textStyle = MaterialTheme.typography.bodyMedium
                                 val density = LocalDensity.current
                                 val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
-                                Icon(Icons.Default.VisibilityOff, contentDescription = "隐藏", modifier = Modifier.size(textHeightDp), tint = colorScheme.outline )
+                                Icon(
+                                    Icons.Default.VisibilityOff,
+                                    contentDescription = "隐藏",
+                                    modifier = Modifier.size(textHeightDp),
+                                    tint = colorScheme.outline
+                                )
                             }
                             post.number?.let {
                                 Text(
@@ -258,7 +297,7 @@ private fun PostItem(
 
                     }
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         post.createdAt?.let {
                             val displayTime = remember(it) { it.relativeTime }
                             Text(
@@ -269,38 +308,44 @@ private fun PostItem(
                         }
 
                         post.editedAt?.relativeTime?.let {
-                            Text(text = "编辑于 $it",
+                            Text(
+                                text = "编辑于 $it",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = colorScheme.outline)
+                                color = colorScheme.outline
+                            )
                         }
                     }
                 }
             }
         }
         // Content
-        if(!isComment){
+        if (!isComment) {
 
             val contentTextColor = colorScheme.outline
-            val contentTextStyle =MaterialTheme.typography.titleSmall
+            val contentTextStyle = MaterialTheme.typography.titleSmall
 
             var icon = Icons.Default.Menu
             var detailsContent: @Composable () -> Unit = {}
 
-            when(post.contentType){
+            when (post.contentType) {
                 "discussionRenamed" -> {
                     icon = Icons.Default.EditNote
                     detailsContent = {
                         val arr = post.content as? List<*>
-                        arr?.get(1)?.toString()?.let{
-                            Text("更改标题为",
+                        arr?.get(1)?.toString()?.let {
+                            Text(
+                                "更改标题为",
                                 style = contentTextStyle,
-                                color = contentTextColor)
+                                color = contentTextColor
+                            )
                         }
-                        arr?.get(0)?.toString()?.let{
-                            Text(it,
+                        arr?.get(0)?.toString()?.let {
+                            Text(
+                                it,
                                 style = contentTextStyle,
                                 textDecoration = TextDecoration.LineThrough,
-                                color = contentTextColor)
+                                color = contentTextColor
+                            )
                         }
                         arr?.get(1)?.toString()?.let {
                             Text(
@@ -311,14 +356,18 @@ private fun PostItem(
                         }
                     }
                 }
+
                 "discussionTagged" -> {
                     icon = Icons.AutoMirrored.Filled.Label
                     detailsContent = {
-                        Text("修改了标签",
+                        Text(
+                            "修改了标签",
                             style = contentTextStyle,
-                            color = contentTextColor)
+                            color = contentTextColor
+                        )
                     }
                 }
+
                 "discussionSplit" -> {
                     icon = Icons.AutoMirrored.Filled.CallSplit
                     detailsContent = {
@@ -348,66 +397,81 @@ private fun PostItem(
                         )
                     }
                 }
+
                 "discussionMerged" -> {
                     icon = Icons.Default.Merge
                     detailsContent = {
-                        val map = post.content as? LinkedHashMap<*,*>
+                        val map = post.content as? LinkedHashMap<*, *>
                         val count = map?.get("count")
                         val titles = map?.get("titles") as? ArrayList<*>
                         val titlesString = titles?.joinToString(separator = ", ") ?: "未知主题"
-                        Text("合并主题 $titlesString 下的 $count 个回复",
+                        Text(
+                            "合并主题 $titlesString 下的 $count 个回复",
                             style = contentTextStyle,
-                            color = contentTextColor)
+                            color = contentTextColor
+                        )
                     }
                 }
 
                 "discussionStickied" -> {
                     icon = Icons.Default.PushPin
                     detailsContent = {
-                        val map = post.content as? LinkedHashMap<*,*>
+                        val map = post.content as? LinkedHashMap<*, *>
                         val isSticky = map?.get("sticky") as? Boolean
-                        Text(if(isSticky == true) "置顶此贴" else "取消置顶",
+                        Text(
+                            if (isSticky == true) "置顶此贴" else "取消置顶",
                             style = contentTextStyle,
-                            color = contentTextColor)
+                            color = contentTextColor
+                        )
                     }
                 }
 
                 "discussionLocked" -> {
-                    val map = post.content as? LinkedHashMap<*,*>
+                    val map = post.content as? LinkedHashMap<*, *>
                     val locked = map?.get("locked") as? Boolean
-                    icon = if(locked == true) Icons.Filled.Lock else Icons.Filled.LockOpen
+                    icon = if (locked == true) Icons.Filled.Lock else Icons.Filled.LockOpen
 
                     detailsContent = {
-                        Text(if(locked == true) "锁定此贴" else "取消锁定",
+                        Text(
+                            if (locked == true) "锁定此贴" else "取消锁定",
                             style = contentTextStyle,
-                            color = contentTextColor)
+                            color = contentTextColor
+                        )
                     }
                 }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp),
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .background(colorScheme.surfaceContainer)
                     .padding(12.dp)
                     .padding(end = 8.dp)
-                    .fillMaxWidth())
+                    .fillMaxWidth()
+            )
             {
 
-                Icon(icon,
+                Icon(
+                    icon,
                     modifier = Modifier
                         .height(36.dp)
                         .width(36.dp),
                     tint = colorScheme.outline,
-                    contentDescription = null)
-                FlowRow(modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterVertically),
+                    contentDescription = null
+                )
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterVertically),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)){
-                    Row(modifier = Modifier.clickable{ post.user?.id?.let { userClick(it)  } },
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.clickable { post.user?.id?.let { userClick(it) } },
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically){
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Avatar(
                             avatarUrl = post.user?.avatarUrl,
                             name = post.user?.displayName,
@@ -423,15 +487,19 @@ private fun PostItem(
                             modifier = Modifier.weight(1f, fill = false)
                         )
                         post.createdAt?.relativeTime?.let {
-                            Text(text = it,
+                            Text(
+                                text = it,
                                 style = contentTextStyle,
-                                color = contentTextColor)
+                                color = contentTextColor
+                            )
                         }
 
                     }
 
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.align(Alignment.CenterVertically)){
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    ) {
                         detailsContent()
                     }
 
@@ -439,95 +507,93 @@ private fun PostItem(
             }
         }
 
-        if(isComment){
-            post.contentMarkdown?.let { markdown ->
-                val isDarkTheme = isSystemInDarkTheme()
-                val markdownState = rememberMarkdownState(post.id, post.editedAt, retainState = true) {
-                    markdown
-                }
-                val markdownComponents = remember(isDarkTheme) {
-                    val highlightsBuilder = Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
-                    markdownComponents(
-                        codeBlock = {
-                            MarkdownHighlightedCodeBlock(
-                                content = it.content,
-                                node = it.node,
-                                highlightsBuilder = highlightsBuilder,
-                                showHeader = true,
-                            )
-                        },
-                        codeFence = {
-                            MarkdownHighlightedCodeFence(
-                                content = it.content,
-                                node = it.node,
-                                highlightsBuilder = highlightsBuilder,
-                                showHeader = true,
-                            )
-                        },
-                    )
-                }
-                SelectionContainer{
-                    Markdown(
-                        markdownState = markdownState,
-                        imageTransformer = ClickableCoil3ImageTransformer(imageClick),
-                        components = markdownComponents,
-                        modifier = Modifier
-                            .padding(vertical = 12.dp)
-                            .fillMaxWidth(),
-                    )
-                }
+        if (isComment) {
+
+            val isDarkTheme = isSystemInDarkTheme()
+            val markdownState = markdownState
+            val markdownComponents = remember(isDarkTheme) {
+                val highlightsBuilder =
+                    Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
+                markdownComponents(
+                    codeBlock = {
+                        MarkdownHighlightedCodeBlock(
+                            content = it.content,
+                            node = it.node,
+                            highlightsBuilder = highlightsBuilder,
+                            showHeader = true,
+                        )
+                    },
+                    codeFence = {
+                        MarkdownHighlightedCodeFence(
+                            content = it.content,
+                            node = it.node,
+                            highlightsBuilder = highlightsBuilder,
+                            showHeader = true,
+                        )
+                    },
+                )
             }
-            val reactions = post.reactionCounts?.mapNotNull {
-                    (id,value) ->
+            SelectionContainer {
+                Markdown(
+                    state = markdownState,
+                    imageTransformer = ClickableCoil3ImageTransformer(imageClick),
+                    components = markdownComponents,
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth(),
+                )
+            }
+            val reactions = post.reactionCounts?.mapNotNull { (id, value) ->
                 val reaction = allReactionsMap[id]
-                if(reaction != null)
+                if (reaction != null)
                     reaction to value
                 else null
             }?.sortedByDescending { it.second }
 
-            if(!reactions.isNullOrEmpty() && !reactions.all { it.second == 0 }){
+            if (!reactions.isNullOrEmpty() && !reactions.all { it.second == 0 }) {
                 ReactionList(
                     reactions = reactions,
                     selectedReaction = post.userReactionIdentifier,
                     modifier = Modifier.padding(bottom = 8.dp),
                     onReactionSelected = {
-                        if(post.canReact == true){
+                        if (post.canReact == true) {
                             onReact(it)
-                        }},
+                        }
+                    },
                     onReactionLongClicked = onReactionLongClicked,
                     enabled = !isReacting
                 )
             }
 
-            Box(modifier = Modifier.fillMaxWidth()){
+            Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.align(Alignment.CenterStart),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val isUpvoted = post.hasUpvoted ?: false
-                    val votes = post.votes ?: 0
+                    val currentUserId = remember { App.INSTANCE.appSettings.user?.id }
+                    val isUpvoted =
+                        post.hasUpvoted == true || post.likes?.any { it.id == currentUserId } == true
+                    val votes = post.votes ?: post.likesCount ?: 0
 
                     Row(
                         modifier = Modifier.align(Alignment.CenterVertically),
                         horizontalArrangement = Arrangement.spacedBy(2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if(post.canVote != null){
+                        if (post.canVote != null || post.canLike != null) {
 
                             LongClickableIconButton(
-                                enabled = post.canVote ?: false,
+                                enabled = post.canVote == true || post.canLike == true,
                                 onClick = {
                                     val newUpvoted = !isUpvoted
-                                    onVote(newUpvoted, post.hasDownvoted?:false)
+                                    onVote(newUpvoted, post.hasDownvoted ?: false)
                                 },
                                 onLongClick = onVoteLongClicked,
                             ) {
-                                if(isVoting){
+                                if (isVoting) {
                                     CircularProgressIndicator(modifier = Modifier.padding(8.dp))
-                                }
-                                else
-                                {
+                                } else {
                                     Icon(
                                         imageVector = if (isUpvoted) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
                                         tint = if (isUpvoted) colorScheme.primary else colorScheme.outline,
@@ -548,12 +614,11 @@ private fun PostItem(
 
                     }
 
-                    if(post.canReact == true){
+                    if (post.canReact == true) {
                         IconButton(onClick = { showReactionMenu = true }) {
                             if (isReacting) {
                                 CircularProgressIndicator(modifier = Modifier.padding(8.dp))
-                            }
-                            else {
+                            } else {
                                 Icon(
                                     Icons.Outlined.AddReaction,
                                     tint = colorScheme.outline,
@@ -567,13 +632,15 @@ private fun PostItem(
                                 FlowRow(
                                     modifier = Modifier.padding(horizontal = 4.dp),
                                     horizontalArrangement = Arrangement.Center,
-                                    maxItemsInEachRow = 5) {
+                                    maxItemsInEachRow = 5
+                                ) {
                                     allReactions.forEach { reaction ->
-                                        val emoji = if (reaction.type == "emoji" && reaction.identifier != null) {
-                                            getEmoji(reaction.identifier!!)
-                                        } else {
-                                            reaction.display ?: ""
-                                        }
+                                        val emoji =
+                                            if (reaction.type == "emoji" && reaction.identifier != null) {
+                                                getEmoji(reaction.identifier!!)
+                                            } else {
+                                                reaction.display ?: ""
+                                            }
                                         IconButton({
                                             onReact(reaction.id)
                                             showReactionMenu = false
@@ -600,16 +667,20 @@ private fun PostItem(
                 ) {
                     IconButton(onClick = {
                         replyClick(post.user?.displayName ?: post.user?.username ?: "", post.id)
-                    }){
-                        Icon(Icons.AutoMirrored.Filled.Reply,
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Reply,
                             tint = colorScheme.outline,
-                            contentDescription = null)
+                            contentDescription = null
+                        )
                     }
                     Box {
                         IconButton(onClick = { showMoreMenu = true }) {
-                            Icon(Icons.Default.MoreHoriz,
+                            Icon(
+                                Icons.Default.MoreHoriz,
                                 tint = colorScheme.outline,
-                                contentDescription = null)
+                                contentDescription = null
+                            )
                         }
                         DropdownMenu(
                             expanded = showMoreMenu,
@@ -619,20 +690,37 @@ private fun PostItem(
                             post.discussion?.let {
                                 DropdownMenuItem(
                                     text = { Text("分享") },
-                                    leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Filled.Share,
+                                            contentDescription = null
+                                        )
+                                    },
                                     onClick = {
                                         showMoreMenu = false
-                                        shareLink(context, "${ForumConfig.baseUrl}d/${it.id}/${post.id}", "${post.user?.displayName ?: post.user?.username } 在 ${it.title} 的回复")
+                                        shareLink(
+                                            context,
+                                            "${ForumConfig.baseUrl}d/${it.id}/${post.id}",
+                                            "${post.user?.displayName ?: post.user?.username} 在 ${it.title} 的回复"
+                                        )
                                     }
                                 )
                             }
                             if (post.canEdit == true) {
                                 DropdownMenuItem(
                                     text = { Text("编辑") },
-                                    leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Filled.Edit,
+                                            contentDescription = null
+                                        )
+                                    },
                                     onClick = {
                                         showMoreMenu = false
-                                        onEditClick(post.id, post.content?.toString() ?: post.contentMarkdown ?: "")
+                                        onEditClick(
+                                            post.id,
+                                            post.content?.toString() ?: ""
+                                        )
                                     }
                                 )
                             }
@@ -653,56 +741,56 @@ fun shareLink(context: Context, url: String, title: String = "分享") {
     context.startActivity(Intent.createChooser(intent, title))
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PostItemPreview() {
-    val sampleUser = User().apply {
-        displayName = "User"
-        username = "user"
-        avatarUrl = null
-    }
-    val samplePost = Post().apply {
-        id = "1"
-        contentType = "comment"
-        user = sampleUser
-        createdAt = ZonedDateTime.now().minusHours(1)
-        number = 2
-        votes = 1
-        contentMarkdown =  """
-### Hello Markdown
-
-This is a simple markdown example with:
-
-- Bullet points
-- **Bold text**
-- *Italic text*
-
-[Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
-"""
-    }
-    MaterialTheme {
-        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PostItemRenamePreview() {
-    val sampleUser = User().apply {
-        displayName = "User"
-        username = "user"
-        avatarUrl = null
-    }
-    val samplePost = Post().apply {
-        id = "1"
-        contentType = "discussionRenamed"
-        user = sampleUser
-        createdAt = ZonedDateTime.now().minusHours(1)
-        number = 2
-        content = listOf("11111111", "22222222")
-    }
-    MaterialTheme {
-        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PostItemPreview() {
+//    val sampleUser = User().apply {
+//        displayName = "User"
+//        username = "user"
+//        avatarUrl = null
+//    }
+//    val samplePost = Post().apply {
+//        id = "1"
+//        contentType = "comment"
+//        user = sampleUser
+//        createdAt = ZonedDateTime.now().minusHours(1)
+//        number = 2
+//        votes = 1
+//        contentMarkdown = """
+//### Hello Markdown
+//
+//This is a simple markdown example with:
+//
+//- Bullet points
+//- **Bold text**
+//- *Italic text*
+//
+//[Check out this link](https://github.com/mikepenz/multiplatform-markdown-renderer)
+//"""
+//    }
+//    MaterialTheme {
+//        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+//    }
+//}
+//
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PostItemRenamePreview() {
+//    val sampleUser = User().apply {
+//        displayName = "User"
+//        username = "user"
+//        avatarUrl = null
+//    }
+//    val samplePost = Post().apply {
+//        id = "1"
+//        contentType = "discussionRenamed"
+//        user = sampleUser
+//        createdAt = ZonedDateTime.now().minusHours(1)
+//        number = 2
+//        content = listOf("11111111", "22222222")
+//    }
+//    MaterialTheme {
+//        PostItem(post = samplePost, isOp = true, modifier = Modifier.padding(16.dp))
+//    }
+//}

@@ -156,7 +156,6 @@ fun DiscussionListPage(
                 item {
                     if (pagingItems.loadState.append is LoadState.Loading) {
                         LinearProgressIndicator(
-                            color = colorScheme.secondary,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

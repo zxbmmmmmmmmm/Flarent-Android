@@ -38,11 +38,6 @@ class PostListDataSource(
 
             val nextKey = if (items.size < pageSize) null else offset + pageSize
             val prevKey = if (offset == 0) null else maxOf(0, offset - pageSize)
-            items.forEach { item ->
-                if (item.contentHtml != null) {
-                    item.contentMarkdown = HtmlConverter.convert(item.contentHtml)
-                }
-            }
             LoadResult.Page(
                 data = items,
                 prevKey = prevKey,

@@ -203,7 +203,6 @@ fun GroupBadgePreview() {
         nameSingular = "Admin"
         color = "#3A75EE"
         icon = "fas fa-wrench"
-        isHidden = 0
     })
 }
 
@@ -225,13 +224,11 @@ fun ProfileHeaderPreview() {
                 nameSingular = "Admin"
                 color = "#3A75EE"
                 icon = "fas fa-wrench"
-                isHidden = 0
             },
             Group().apply {
                 nameSingular = "User"
                 color = "#763D99"
                 icon = "fas fa-bolt"
-                isHidden = 0
             })
     })
 }

@@ -16,4 +16,6 @@ interface PostsRepository {
     suspend fun fetchReactions(postId: String): List<PostReactions>
 
     suspend fun editPost(postId: String, content: String): Post
+
+    suspend fun likePost(postId: String, isLiked: Boolean) : Post
 }

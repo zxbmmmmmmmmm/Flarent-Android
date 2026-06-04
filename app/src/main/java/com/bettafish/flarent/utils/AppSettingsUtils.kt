@@ -20,22 +20,29 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.koin.compose.koinInject
+import org.koin.core.component.KoinComponent
+import org.koin.core.context.GlobalContext
 import java.lang.ref.WeakReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-open class AppSettingsUtils private constructor(ctx: Context) {
+open class AppSettingsUtils private constructor(ctx: Context,
+                                                json: Json) {
     companion object {
         private var instance: AppSettingsUtils? = null
 
         fun getInstance(context: Context): AppSettingsUtils {
-            return instance ?: AppSettingsUtils(context).also {
+
+            return instance ?: AppSettingsUtils(context, GlobalContext.get().get()).also {
                 instance = it
             }
         }
     }
 
     private val contextWeakReference: WeakReference<Context> = WeakReference(ctx)
+
+    private val dataStoreDelegates = DataStoreDelegates(json)
 
     private val context: Context
         get() = contextWeakReference.get()!!
@@ -45,17 +52,17 @@ open class AppSettingsUtils private constructor(ctx: Context) {
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    var token by DataStoreDelegates.string(key = "token")
+    var token by dataStoreDelegates.string(key = "token")
 
-    var userId by DataStoreDelegates.string(key = "userId")
+    var userId by dataStoreDelegates.string(key = "userId")
 
-    var user by DataStoreDelegates.any<User>(key = "user")
+    var user by dataStoreDelegates.any<User>(key = "user")
 
-    var forum by DataStoreDelegates.any<Forum>(key = "forum")
+    var forum by dataStoreDelegates.any<Forum>(key = "forum")
 
-    var themeMode by DataStoreDelegates.string(key = "themeMode", defaultValue = AppThemeMode.SYSTEM.value)
+    var themeMode by dataStoreDelegates.string(key = "themeMode", defaultValue = AppThemeMode.SYSTEM.value)
 
-    private object DataStoreDelegates {
+    private class DataStoreDelegates(val json: Json) {
         fun int(
             defaultValue: Int = 0,
             key: String? = null
@@ -264,16 +271,17 @@ open class AppSettingsUtils private constructor(ctx: Context) {
 
             override fun getValue(thisRef: AppSettingsUtils, property: KProperty<*>): T? {
                 val finalKey = key ?: property.name
+
                 if (!initialized) {
                     initialized = true
                     prefValue =
-                        Json.decodeFromString( thisRef.preferencesDataStore.getString(finalKey, Json.encodeToString(defaultValue)))
+                        json.decodeFromString( thisRef.preferencesDataStore.getString(finalKey, json.encodeToString(defaultValue)))
                     thisRef.coroutineScope.launch {
                         thisRef.preferencesDataStore.data
                             .map { it[stringPreferencesKey(finalKey)] }
                             .distinctUntilChanged()
                             .collect {
-                                prefValue = it?.let { str -> Json.decodeFromString(str) } ?: defaultValue
+                                prefValue = it?.let { str -> json.decodeFromString(str) } ?: defaultValue
                             }
                     }
                 }

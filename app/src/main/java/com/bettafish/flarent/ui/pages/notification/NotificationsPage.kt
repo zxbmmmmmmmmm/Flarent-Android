@@ -262,6 +262,17 @@ fun NotificationsPage(
                                             )
                                         )
                                     }
+
+                                    "postLiked" ->{
+                                        val post = notification.subject as Post
+                                        navigator.navigate(
+                                            PostBottomSheetDestination(
+                                                postId = post.id,
+                                                discussionId = post.discussion!!.id,
+                                                discussionTitle = post.discussion?.title
+                                            )
+                                        )
+                                    }
                                 }
                             },
                             userClick = { user ->

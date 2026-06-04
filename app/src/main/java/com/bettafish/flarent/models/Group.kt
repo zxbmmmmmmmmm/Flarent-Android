@@ -3,6 +3,7 @@ package com.bettafish.flarent.models
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.jasminb.jsonapi.annotations.Id
 import com.github.jasminb.jsonapi.annotations.Type
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -23,6 +24,4 @@ class Group {
     @JsonProperty("icon")
     var icon: String? = null
 
-    @JsonProperty("isHidden")
-    var isHidden: Int? = null
 }

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
+import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -79,6 +80,7 @@ fun UserProfilePage(
     userName: String,
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
+    navController: NavController,
     viewModel: UserProfileViewModel = koinViewModel { parametersOf(userName) }
 ) {
     val user by viewModel.user.collectAsState()
@@ -209,29 +211,31 @@ fun UserProfilePage(
                                                 )
                                             })
                                 }
-                                val owner = rememberViewModelStoreOwner(
-                                    provider = storeProvider,
-                                    key = post.id
-                                )
-
-                                CompositionLocalProvider(LocalViewModelStoreOwner provides owner) {
-                                    val viewModel: PostItemViewModel =
-                                        koinViewModel<PostItemViewModel>(key = post.id) {
-                                            parametersOf(
-                                                post.id,
-                                                post
-                                            )
-                                        }
-                                    PostItem(
-                                        viewModel,
-                                        navigator,
-                                        modifier = Modifier.padding(
-                                            start = 16.dp,
-                                            end = 16.dp,
-                                            bottom = 16.dp
+                                val parentEntry =
+                                    remember(navController.currentBackStackEntry) {
+                                        navController.getBackStackEntry(
+                                            DiscussionDetailPageDestination.route
                                         )
+                                    }
+                                val viewModel: PostItemViewModel =
+                                    koinViewModel<PostItemViewModel>(
+                                        key = post.id,
+                                        viewModelStoreOwner = parentEntry
+                                    ) {
+                                        parametersOf(
+                                            post.id,
+                                            post
+                                        )
+                                    }
+                                PostItem(
+                                    viewModel,
+                                    navigator,
+                                    modifier = Modifier.padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        bottom = 16.dp
                                     )
-                                }
+                                )
 
                             }
 

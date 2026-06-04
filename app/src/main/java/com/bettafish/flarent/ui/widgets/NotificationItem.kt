@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.ThumbsUpDown
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
@@ -52,6 +53,7 @@ import com.bettafish.flarent.utils.LocalUpdatedValueStore.Companion.Notification
 import com.bettafish.flarent.utils.relativeTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import org.koin.compose.koinInject
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalGridApi::class)
@@ -129,6 +131,7 @@ fun NotificationItem(
                                 "newPostByUser" -> Icons.Default.Person
                                 "userMentioned" -> Icons.Default.AlternateEmail
                                 "newPost" -> Icons.Default.Star
+                                "postLiked" -> Icons.Default.ThumbUp
                                 else -> Icons.Default.Notifications
                             },
                             null,
@@ -145,8 +148,9 @@ fun NotificationItem(
                                 "postMentioned" -> Text("回复了你")
                                 "vote" -> Text(if (notification.content == 1) "赞同了你的帖子" else "反对了你的帖子")
                                 "postReacted" -> {
+                                    val json : Json = koinInject()
                                     val jsonObject: JsonObject =
-                                        Json.decodeFromString(notification.content.toString())
+                                        json.decodeFromString(notification.content.toString())
                                     val emoji =
                                         if (jsonObject["type"].toString() == "\"emoji\"") {
                                             val identifier = jsonObject["identifier"].toString()
@@ -168,6 +172,7 @@ fun NotificationItem(
                                 "newPostByUser" -> Text("发表回复")
                                 "userMentioned" -> Text("提及了你")
                                 "newPost" -> Text("回复了你关注的主题")
+                                "postLiked" -> Text("赞了你")
                                 else -> Text(notification.contentType.toString())
                             }
                         }
