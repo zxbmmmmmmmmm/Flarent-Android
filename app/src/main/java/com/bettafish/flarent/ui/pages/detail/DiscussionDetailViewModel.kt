@@ -69,7 +69,7 @@ class DiscussionDetailViewModel(
             _discussion.value = result
             firebaseAnalytics.logEvent(Analytics.Event.VIEW_DISCUSSION) {
                 result.title?.let{ param(Analytics.Param.DISCUSSION_TITLE, it )}
-                param(FirebaseAnalytics.Param.METHOD, "welcomePage")
+                param(FirebaseAnalytics.Param.METHOD, "discussionDetailPage")
             }
         } catch (e: Exception) {
         }

@@ -26,12 +26,6 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
         return service.patchPost(postId, post)
     }
 
-    suspend fun patchPost(postId :String, block:Post.() -> Unit):Post{
-        val post = Post().apply { id = postId }
-        block(post)
-        return service.patchPost(postId, post)
-    }
-
     override suspend fun votePost(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) : Post {
         val request = mapOf("data" to mapOf(
             "type" to "posts",
@@ -40,6 +34,15 @@ class PostsRepositoryImpl(private val service: FlarumService): PostsRepository {
             ),
         )
         return service.votePost(postId,request)
+    }
+
+    override suspend fun likePost(postId: String, isLiked: Boolean) : Post {
+        val request = mapOf("data" to mapOf(
+            "type" to "posts",
+            "attributes" to mapOf("isLiked" to isLiked),
+            "id" to postId,
+        ))
+        return service.patchPost(postId, request)
     }
 
     override suspend fun reactPost(postId: String, reactionId: String) : Post {

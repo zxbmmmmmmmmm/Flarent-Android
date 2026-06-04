@@ -33,6 +33,7 @@ import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
 import com.bettafish.flarent.ui.pages.detail.DiscussionDetailViewModel
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListViewModel
 import com.bettafish.flarent.ui.pages.home.HomeViewModel
+import com.bettafish.flarent.ui.pages.like.LikesViewModel
 import com.bettafish.flarent.ui.pages.notification.NotificationsViewModel
 import com.bettafish.flarent.ui.pages.post.PostBottomSheetViewModel
 import com.bettafish.flarent.ui.pages.reaction.PostReactionsViewModel
@@ -61,11 +62,13 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
+import kotlinx.serialization.json.Json
 
 val networkModule = module {
     single {
         val logging = HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+            level =
+                if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         }
         OkHttpClient.Builder()
             .addInterceptor(logging)
@@ -114,6 +117,12 @@ val networkModule = module {
             .build()
     }
 
+    single {
+        Json {
+            ignoreUnknownKeys = true
+        }
+    }
+
     single { get<Retrofit>().create(FlarumService::class.java) }
 }
 
@@ -129,22 +138,44 @@ val repositoryModule = module {
 
 val viewModelModule = module {
     viewModel { (navArgs: TagNavArgs?) ->
-        DiscussionListViewModel(get(), navArgs) }
+        DiscussionListViewModel(get(), navArgs)
+    }
     viewModel { TagListViewModel(get()) }
     viewModel { AccountViewModel(get()) }
-    viewModel { (id : String, targetPosition:Int) -> DiscussionDetailViewModel(get(),get(),id, targetPosition) }
-    viewModel { (userName : String) -> UserProfileViewModel(userName, get(), get()) }
+    viewModel { (id: String, targetPosition: Int) ->
+        DiscussionDetailViewModel(
+            get(),
+            get(),
+            id,
+            targetPosition
+        )
+    }
+    viewModel { (userName: String) -> UserProfileViewModel(userName, get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { FileViewModel(get()) }
-    viewModel { (postId : String) -> PostReactionsViewModel(get(), postId) }
-    viewModel { WelcomeViewModel(get(),get()) }
-    viewModel { (id:String, initDiscussion: Discussion?) -> DiscussionItemViewModel(id, initDiscussion, get()) }
-    viewModel { (id:String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
-    viewModel { (id:String, postId:String? , content:String?) -> ReplyViewModel(discussionId = id, postId = postId, initContent = content, get()) }
-    viewModel { (id:String) -> VotesViewModel(get(), id) }
-    viewModel {  NotificationsViewModel(get()) }
-    viewModel {  HomeViewModel(get()) }
+    viewModel { (postId: String) -> PostReactionsViewModel(get(), postId) }
+    viewModel { WelcomeViewModel(get(), get()) }
+    viewModel { (id: String, initDiscussion: Discussion?) ->
+        DiscussionItemViewModel(
+            id,
+            initDiscussion,
+            get()
+        )
+    }
+    viewModel { (id: String, initPost: Post?) -> PostItemViewModel(id, initPost, get()) }
+    viewModel { (id: String, postId: String?, content: String?) ->
+        ReplyViewModel(
+            discussionId = id,
+            postId = postId,
+            initContent = content,
+            get()
+        )
+    }
+    viewModel { (id: String) -> VotesViewModel(get(), id) }
+    viewModel { NotificationsViewModel(get()) }
+    viewModel { HomeViewModel(get()) }
     viewModel { PostBottomSheetViewModel(get()) }
+    viewModel { (id: String) -> LikesViewModel(get(), id) }
 }
 
 class AuthInterceptor : Interceptor {
@@ -155,7 +186,7 @@ class AuthInterceptor : Interceptor {
         val requestWithToken = token?.let {
             originalRequest.newBuilder()
                 .header("Authorization", "Token $it").build()
-        }  ?: originalRequest
+        } ?: originalRequest
 
         return chain.proceed(requestWithToken)
     }

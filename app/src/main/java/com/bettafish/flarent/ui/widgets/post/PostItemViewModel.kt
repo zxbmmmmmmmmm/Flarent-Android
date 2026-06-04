@@ -8,6 +8,7 @@ import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.utils.HtmlConverter
 import com.bettafish.flarent.utils.SuspendCommand2
 import com.bettafish.flarent.utils.SuspendCommand3
+import com.bettafish.flarent.utils.SuspendCommand4
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class PostItemViewModel(
 ) : ViewModel() {
     private val _post = MutableStateFlow(initPost)
     val post: StateFlow<Post?> = _post
-    
+
     init {
         if (initPost == null) {
             load()
@@ -46,8 +47,13 @@ class PostItemViewModel(
         _post.value = updatedPost
     }
 
-    private suspend fun vote(postId: String, isUpvoted: Boolean, isDownvoted: Boolean) {
-        val data = repository.votePost(postId, isUpvoted, isDownvoted)
+    private suspend fun vote(postId: String, isUpvoted: Boolean, isDownvoted: Boolean, useVote: Boolean) {
+        val data = if(useVote){
+            repository.votePost(postId, isUpvoted, isDownvoted)
+        }
+        else{
+            repository.likePost(postId, isUpvoted)
+        }
         updatePost(data)
     }
 
@@ -58,5 +64,5 @@ class PostItemViewModel(
 
     val reactCommand = SuspendCommand2(::react, viewModelScope)
 
-    val voteCommand = SuspendCommand3(::vote, viewModelScope)
+    val voteCommand = SuspendCommand4(::vote, viewModelScope)
 }
