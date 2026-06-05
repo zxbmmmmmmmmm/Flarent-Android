@@ -1,5 +1,6 @@
 package com.bettafish.flarent.ui.pages.detail
 
+import android.R
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.background
@@ -44,6 +45,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -118,8 +121,21 @@ fun DiscussionDetailPage(
     var pendingJumpTarget by remember { mutableStateOf<Int?>(null) }
     val canLoadDiscussionCommandExec = viewModel.loadDiscussionCommand.canExecute.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val storeProvider = rememberViewModelStoreProvider()
-
+    val target = scrollTarget
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = if (initialScrollConsumed) 0 else target ?: 0
+    )
+    val lastVisibleItem by remember {
+        derivedStateOf {
+            val visibleItems = listState.layoutInfo.visibleItemsInfo
+            if (visibleItems.isNotEmpty()) {
+                val lastIndex = visibleItems.last().index
+                posts[lastIndex]
+            } else {
+                null
+            }
+        }
+    }
     PullToRefreshBox(
         isRefreshing = posts.loadState.refresh is LoadState.Loading || !canLoadDiscussionCommandExec.value,
         onRefresh = { viewModel.loadDiscussionCommand.execute() },
@@ -170,7 +186,14 @@ fun DiscussionDetailPage(
                     navigationIcon = {
                         BackNavigationIcon { navigator.navigateUp() }
                     },
-                    actions = {},
+                    actions = {
+                        IconButton(
+                            onClick = { showSheet = true },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Icon(Icons.Default.MoreVert, "更多", tint = colorScheme.outline)
+                        }
+                    },
                     scrollBehavior = scrollBehavior
                 )
             },
@@ -186,7 +209,7 @@ fun DiscussionDetailPage(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f)
-                            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
+                            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
                             .clip(RoundedCornerShape(64.dp))
                             .background(colorScheme.surfaceContainerHigh)
                             .clickable {
@@ -208,16 +231,44 @@ fun DiscussionDetailPage(
                                 .align(Alignment.CenterStart)
                         )
                     }
-                    IconButton(
-                        onClick = { showSheet = true },
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Default.MoreVert, "更多", tint = colorScheme.outline)
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
+                            .clip(RoundedCornerShape(64.dp))
+                            .clickable {
+                                showJumpDialog = true
+                            }) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(horizontal = 8.dp)) {
+
+                            lastVisibleItem?.number?.let {
+                                Text(
+                                    text = it.toString(),
+                                )
+                            }
+                            Text(
+                                text = "/",
+                                color = colorScheme.outline
+
+                            )
+                            discussion?.lastPostNumber?.let {
+                                Text(
+                                    text = it.toString(),
+                                    color = colorScheme.outline
+
+                                )
+                            }
+                        }
+
                     }
                 }
             }
         ) { innerPadding ->
-            val target = scrollTarget
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -225,9 +276,6 @@ fun DiscussionDetailPage(
             ) {
 
                 if (target != null && canLoadDiscussionCommandExec.value) {
-                    val listState = rememberLazyListState(
-                        initialFirstVisibleItemIndex = if (initialScrollConsumed) 0 else target
-                    )
 
                     LaunchedEffect(target, pendingJumpTarget) {
                         val jumpTarget = pendingJumpTarget
@@ -239,7 +287,6 @@ fun DiscussionDetailPage(
                             pendingJumpTarget = null
                         }
                     }
-
                     LazyColumn(
                         state = listState,
                         modifier = Modifier.fillMaxSize()
