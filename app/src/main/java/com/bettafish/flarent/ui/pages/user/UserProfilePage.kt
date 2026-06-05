@@ -56,7 +56,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.bettafish.flarent.models.navigation.TagNavArgs
+import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
 import com.bettafish.flarent.ui.widgets.DiscussionItemViewModel
@@ -214,7 +214,7 @@ fun UserProfilePage(
                                 val parentEntry =
                                     remember(navController.currentBackStackEntry) {
                                         navController.getBackStackEntry(
-                                            DiscussionDetailPageDestination.route
+                                            UserProfilePageDestination.route
                                         )
                                     }
                                 val viewModel: PostItemViewModel =
@@ -260,9 +260,13 @@ fun UserProfilePage(
                                         tagClick = {
                                             navigator.navigate(
                                                 DiscussionListPageDestination(
-                                                    TagNavArgs.from(it)
+                                                    DiscussionListNavArgs(
+                                                        filter = arrayOf("tag", it.slug!!),
+                                                        title = it.slug
+                                                    )
                                                 )
                                             )
+
                                         },
                                         click = {
                                             navigator.navigate(DiscussionDetailPageDestination(it.id))

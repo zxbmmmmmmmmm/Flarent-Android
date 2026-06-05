@@ -8,12 +8,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.bettafish.flarent.data.DiscussionsRepository
 import com.bettafish.flarent.models.Discussion
-import com.bettafish.flarent.models.navigation.TagNavArgs
 import kotlinx.coroutines.flow.Flow
 
 class DiscussionListViewModel(
     private val repository: DiscussionsRepository,
-    val navArgs: TagNavArgs? = null
+    val filter: Map<String,String>?
 ) : ViewModel() {
     companion object{
         private const val LOAD_COUNT = 20
@@ -24,7 +23,7 @@ class DiscussionListViewModel(
             DiscussionListDataSource(
                 repository,
                 LOAD_COUNT,
-                navArgs?.slug
+                filter
             )
         }
     ).flow.cachedIn(viewModelScope)

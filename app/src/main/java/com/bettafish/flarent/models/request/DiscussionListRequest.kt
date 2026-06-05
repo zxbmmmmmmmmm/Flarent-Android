@@ -1,17 +1,17 @@
 package com.bettafish.flarent.models.request
 
+import kotlin.collections.set
+
 data class DiscussionListRequest(
     val offset: Int? = 0,
-    val tag: String? = null,
-    val author: String? = null,
     val sort: String? = null,
-    val include: String? = "user,lastPostedUser,tags"
+    val filter: Map<String,String>? = null,
+    val include: List<String>? = listOf("user","lastPostedUser","tags")
 ) {
     fun toQueryMap(): Map<String, String> = buildMap {
         offset?.let { put("page[offset]", it.toString()) }
-        tag?.let { put("filter[tag]", it) }
-        author?.let { put("filter[author]", it) }
+        filter?.forEach { (k, v) -> put("filter[$k]", v) }
         sort?.let { put("sort", it) }
-        include?.let { put("include", it) }
+        include?.let { put("include", it.joinToString(",")) }
     }
 }

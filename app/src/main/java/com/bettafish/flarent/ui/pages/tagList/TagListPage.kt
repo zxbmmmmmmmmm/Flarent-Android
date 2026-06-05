@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
-import com.bettafish.flarent.models.navigation.TagNavArgs
+import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
 import com.bettafish.flarent.utils.relativeTime
 import com.bettafish.flarent.utils.toFaIcon
 import com.guru.fontawesomecomposelib.FaIcon
@@ -55,9 +55,11 @@ import java.time.ZonedDateTime
 @Destination<RootGraph>
 @ExperimentalMaterial3Api
 @ExperimentalCoroutinesApi
-fun TagListPage(modifier: Modifier = Modifier,
-                navigator: DestinationsNavigator,
-                viewModel: TagListViewModel = koinViewModel()) {
+fun TagListPage(
+    modifier: Modifier = Modifier,
+    navigator: DestinationsNavigator,
+    viewModel: TagListViewModel = koinViewModel()
+) {
     val list by viewModel.tags.collectAsState()
     MaterialTheme.typography
     var isRefreshing by remember { mutableStateOf(list.isEmpty()) }
@@ -69,7 +71,7 @@ fun TagListPage(modifier: Modifier = Modifier,
             isRefreshing = true
         },
         modifier = modifier.fillMaxSize()
-    ){
+    ) {
         LaunchedEffect(isRefreshing) {
             if (isRefreshing) {
                 viewModel.refresh()
@@ -84,16 +86,37 @@ fun TagListPage(modifier: Modifier = Modifier,
                     scrollBehavior = scrollBehavior
                 )
             }
-        ){ padding ->
+        ) { padding ->
             LazyColumn(Modifier.padding(padding)) {
                 items(list) { tag ->
-                    if(tag.isChild == false){
-                        TagViewItem(tag,
+                    if (tag.isChild == false) {
+                        TagViewItem(
+                            tag,
                             onClick = {
-                                navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
+                                navigator.navigate(
+                                    DiscussionListPageDestination(
+                                        DiscussionListNavArgs(
+                                            title = it.name ?: "",
+                                            filter = arrayOf(
+                                                "tag",
+                                                it.name ?: ""
+                                            )
+                                        )
+                                    )
+                                )
                             },
                             onChildrenClick = {
-                                navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
+                                navigator.navigate(
+                                    DiscussionListPageDestination(
+                                        DiscussionListNavArgs(
+                                            title = it.name ?: "",
+                                            filter = arrayOf(
+                                                "tag",
+                                                it.name ?: ""
+                                            )
+                                        )
+                                    )
+                                )
                             },
                             onDiscussionClick = {
                                 navigator.navigate(DiscussionDetailPageDestination(it.id))
@@ -107,12 +130,14 @@ fun TagListPage(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun TagViewItem(tag : Tag,
-                modifier: Modifier = Modifier,
-                onClick: (Tag) -> Unit = {},
-                onChildrenClick: (Tag) -> Unit = {},
-                onDiscussionClick: (Discussion) -> Unit = {}){
-    Surface(modifier = modifier.clickable{ onClick(tag) }){
+fun TagViewItem(
+    tag: Tag,
+    modifier: Modifier = Modifier,
+    onClick: (Tag) -> Unit = {},
+    onChildrenClick: (Tag) -> Unit = {},
+    onDiscussionClick: (Discussion) -> Unit = {}
+) {
+    Surface(modifier = modifier.clickable { onClick(tag) }) {
         Column(modifier = Modifier.padding(24.dp)) {
             Row {
                 val textStyle = MaterialTheme.typography.headlineLarge
@@ -133,7 +158,7 @@ fun TagViewItem(tag : Tag,
                     style = textStyle,
                 )
             }
-            tag.description?.let{
+            tag.description?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyLarge,
@@ -145,7 +170,7 @@ fun TagViewItem(tag : Tag,
                 FlowRow(
                     modifier = Modifier.padding(top = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
-                )  {
+                ) {
                     children.forEach {
                         ChildrenTagViewItem(it, onClick = onChildrenClick)
                     }
@@ -154,52 +179,69 @@ fun TagViewItem(tag : Tag,
 
 
             tag.lastPostedDiscussion?.let {
-                TagDiscussionItem(it,
+                TagDiscussionItem(
+                    it,
                     modifier = Modifier
                         .padding(top = 16.dp)
-                        .fillMaxWidth(), onDiscussionClick)
+                        .fillMaxWidth(), onDiscussionClick
+                )
             }
         }
     }
 }
 
 @Composable
-fun ChildrenTagViewItem(tag : Tag, modifier: Modifier = Modifier, onClick: (Tag) -> Unit) {
-    Button(onClick = { onClick(tag) }, modifier){
-        Row{
+fun ChildrenTagViewItem(tag: Tag, modifier: Modifier = Modifier, onClick: (Tag) -> Unit) {
+    Button(onClick = { onClick(tag) }, modifier) {
+        Row {
             val textStyle = MaterialTheme.typography.bodyMedium
             val density = LocalDensity.current
             val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
             val icon = tag.icon?.toFaIcon()
-            if(icon != null)
-                FaIcon(faIcon = icon,
+            if (icon != null)
+                FaIcon(
+                    faIcon = icon,
                     size = textHeightDp,
                     tint = LocalContentColor.current,
-                    modifier= Modifier
+                    modifier = Modifier
                         .padding(end = 12.dp)
-                        .align(Alignment.CenterVertically))
-            Text(text = tag.name ?: "",
-                style= textStyle)
+                        .align(Alignment.CenterVertically)
+                )
+            Text(
+                text = tag.name ?: "",
+                style = textStyle
+            )
         }
     }
 }
 
 @Composable
-fun TagDiscussionItem(discussion: Discussion, modifier: Modifier, onClick: (Discussion) -> Unit = {}){
-    Card(modifier = modifier
-        .clickable { onClick(discussion) }
-        .clip(RoundedCornerShape(8.dp)))
+fun TagDiscussionItem(
+    discussion: Discussion,
+    modifier: Modifier,
+    onClick: (Discussion) -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+            .clickable { onClick(discussion) }
+            .clip(RoundedCornerShape(8.dp)))
     {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = discussion.title ?: "",
-                style = MaterialTheme.typography.titleMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                Text(text = discussion.lastPostedAt?.relativeTime ?: "",
+            Text(
+                text = discussion.title ?: "",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = discussion.lastPostedAt?.relativeTime ?: "",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(text = "${discussion.commentCount} 回复" ?: "",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "${discussion.commentCount} 回复" ?: "",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.outline)
+                    color = MaterialTheme.colorScheme.outline
+                )
             }
 
         }
@@ -208,30 +250,33 @@ fun TagDiscussionItem(discussion: Discussion, modifier: Modifier, onClick: (Disc
 
 @Composable
 @Preview
-fun TagViewItemPreview(tag: Tag = Tag().apply {
-    name = "Windows"
-    slug = "windows"
-    icon = "fas fa-windows"
-    description = "Microsoft, your potential, our passion."
-    color = "#0077C8"
-    children = listOf(Tag().apply{
-        name = "Beta"
-        slug = "ai"
-        icon = "fas fa-flask"
-    },
-        Tag().apply{
-            name = "PC"
-            slug = "pc"
-            icon = "fas fa-desktop"
-        })
-    lastPostedDiscussion = Discussion().apply {
-        title = "Thin PC 7 全补丁集成版重制 · 最后一更"
-        slug = "hello-world"
-        commentCount = 10
-        participantCount = 10
-        createdAt = ZonedDateTime.now()
-        lastPostedAt = ZonedDateTime.now()
+fun TagViewItemPreview(
+    tag: Tag = Tag().apply {
+        name = "Windows"
+        slug = "windows"
+        icon = "fas fa-windows"
+        description = "Microsoft, your potential, our passion."
+        color = "#0077C8"
+        children = listOf(
+            Tag().apply {
+                name = "Beta"
+                slug = "ai"
+                icon = "fas fa-flask"
+            },
+            Tag().apply {
+                name = "PC"
+                slug = "pc"
+                icon = "fas fa-desktop"
+            })
+        lastPostedDiscussion = Discussion().apply {
+            title = "Thin PC 7 全补丁集成版重制 · 最后一更"
+            slug = "hello-world"
+            commentCount = 10
+            participantCount = 10
+            createdAt = ZonedDateTime.now()
+            lastPostedAt = ZonedDateTime.now()
+        }
     }
-}){
+) {
     TagViewItem(tag)
 }

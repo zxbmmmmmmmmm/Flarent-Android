@@ -38,9 +38,8 @@ class UserProfileViewModel(
             DiscussionListDataSource(
                 discussionsRepository,
                 LOAD_COUNT,
-                null,
-                userName,
-                "-createdAt"
+                filter = mapOf("author" to userName),
+                sort = "-createdAt"
             )
         }
     ).flow.cachedIn(viewModelScope)

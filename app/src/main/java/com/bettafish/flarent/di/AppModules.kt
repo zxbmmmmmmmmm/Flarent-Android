@@ -26,7 +26,7 @@ import com.bettafish.flarent.models.PostReactions
 import com.bettafish.flarent.models.Reaction
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
-import com.bettafish.flarent.models.navigation.TagNavArgs
+import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
 import com.bettafish.flarent.network.FlarumService
 import com.bettafish.flarent.ui.pages.account.AccountViewModel
 import com.bettafish.flarent.ui.pages.account.login.LoginViewModel
@@ -137,8 +137,8 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { (navArgs: TagNavArgs?) ->
-        DiscussionListViewModel(get(), navArgs)
+    viewModel { (filter: Map<String, String>?) ->
+        DiscussionListViewModel(get(), filter)
     }
     viewModel { TagListViewModel(get()) }
     viewModel { AccountViewModel(get()) }

@@ -39,7 +39,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.App
 import com.bettafish.flarent.models.Tag
-import com.bettafish.flarent.models.navigation.TagNavArgs
+import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
 import com.bettafish.flarent.ui.widgets.DiscussionItemViewModel
@@ -47,6 +47,7 @@ import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.toFaIcon
 import com.guru.fontawesomecomposelib.FaIcon
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DiscussionDetailPageDestination
 import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
@@ -55,18 +56,31 @@ import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDe
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-@Composable
 @Destination<RootGraph>(
-    navArgs = TagNavArgs::class
+    navArgs = DiscussionListNavArgs::class
 )
+@Composable
 @ExperimentalMaterial3Api
 fun DiscussionListPage(
     modifier: Modifier = Modifier,
-    tag: TagNavArgs? = null,
+    args: DiscussionListNavArgs? = null,
     navigator: DestinationsNavigator,
-    viewModel: DiscussionListViewModel = koinViewModel { parametersOf(tag) }
+    vm: DiscussionListViewModel? = null
 ) {
+    var filter : MutableMap<String,String>? = null;
+    val filterArray = args?.filter
+    if(filterArray != null) {
+        filter = mutableMapOf()
+        for (i in filterArray.indices step 2) {
+            if (i + 1 < filterArray.size) {
+                filter[filterArray[i]] = filterArray[i + 1]
+            } else {
+                filter[filterArray[i]] = ""
+            }
+        }
+    }
+    val viewModel = vm ?: koinViewModel(parameters = { parametersOf(filter) })
+
     val pagingItems = viewModel.discussions.collectAsLazyPagingItems()
     val storeProvider = rememberViewModelStoreProvider()
 
@@ -80,15 +94,15 @@ fun DiscussionListPage(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 MediumTopAppBar(
-                    title = { Text(text = tag?.name ?: "帖子") },
+                    title = { Text(text = args?.title ?: "帖子") },
                     navigationIcon = {
-                        if (tag != null) {
+                        if (args?.title != null) {
                             BackNavigationIcon { navigator.navigateUp() }
                         }
                     },
                     scrollBehavior = scrollBehavior,
                     actions = {
-                        if (tag == null) {
+                        if (args?.title == null) {
                             val user = App.INSTANCE.appSettings.user
                             user?.newNotificationCount?.let {
                                 IconButton(onClick = {
@@ -146,7 +160,14 @@ fun DiscussionListPage(
                                     )
                                 )
                             }, tagClick = {
-                                navigator.navigate(DiscussionListPageDestination(TagNavArgs.from(it)))
+                                navigator.navigate(
+                                    DiscussionListPageDestination(
+                                        DiscussionListNavArgs(
+                                            filter = arrayOf("tag", it.slug!!),
+                                            title = it.name
+                                        )
+                                    )
+                                )
                             }, userClick = {
                                 navigator.navigate(UserProfilePageDestination(it.username!!))
                             })
@@ -164,54 +185,6 @@ fun DiscussionListPage(
         }
     }
 
-}
-
-@Composable
-fun TagHeader(tag: TagNavArgs) {
-    Surface(color = colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
-        Column {
-            Row {
-                intArrayOf()
-                val textStyle = MaterialTheme.typography.displayMedium
-                val density = LocalDensity.current
-                val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
-                val icon = tag.icon?.toFaIcon()
-                if (icon != null)
-                    FaIcon(
-                        faIcon = icon,
-                        size = textHeightDp,
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .align(Alignment.CenterVertically),
-                        tint = LocalContentColor.current
-                    )
-                Text(
-                    text = tag.name ?: "",
-                    style = textStyle,
-                )
-            }
-            tag.description?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-        }
-
-    }
-}
-
-@Composable
-@Preview
-fun TagHeaderPreview() {
-    TagHeader(TagNavArgs.from(Tag().apply {
-        name = "Windows"
-        slug = "ai"
-        icon = "fas fa-windows"
-        description = "Microsoft, your potential, our passion."
-        color = "#0077C8"
-    }))
 }
 
 
