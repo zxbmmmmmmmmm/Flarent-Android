@@ -13,8 +13,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.twotone.History
+import androidx.compose.material.icons.twotone.Info
+import androidx.compose.material.icons.twotone.Settings
+import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +47,7 @@ import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AboutPageDestination
+import com.ramcosta.composedestinations.generated.destinations.DiscussionListPageDestination
 import com.ramcosta.composedestinations.generated.destinations.LoginPageDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsPageDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
@@ -50,11 +59,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class)
-fun AccountPage(modifier: Modifier = Modifier,
-                navigator: DestinationsNavigator,
-                resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>,
-                viewModel: AccountViewModel = koinViewModel()
-){
+fun AccountPage(
+    modifier: Modifier = Modifier,
+    navigator: DestinationsNavigator,
+    resultRecipient: ResultRecipient<LoginPageDestination, LoginResult>,
+    viewModel: AccountViewModel = koinViewModel()
+) {
     val user by viewModel.user.collectAsState()
     resultRecipient.onResult(
         onValue = { resultValue ->
@@ -63,19 +73,52 @@ fun AccountPage(modifier: Modifier = Modifier,
             viewModel.refreshUser(resultValue.id, true)
         }
     )
-    Column(modifier = modifier.fillMaxSize()){
-        AccountInfo(user = user,
-            modifier = Modifier.clickable{
-                if(user != null){
-                    navigator.navigate(UserProfilePageDestination(user!!.username!!))
+    Column(modifier = modifier.fillMaxSize()) {
+        AccountInfo(
+            user = user,
+            modifier = Modifier
+                .clickable {
+                    if (user != null) {
+                        navigator.navigate(UserProfilePageDestination(user!!.username!!))
+                    } else {
+                        navigator.navigate(LoginPageDestination)
+                    }
                 }
-                else{
-                    navigator.navigate(LoginPageDestination)
-                }
-            }
                 .statusBarsPadding()
                 .padding(16.dp, 48.dp, 16.dp, 32.dp),
             onLogoutClick = { viewModel.logout() })
+        user?.let {
+            TextSetting(
+                title = "历史记录",
+                minimalHeight = true,
+                leadingIcon = { Icon(Icons.Default.History, contentDescription = null) },
+                onClick = {
+                    navigator.navigate(
+                        DiscussionListPageDestination(
+                            title = "历史记录",
+                            sort = "-lastReadAt"
+                        )
+                    )
+                }
+            )
+            TextSetting(
+                title = "关注的主题",
+                minimalHeight = true,
+                leadingIcon = { Icon(Icons.Default.Star, contentDescription = null) },
+                onClick = {
+                    navigator.navigate(
+                        DiscussionListPageDestination(
+                            filter = arrayOf(
+                                "subscription",
+                                "following"
+                            ),
+                            title = "关注的主题"
+                        )
+                    )
+                }
+            )
+        }
+
         TextSetting(
             title = "设置",
             minimalHeight = true,
@@ -92,37 +135,49 @@ fun AccountPage(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick : () -> Unit  = {}){
-    Row(modifier = modifier.fillMaxWidth()){
+fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick: () -> Unit = {}) {
+    Row(modifier = modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp), modifier = Modifier.weight(1f)) {
-            Avatar(user?.avatarUrl, user?.displayName, modifier = Modifier
-                .height(64.dp)
-                .width(64.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterVertically))
-            Column(modifier = Modifier.align(Alignment.CenterVertically),
-                verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(user?.displayName ?: user?.username?: "未登录", style = MaterialTheme.typography.titleLarge)
+            Avatar(
+                user?.avatarUrl, user?.displayName, modifier = Modifier
+                    .height(64.dp)
+                    .width(64.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.CenterVertically)
+            )
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    user?.displayName ?: user?.username ?: "未登录",
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     val textStyle = MaterialTheme.typography.titleSmall
                     val density = LocalDensity.current
                     val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
-                    Text(if(user != null) "查看个人空间" else "点击登录",
+                    Text(
+                        if (user != null) "查看个人空间" else "点击登录",
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.outline)
-                    Icon(imageVector = Icons.Default.ChevronRight,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
                         contentDescription = null,
                         modifier = Modifier
                             .height(textHeightDp)
                             .align(Alignment.CenterVertically),
-                        tint = MaterialTheme.colorScheme.outline)
+                        tint = MaterialTheme.colorScheme.outline
+                    )
                 }
             }
         }
-        if(user != null){
-            Button(colors = ButtonDefaults.filledTonalButtonColors(),
+        if (user != null) {
+            Button(
+                colors = ButtonDefaults.filledTonalButtonColors(),
                 modifier = Modifier.align(Alignment.CenterVertically),
-                onClick = { onLogoutClick() }){
+                onClick = { onLogoutClick() }) {
                 Text("退出登录")
             }
         }
@@ -133,17 +188,18 @@ fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick
 
 @Composable
 @Preview(showBackground = true)
-fun AccountInfoPreview(){
-    AccountInfo(modifier = Modifier.padding(16.dp),
+fun AccountInfoPreview() {
+    AccountInfo(
+        modifier = Modifier.padding(16.dp),
         user = User().apply {
             displayName = "John Doe"
             username = "AA"
             id = "1"
-    })
+        })
 }
 
 @Composable
 @Preview(showBackground = true)
-fun AccountInfoWithoutUserPreview(){
+fun AccountInfoWithoutUserPreview() {
     AccountInfo(modifier = Modifier.padding(16.dp))
 }

@@ -99,7 +99,7 @@ fun TagListPage(
                                             title = it.name ?: "",
                                             filter = arrayOf(
                                                 "tag",
-                                                it.name ?: ""
+                                                it.slug ?: ""
                                             )
                                         )
                                     )
@@ -112,7 +112,7 @@ fun TagListPage(
                                             title = it.name ?: "",
                                             filter = arrayOf(
                                                 "tag",
-                                                it.name ?: ""
+                                                it.slug ?: ""
                                             )
                                         )
                                     )

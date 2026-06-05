@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 
 class DiscussionListViewModel(
     private val repository: DiscussionsRepository,
-    val filter: Map<String,String>?
+    val filter: Map<String,String>?,
+    val sort: String? = null,
 ) : ViewModel() {
     companion object{
         private const val LOAD_COUNT = 20
@@ -23,7 +24,8 @@ class DiscussionListViewModel(
             DiscussionListDataSource(
                 repository,
                 LOAD_COUNT,
-                filter
+                filter,
+                sort
             )
         }
     ).flow.cachedIn(viewModelScope)

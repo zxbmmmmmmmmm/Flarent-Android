@@ -79,7 +79,7 @@ fun DiscussionListPage(
             }
         }
     }
-    val viewModel = vm ?: koinViewModel(parameters = { parametersOf(filter) })
+    val viewModel = vm ?: koinViewModel(parameters = { parametersOf(filter, args?.sort) })
 
     val pagingItems = viewModel.discussions.collectAsLazyPagingItems()
     val storeProvider = rememberViewModelStoreProvider()

@@ -10,6 +10,7 @@ import kotlinx.serialization.builtins.MapSerializer
 data class DiscussionListNavArgs(
     val title: String? = null,
     val filter: Array<String>? = null,
+    val sort: String = "-createdAt"
 ) : Parcelable {
 
 }
