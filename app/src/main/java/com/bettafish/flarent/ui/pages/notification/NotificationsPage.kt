@@ -21,10 +21,12 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
@@ -114,7 +116,7 @@ fun NotificationsPage(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("通知") },
+                    title = { Text(stringResource(R.string.notifications)) },
                     navigationIcon = {
                         BackNavigationIcon { navigator.navigateUp() }
                     },
@@ -125,7 +127,7 @@ fun NotificationsPage(
                             viewModel.markAllAsReadCommand.execute(notifications.itemSnapshotList.items)
                         }, enabled = canMarkAsAll.value) {
                             if (canMarkAsAll.value)
-                                Icon(Icons.Default.Check, "全部标记为已读")
+                                Icon(Icons.Default.Check, stringResource(R.string.mark_all_as_read))
                             else
                                 CircularProgressIndicator(Modifier.padding(8.dp))
                         }
@@ -143,7 +145,7 @@ fun NotificationsPage(
                         item(key = "header-${group.key}") {
                             NotificationGroupHeader(
                                 title = group.discussion.title?.takeIf { it.isNotBlank() }
-                                    ?: "未命名讨论",
+                                    ?: stringResource(R.string.untitled_discussion),
                                 modifier = Modifier.padding(
                                     start = 16.dp,
                                     end = 16.dp,

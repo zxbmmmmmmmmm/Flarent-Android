@@ -53,10 +53,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.firebaseAnalytics
 import com.bettafish.flarent.utils.Analytics
 import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
@@ -92,7 +94,7 @@ fun ReplyBottomSheet(discussionId: String? = null,
     val content by replyViewModel.content.collectAsState()
 
     val screenHeight = LocalWindowInfo.current.containerDpSize.height
-    val options = listOf("编辑", "预览")
+    val options = listOf(stringResource(R.string.edit), stringResource(R.string.preview))
     val pagerState = rememberPagerState { options.size }
     val coroutineScope = rememberCoroutineScope()
     val isSending = remember { mutableStateOf(false) }
@@ -155,7 +157,7 @@ fun ReplyBottomSheet(discussionId: String? = null,
                             isSending.value = false
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.Send, "发送")
+                        Icon(Icons.AutoMirrored.Filled.Send, stringResource(R.string.send))
                     }
                 }
             }
@@ -252,27 +254,27 @@ fun MarkdownEditBox(replyViewModel: ReplyViewModel, fileViewModel: FileViewModel
                     CircularProgressIndicator(modifier = Modifier.padding(8.dp))
                 }
                 else{
-                    ToolbarButton(Icons.Default.Upload, "上传") {
+                    ToolbarButton(Icons.Default.Upload, stringResource(R.string.upload)) {
                         launcher.launch("*/*")
                     }
                 }
             }
-            ToolbarButton(Icons.Default.FormatBold, "加粗") {
+            ToolbarButton(Icons.Default.FormatBold, stringResource(R.string.bold)) {
                 textState = handleMarkdownAction(textState, "**", "**")
             }
-            ToolbarButton(Icons.Default.FormatItalic, "斜体") {
+            ToolbarButton(Icons.Default.FormatItalic, stringResource(R.string.italic)) {
                 textState = handleMarkdownAction(textState, "*", "*")
             }
-            ToolbarButton(Icons.AutoMirrored.Filled.FormatListBulleted, "列表") {
+            ToolbarButton(Icons.AutoMirrored.Filled.FormatListBulleted, stringResource(R.string.list)) {
                 textState = handleMarkdownAction(textState, "\n- ")
             }
-            ToolbarButton(Icons.Default.Title, "标题") {
+            ToolbarButton(Icons.Default.Title, stringResource(R.string.heading)) {
                 textState = handleMarkdownAction(textState, "\n# ")
             }
-            ToolbarButton(Icons.Default.Code, "代码") {
+            ToolbarButton(Icons.Default.Code, stringResource(R.string.code)) {
                 textState = handleMarkdownAction(textState, "`", "`")
             }
-            ToolbarButton(Icons.Default.Link, "链接") {
+            ToolbarButton(Icons.Default.Link, stringResource(R.string.link)) {
                 textState = handleMarkdownAction(textState, "[", "](url)")
             }
         }
@@ -286,7 +288,7 @@ fun MarkdownEditBox(replyViewModel: ReplyViewModel, fileViewModel: FileViewModel
                 .focusRequester(focusRequester)
                 .weight(1f, fill = false)
                 .navigationBarsPadding(),
-            placeholder = { Text("开始书写...") },
+            placeholder = { Text(stringResource(R.string.start_writing)) },
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,

@@ -23,9 +23,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.ramcosta.composedestinations.annotation.Destination
@@ -64,7 +66,7 @@ fun LoginPage(modifier: Modifier = Modifier,
                 .imePadding(),
         ) {
             Text(
-                text = "登录",
+                text = stringResource(R.string.login),
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
@@ -72,7 +74,7 @@ fun LoginPage(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text("用户名/邮箱") },
+                label = { Text(stringResource(R.string.username_or_email)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -82,7 +84,7 @@ fun LoginPage(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("密码") },
+                label = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
                 singleLine = true
@@ -115,7 +117,7 @@ fun LoginPage(modifier: Modifier = Modifier,
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("登录", fontSize = 18.sp)
+                    Text(stringResource(R.string.login), fontSize = 18.sp)
                 }            }
         }
     }

@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.PlatformTextStyle
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.User
@@ -178,27 +180,27 @@ private fun DiscussionItem(
 
                 val inlineContent = mapOf(
                     "pinned" to getAutoInlineContent(
-                        "置顶",
+                        stringResource(R.string.discussion_badge_pinned),
                         colorScheme.secondaryContainer,
                         colorScheme.secondary
                     ),
                     "front" to getAutoInlineContent(
-                        "精",
+                        stringResource(R.string.discussion_badge_featured),
                         colorScheme.errorContainer,
                         colorScheme.onErrorContainer
                     ),
                     "locked" to getAutoInlineContent(
-                        "已锁定",
+                        stringResource(R.string.discussion_badge_locked),
                         colorScheme.surfaceContainerHighest,
                         colorScheme.onSurface
                     ),
                     "hasBestAnswer" to getAutoInlineContent(
-                        "已有最佳回复",
+                        stringResource(R.string.discussion_badge_has_best_answer),
                         colorScheme.surfaceContainerHighest,
                         colorScheme.onSurface
                     ),
                     "hidden" to getAutoInlineContent(
-                        "隐藏",
+                        stringResource(R.string.discussion_badge_hidden),
                         colorScheme.surfaceContainerHighest,
                         colorScheme.onSurface
                     )

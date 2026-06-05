@@ -47,6 +47,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -56,6 +57,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.DiscussionItem
@@ -143,8 +145,8 @@ fun UserProfilePage(
                 }
                 Column(modifier = Modifier.height(screenHeight)) {
                     val tabs = listOf(
-                        "回复 ${user?.commentCount ?: ""}",
-                        "主题 ${user?.discussionCount ?: ""}"
+                        stringResource(R.string.user_replies_tab, user?.commentCount?.toString() ?: ""),
+                        stringResource(R.string.user_discussions_tab, user?.discussionCount?.toString() ?: "")
                     )
                     val coroutineScope = rememberCoroutineScope()
                     val pagerState = rememberPagerState { tabs.size }

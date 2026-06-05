@@ -29,11 +29,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
+import com.bettafish.flarent.R
 import com.bettafish.flarent.data.PostsRepository
 import com.bettafish.flarent.models.request.PostsRequest
 import com.bettafish.flarent.ui.widgets.Card
@@ -114,10 +116,10 @@ fun PostBottomSheet(
                         modifier = Modifier.weight(1f)
                     ) {
                         if (discussionTitle != null) {
-                            Text("于", color = MaterialTheme.colorScheme.outline)
+                            Text(stringResource(R.string.in_discussion), color = MaterialTheme.colorScheme.outline)
                             Text(discussionTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         } else {
-                            Text("查看原帖")
+                            Text(stringResource(R.string.view_original_post))
                         }
 
                     }

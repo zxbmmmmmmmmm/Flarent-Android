@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -38,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bettafish.flarent.App
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
@@ -94,7 +96,7 @@ fun DiscussionListPage(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 MediumTopAppBar(
-                    title = { Text(text = args?.title ?: "帖子") },
+                    title = { Text(text = args?.title ?: stringResource(R.string.posts)) },
                     navigationIcon = {
                         if (args?.title != null) {
                             BackNavigationIcon { navigator.navigateUp() }
@@ -115,12 +117,12 @@ fun DiscussionListPage(
                                         }) {
                                             Icon(
                                                 Icons.Filled.Notifications,
-                                                "通知",
+                                                stringResource(R.string.notifications),
                                                 tint = MaterialTheme.colorScheme.primary
                                             )
                                         }
                                     } else {
-                                        Icon(Icons.Outlined.Notifications, "通知")
+                                        Icon(Icons.Outlined.Notifications, stringResource(R.string.notifications))
                                     }
                                 }
 

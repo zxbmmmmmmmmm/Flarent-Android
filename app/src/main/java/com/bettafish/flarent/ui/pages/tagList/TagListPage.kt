@@ -34,8 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Discussion
 import com.bettafish.flarent.models.Tag
 import com.bettafish.flarent.models.navigation.DiscussionListNavArgs
@@ -82,7 +85,7 @@ fun TagListPage(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 MediumTopAppBar(
-                    title = { Text("分类") },
+                    title = { Text(stringResource(R.string.categories)) },
                     scrollBehavior = scrollBehavior
                 )
             }
@@ -238,7 +241,9 @@ fun TagDiscussionItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "${discussion.commentCount} 回复" ?: "",
+                    text = discussion.commentCount?.let {
+                        pluralStringResource(R.plurals.reply_count, it, it)
+                    } ?: "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline
                 )
@@ -269,7 +274,7 @@ fun TagViewItemPreview(
                 icon = "fas fa-desktop"
             })
         lastPostedDiscussion = Discussion().apply {
-            title = "Thin PC 7 全补丁集成版重制 · 最后一更"
+            title = "Thin PC 7 integrated patch remake - final update"
             slug = "hello-world"
             commentCount = 10
             participantCount = 10

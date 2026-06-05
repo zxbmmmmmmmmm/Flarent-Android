@@ -41,10 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Notification
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
@@ -145,8 +147,14 @@ fun NotificationItem(
 
                             ) {
                             when (notification.contentType) {
-                                "postMentioned" -> Text("回复了你")
-                                "vote" -> Text(if (notification.content == 1) "赞同了你的帖子" else "反对了你的帖子")
+                                "postMentioned" -> Text(stringResource(R.string.notification_post_mentioned))
+                                "vote" -> Text(
+                                    if (notification.content == 1) {
+                                        stringResource(R.string.notification_upvoted)
+                                    } else {
+                                        stringResource(R.string.notification_downvoted)
+                                    }
+                                )
                                 "postReacted" -> {
                                     val json : Json = koinInject()
                                     val jsonObject: JsonObject =
@@ -162,17 +170,17 @@ fun NotificationItem(
                                             )
                                         } else {
                                             jsonObject["display"].toString()
-                                        }
+                                    }
                                     Text(
-                                        text = "戳了一个 $emoji"
+                                        text = stringResource(R.string.notification_reacted, emoji ?: "")
                                     )
                                 }
 
-                                "newFollower" -> Text("关注了你")
-                                "newPostByUser" -> Text("发表回复")
-                                "userMentioned" -> Text("提及了你")
-                                "newPost" -> Text("回复了你关注的主题")
-                                "postLiked" -> Text("赞了你")
+                                "newFollower" -> Text(stringResource(R.string.notification_new_follower))
+                                "newPostByUser" -> Text(stringResource(R.string.notification_new_post_by_user))
+                                "userMentioned" -> Text(stringResource(R.string.notification_user_mentioned))
+                                "newPost" -> Text(stringResource(R.string.notification_new_post))
+                                "postLiked" -> Text(stringResource(R.string.notification_post_liked))
                                 else -> Text(notification.contentType.toString())
                             }
                         }

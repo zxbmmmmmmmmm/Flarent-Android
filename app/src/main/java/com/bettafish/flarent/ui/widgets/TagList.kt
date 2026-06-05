@@ -34,14 +34,14 @@ fun TagListPreview(){
             name = "Windows"
             slug = "ai"
             icon = "Microsoft, your potential, our passion."
-            description = "关于AI的最新动态"
+            description = "Latest updates about AI"
             color = "#0077C8"
         },
             Tag().apply {
                 name = "Beta"
                 slug = "ai"
                 icon = "fas fa-desktop"
-                description = "关于AI的最新动态"
+                description = "Latest updates about AI"
                 color = "#00A4EF"
             }))
 }

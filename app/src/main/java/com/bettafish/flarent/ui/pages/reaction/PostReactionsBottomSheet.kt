@@ -159,7 +159,7 @@ fun ReactionCardPreview(){
     ReactionCard(Reaction().apply {
         type = "emoji"
         identifier = "heart"
-        display = "好"
+        display = "Good"
     }, listOf(
         User().apply {
             displayName = "User"

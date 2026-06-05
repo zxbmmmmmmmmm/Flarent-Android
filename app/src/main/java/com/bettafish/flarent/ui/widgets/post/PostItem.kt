@@ -60,6 +60,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -281,7 +282,7 @@ private fun PostItem(
                                 val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
                                 Icon(
                                     Icons.Default.VisibilityOff,
-                                    contentDescription = "隐藏",
+                                    contentDescription = stringResource(R.string.discussion_badge_hidden),
                                     modifier = Modifier.size(textHeightDp),
                                     tint = colorScheme.outline
                                 )
@@ -309,7 +310,7 @@ private fun PostItem(
 
                         post.editedAt?.relativeTime?.let {
                             Text(
-                                text = "编辑于 $it",
+                                text = stringResource(R.string.edited_at, it),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = colorScheme.outline
                             )
@@ -334,7 +335,7 @@ private fun PostItem(
                         val arr = post.content as? List<*>
                         arr?.get(1)?.toString()?.let {
                             Text(
-                                "更改标题为",
+                                stringResource(R.string.discussion_renamed),
                                 style = contentTextStyle,
                                 color = contentTextColor
                             )
@@ -361,7 +362,7 @@ private fun PostItem(
                     icon = Icons.AutoMirrored.Filled.Label
                     detailsContent = {
                         Text(
-                            "修改了标签",
+                            stringResource(R.string.discussion_tagged),
                             style = contentTextStyle,
                             color = contentTextColor
                         )
@@ -372,12 +373,15 @@ private fun PostItem(
                     icon = Icons.AutoMirrored.Filled.CallSplit
                     detailsContent = {
                         val map = post.content as? LinkedHashMap<*, *>
-                        val title = map?.get("title")?.toString() ?: "未知主题"
-                        val count = map?.get("count") ?: 0
+                        val title = map?.get("title")?.toString() ?: stringResource(R.string.unknown_discussion)
+                        val count = map?.get("count")?.toString()?.toIntOrNull() ?: 0
                         val url = map?.get("url")?.toString() ?: ""
+                        val prefix = stringResource(R.string.discussion_split_prefix)
+                        val suffix = pluralStringResource(R.plurals.discussion_split_reply_count, count, count)
 
                         val annotatedString = buildAnnotatedString {
-                            append("从 ")
+                            append(prefix)
+                            append(" ")
 
                             withLink(
                                 LinkAnnotation.Url(
@@ -387,7 +391,8 @@ private fun PostItem(
                                 append(title)
                             }
 
-                            append(" 拆分来 $count 个回复")
+                            append(" ")
+                            append(suffix)
                         }
 
                         Text(
@@ -402,11 +407,11 @@ private fun PostItem(
                     icon = Icons.Default.Merge
                     detailsContent = {
                         val map = post.content as? LinkedHashMap<*, *>
-                        val count = map?.get("count")
+                        val count = map?.get("count")?.toString() ?: "0"
                         val titles = map?.get("titles") as? ArrayList<*>
-                        val titlesString = titles?.joinToString(separator = ", ") ?: "未知主题"
+                        val titlesString = titles?.joinToString(separator = ", ") ?: stringResource(R.string.unknown_discussion)
                         Text(
-                            "合并主题 $titlesString 下的 $count 个回复",
+                            stringResource(R.string.discussion_merged, titlesString, count),
                             style = contentTextStyle,
                             color = contentTextColor
                         )
@@ -419,7 +424,7 @@ private fun PostItem(
                         val map = post.content as? LinkedHashMap<*, *>
                         val isSticky = map?.get("sticky") as? Boolean
                         Text(
-                            if (isSticky == true) "置顶此贴" else "取消置顶",
+                            if (isSticky == true) stringResource(R.string.discussion_stickied) else stringResource(R.string.discussion_unstickied),
                             style = contentTextStyle,
                             color = contentTextColor
                         )
@@ -433,7 +438,7 @@ private fun PostItem(
 
                     detailsContent = {
                         Text(
-                            if (locked == true) "锁定此贴" else "取消锁定",
+                            if (locked == true) stringResource(R.string.discussion_locked) else stringResource(R.string.discussion_unlocked),
                             style = contentTextStyle,
                             color = contentTextColor
                         )
@@ -689,7 +694,7 @@ private fun PostItem(
                             val context = LocalContext.current
                             post.discussion?.let {
                                 DropdownMenuItem(
-                                    text = { Text("分享") },
+                                    text = { Text(stringResource(R.string.share)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Filled.Share,
@@ -701,14 +706,18 @@ private fun PostItem(
                                         shareLink(
                                             context,
                                             "${ForumConfig.baseUrl}d/${it.id}/${post.id}",
-                                            "${post.user?.displayName ?: post.user?.username} 在 ${it.title} 的回复"
+                                            context.getString(
+                                                R.string.post_share_title,
+                                                post.user?.displayName ?: post.user?.username ?: "",
+                                                it.title ?: ""
+                                            )
                                         )
                                     }
                                 )
                             }
                             if (post.canEdit == true) {
                                 DropdownMenuItem(
-                                    text = { Text("编辑") },
+                                    text = { Text(stringResource(R.string.edit)) },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Filled.Edit,
@@ -733,7 +742,7 @@ private fun PostItem(
     }
 }
 
-fun shareLink(context: Context, url: String, title: String = "分享") {
+fun shareLink(context: Context, url: String, title: String = context.getString(R.string.share_chooser_title)) {
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, url)
