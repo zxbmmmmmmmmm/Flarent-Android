@@ -1,12 +1,14 @@
 package com.bettafish.flarent.ui.theme
 
+import com.bettafish.flarent.R
+
 enum class AppThemeMode(
     val value: String,
-    val label: String
+    val labelRes: Int
 ) {
-    SYSTEM("system", "跟随系统"),
-    LIGHT("light", "亮色"),
-    DARK("dark", "暗色");
+    SYSTEM("system", R.string.theme_system),
+    LIGHT("light", R.string.theme_light),
+    DARK("dark", R.string.theme_dark);
 
     companion object {
         const val PreferenceKey = "themeMode"

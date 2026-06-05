@@ -18,9 +18,11 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.bettafish.flarent.App
+import com.bettafish.flarent.R
 import com.bettafish.flarent.ui.theme.AppThemeMode
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.setting.item.DropdownSetting
@@ -44,7 +46,7 @@ fun SettingsPage(navigator: DestinationsNavigator) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("设置") },
+                    title = { Text(stringResource(R.string.settings)) },
 
                     navigationIcon = {
                         BackNavigationIcon { navigator.navigateUp() }
@@ -58,8 +60,9 @@ fun SettingsPage(navigator: DestinationsNavigator) {
                     .padding(innerPadding)
             ) {
                 val themeMode = App.INSTANCE.appSettings.themeMode!!
+                val themeLabels = AppThemeMode.entries.associate { it.value to stringResource(it.labelRes) }
                 DropdownSetting(
-                    title = "主题",
+                    title = stringResource(R.string.theme),
                     leadingIcon = {
                         val icon = when(AppThemeMode.fromPreference(themeMode)){
                             AppThemeMode.SYSTEM -> Icons.Default.WbSunny
@@ -68,9 +71,9 @@ fun SettingsPage(navigator: DestinationsNavigator) {
                         }
                         Icon(icon, null)
                     },
-                    summary = AppThemeMode.fromPreference(themeMode).label,
+                    summary = stringResource(AppThemeMode.fromPreference(themeMode).labelRes),
                     key = themeMode,
-                    entries = AppThemeMode.entries.associate{ it.value to it.label },
+                    entries = themeLabels,
                     onValueChange = {
                         App.INSTANCE.appSettings.themeMode = it
                     }

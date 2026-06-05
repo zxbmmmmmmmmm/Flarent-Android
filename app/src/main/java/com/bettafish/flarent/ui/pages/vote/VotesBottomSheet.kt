@@ -33,7 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.ramcosta.composedestinations.annotation.Destination
@@ -73,7 +75,10 @@ fun VotesBottomSheet(postId: String,
                 else
                     1
             ) { 2 }
-            val tabs = listOf("赞同 ${upvotersState.value?.size ?: 0}", "反对 ${downvotersState.value?.size ?: 0}")
+            val tabs = listOf(
+                stringResource(R.string.upvotes_tab, upvotersState.value?.size ?: 0),
+                stringResource(R.string.downvotes_tab, downvotersState.value?.size ?: 0)
+            )
             Column(modifier = Modifier.fillMaxSize()) {
                 SecondaryTabRow(
                     pagerState.currentPage,
@@ -107,7 +112,7 @@ fun VotesBottomSheet(postId: String,
                     val users = if (page == 0) upvotersState.value else downvotersState.value
                     if (users.isNullOrEmpty()) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("暂无数据", style = MaterialTheme.typography.bodyLarge)
+                            Text(stringResource(R.string.no_data), style = MaterialTheme.typography.bodyLarge)
                         }
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {

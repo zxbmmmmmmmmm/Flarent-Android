@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,7 +65,7 @@ fun AboutPage() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("关于") },
+                title = { Text(stringResource(R.string.about)) },
                 navigationIcon = {
                     BackNavigationIcon { }
                 },
@@ -88,15 +89,15 @@ fun AboutPage() {
 
                 StandardLargeCard(
                     Icons.Default.Sync,
-                    "版本更新",
-                    "当前版本 ${BuildConfig.VERSION_NAME}",
+                    stringResource(R.string.version_update),
+                    stringResource(R.string.current_version, BuildConfig.VERSION_NAME),
                     shape = RoundedCornerShape(12.dp, 12.dp, 4.dp, 4.dp)
                 ) {
                     uriHandler.openUri(ForumConfig.checkUpdateUrl)
                 }
                 StandardLargeCard(
                     Icons.TwoTone.Info,
-                    "基于 Flarent 开发",
+                    stringResource(R.string.based_on_flarent),
                     "GPL-3  License",
                     shape = RoundedCornerShape(4.dp, 4.dp, 12.dp, 12.dp)
                 ) {
@@ -154,21 +155,21 @@ fun ForumCard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        ForumStatsItem(it.discussionCount, "讨论")
+                        ForumStatsItem(it.discussionCount, stringResource(R.string.forum_stat_discussions))
                         VerticalDivider(
                             thickness = 2.dp,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                                 .height(32.dp)
                         )
-                        ForumStatsItem(it.commentPostCount, "帖子")
+                        ForumStatsItem(it.commentPostCount, stringResource(R.string.forum_stat_posts))
                         VerticalDivider(
                             thickness = 2.dp,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                                 .height(32.dp)
                         )
-                        ForumStatsItem(it.userCount, "用户")
+                        ForumStatsItem(it.userCount, stringResource(R.string.forum_stat_users))
                     }
                 }
             }
@@ -178,20 +179,20 @@ fun ForumCard(
         forum.guidelinesUrl?.let {
             StandardLargeCard(
                 icon = Icons.Outlined.PinDrop,
-                title = "导航帖",
+                title = stringResource(R.string.guidelines),
             ) {
                 uriHandler.openUri(it)
             }
         }
         StandardLargeCard(
             icon = Icons.Outlined.PrivacyTip,
-            title = "隐私政策",
+            title = stringResource(R.string.privacy_policy),
         ) {
             uriHandler.openUri(privacyPolicyUrl)
         }
         StandardLargeCard(
             icon = Icons.Default.Language,
-            title = "访问论坛",
+            title = stringResource(R.string.visit_forum),
             shape = RoundedCornerShape(4.dp, 4.dp, 12.dp, 12.dp),
             actionIcon = Icons.AutoMirrored.Filled.OpenInNew
         ) {
@@ -209,7 +210,7 @@ fun ForumCard(
 //                    verticalAlignment = Alignment.CenterVertically
 //                ) {
 //                    Text(BuildConfig.VERSION_NAME)
-//                    // Text("已是最新版本", color = MaterialTheme.colorScheme.outline)
+//                    // Text("Already on the latest version", color = MaterialTheme.colorScheme.outline)
 //                }
 //                Icon(
 //                    Icons.Default.Sync,
@@ -245,13 +246,13 @@ fun ForumStatsItem(item: StatsItem, name: String) {
 fun ForumCardPreview() {
     ForumCard(
         Forum().apply {
-            title = "测试论坛"
-            description = "这是一个测试论坛"
+            title = "Test forum"
+            description = "This is a test forum"
             guidelinesUrl = "https://example.com/guidelines"
             stats = ForumStats(
-                discussionCount = StatsItem("讨论", null, 123, "123"),
-                commentPostCount = StatsItem("帖子", null, 456, "456"),
-                userCount = StatsItem("用户", null, 789, "789")
+                discussionCount = StatsItem("Discussions", null, 123, "123"),
+                commentPostCount = StatsItem("Posts", null, 456, "456"),
+                userCount = StatsItem("Users", null, 789, "789")
             )
         },
         "https://example.com",

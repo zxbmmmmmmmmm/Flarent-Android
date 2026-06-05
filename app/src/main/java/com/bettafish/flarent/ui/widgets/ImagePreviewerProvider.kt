@@ -44,8 +44,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
+import com.bettafish.flarent.R
 import com.bettafish.flarent.utils.ImageHelper
 import com.jvziyaoyao.scale.image.previewer.ImagePreviewer
 import com.jvziyaoyao.scale.zoomable.pager.PagerGestureScope
@@ -65,6 +67,8 @@ fun GlobalImagePreviewerProvider(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val savedToDownloadsMessage = stringResource(R.string.saved_to_downloads)
+    val storagePermissionRequiredMessage = stringResource(R.string.storage_permission_required)
 
     val imageHelper = remember { ImageHelper(context) }
 
@@ -85,10 +89,10 @@ fun GlobalImagePreviewerProvider(
         if (isGranted && pendingSaveUrl != null) {
             scope.launch {
                 val result = imageHelper.saveImageToDownloads(pendingSaveUrl!!)
-                showResultToast(context, result, "已保存到下载目录")
+                showResultToast(context, result, savedToDownloadsMessage)
             }
         } else if (!isGranted) {
-            Toast.makeText(context, "需要存储权限才能保存图片", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, storagePermissionRequiredMessage, Toast.LENGTH_SHORT).show()
         }
         pendingSaveUrl = null
     }
@@ -137,7 +141,7 @@ fun GlobalImagePreviewerProvider(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     SheetIconButton(
-                        text = "保存",
+                        text = stringResource(R.string.save),
                         icon = Icons.Default.Download,
                         onClick = {
                             currentMenuUrl?.let { url ->
@@ -149,7 +153,7 @@ fun GlobalImagePreviewerProvider(
                                     // Android 10+: 直接保存
                                     scope.launch {
                                         val result = imageHelper.saveImageToDownloads(url)
-                                        showResultToast(context, result, "已保存到下载目录")
+                                        showResultToast(context, result, savedToDownloadsMessage)
                                     }
                                 }
                             }
@@ -158,14 +162,21 @@ fun GlobalImagePreviewerProvider(
                     )
 
                     SheetIconButton(
-                        text = "分享",
+                        text = stringResource(R.string.share),
                         icon = Icons.Default.Share,
                         onClick = {
                             currentMenuUrl?.let { url ->
                                 scope.launch {
                                     val result = imageHelper.shareImage(url)
                                     if (result.isFailure) {
-                                        Toast.makeText(context, "分享失败: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(
+                                                R.string.share_failed,
+                                                result.exceptionOrNull()?.message ?: ""
+                                            ),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
                             }
@@ -190,7 +201,11 @@ private fun showResultToast(context: Context, result: Result<String>, successMsg
     if (result.isSuccess) {
         Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show()
     } else {
-        Toast.makeText(context, "操作失败: ${result.exceptionOrNull()?.message}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            context.getString(R.string.operation_failed, result.exceptionOrNull()?.message ?: ""),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 

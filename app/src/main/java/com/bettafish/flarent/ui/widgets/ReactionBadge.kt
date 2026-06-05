@@ -125,7 +125,7 @@ fun getEmoji(name: String?): String? {
 fun ReactionBadgePreview(){
     ReactionBadge(Reaction().apply {
         identifier = "thinking"
-        display = "思考"
+        display = "Thinking"
         type = "emoji"
         enabled = true
     }, 1, false, {}, {})
@@ -137,7 +137,7 @@ fun ReactionBadgePreview(){
 fun ReactionBadgeSelectedPreview(){
     ReactionBadge(Reaction().apply {
         identifier = "thinking"
-        display = "思考"
+        display = "Thinking"
         type = "emoji"
         enabled = true
     }, 1, true, {}, {})
@@ -150,21 +150,21 @@ fun ReactionListPreview(){
         Pair(Reaction().apply {
             id = "1"
             identifier = "thinking"
-            display = "思考"
+            display = "Thinking"
             type = "emoji"
             enabled = true
         },2),
         Pair(Reaction().apply {
             id = "2"
             identifier = "overheating"
-            display = "烧！"
+            display = "Hot"
             type = "emoji"
             enabled = true
         },1),
         Pair(Reaction().apply {
             id = "3"
             identifier = "herb"
-            display = "草"
+            display = "Herb"
             type = "emoji"
             enabled = true
         },1)),"2")

@@ -24,9 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.App
+import com.bettafish.flarent.R
 import com.bettafish.flarent.config.ForumConfig
 import com.bettafish.flarent.models.Forum
 import com.bettafish.flarent.models.navigation.LoginResult
@@ -147,14 +149,14 @@ fun WelcomePage(forum: Forum,
                 }
             )
             forum.guidelinesUrl?.let {
-                LinkCard("导航贴",
+                LinkCard(stringResource(R.string.guidelines),
                     it,
                     icon = {
                         Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                     })
             }
-            LinkCard("用户许可", ForumConfig.userAgreementUrl)
-            LinkCard("隐私政策", ForumConfig.privacyPolicyUrl)
+            LinkCard(stringResource(R.string.user_agreement), ForumConfig.userAgreementUrl)
+            LinkCard(stringResource(R.string.privacy_policy), ForumConfig.privacyPolicyUrl)
         }
 
 
@@ -168,7 +170,7 @@ fun WelcomePage(forum: Forum,
                         launchSingleTop = true
                     }
                     onSave()}) {
-                Text("直接进入")
+                Text(stringResource(R.string.enter_directly))
             }
             Button(
                 modifier = Modifier.weight(1f),
@@ -176,7 +178,7 @@ fun WelcomePage(forum: Forum,
                     navigator?.navigate(LoginPageDestination)
                     onSave()
                 }) {
-                Text("登录")
+                Text(stringResource(R.string.login))
             }
         }
     }
@@ -208,9 +210,9 @@ fun WelcomePagePreview(){
     val forumName = "wvbCommunity"
     WelcomePage(Forum().apply {
         title = forumName
-        description = "$forumName: where Vista booms! 这里是一个正在成为电脑数码技术乐园的小圈子。"
+        description = "$forumName: where Vista booms! A growing circle for PC and digital tech."
         guidelinesUrl = "${baseUrl}d/22/3"
-        welcomeTitle = "欢迎来到 $forumName！"
-        welcomeMessage = "在开始之前，请先阅读我们的\u003Ca href=/d/22\u003E导航贴\u003C/a\u003E，了解有关论坛的基本信息。\n\u003Cbr/\u003E\u003Cb\u003E声明：本站用户言论只代表其个人意见，并不代表 $forumName 的观点。\u003C/b\u003E"
+        welcomeTitle = "Welcome to $forumName!"
+        welcomeMessage = "Before getting started, please read our \u003Ca href=/d/22\u003Eguidelines\u003C/a\u003E for basic forum information.\n\u003Cbr/\u003E\u003Cb\u003ENote: user posts represent their personal opinions, not the views of $forumName.\u003C/b\u003E"
     })
 }

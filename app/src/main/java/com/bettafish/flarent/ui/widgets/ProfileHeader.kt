@@ -22,9 +22,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.Group
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.utils.relativeTime
@@ -77,7 +79,11 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier) {
                     ) { }
                 }
                 user.lastSeenAt?.let {
-                    val text = if (isOnline) "在线" else "最后登录于 ${it.relativeTime}"
+                    val text = if (isOnline) {
+                        stringResource(R.string.online)
+                    } else {
+                        stringResource(R.string.last_seen_at, it.relativeTime)
+                    }
                     Text(
                         text,
                         modifier = Modifier.padding(end = 8.dp),
@@ -87,7 +93,7 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier) {
                 }
                 user.joinTime?.let {
                     Text(
-                        "注册于 ${it.relativeTime}",
+                        stringResource(R.string.joined_at, it.relativeTime),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -137,7 +143,7 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier) {
                 }
             }
 
-            StatItem("粉丝", user.followerCount.toString())
+            StatItem(stringResource(R.string.followers), user.followerCount.toString())
 
             VerticalDivider(
                 modifier = Modifier
@@ -145,7 +151,7 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier) {
                     .align(Alignment.CenterVertically)
             )
 
-            StatItem("关注", user.followingCount.toString())
+            StatItem(stringResource(R.string.following), user.followingCount.toString())
 
             VerticalDivider(
                 modifier = Modifier
@@ -153,7 +159,7 @@ fun ProfileHeader(user: User, modifier: Modifier = Modifier) {
                     .align(Alignment.CenterVertically)
             )
 
-            StatItem("获赞", user.points.toString())
+            StatItem(stringResource(R.string.likes_received), user.points.toString())
         }
         if (!user.bio.isNullOrEmpty()) {
             Text(user.bio!!)
@@ -218,7 +224,7 @@ fun ProfileHeaderPreview() {
         followerCount = 11
         followingCount = 4
         points = 514
-        bio = "这个人很懒，什么都没有写"
+        bio = "This user has not written anything yet."
         groups = listOf(
             Group().apply {
                 nameSingular = "Admin"

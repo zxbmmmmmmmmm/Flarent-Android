@@ -1,0 +1,146 @@
+<resources>
+    <string name="back">Back</string>
+
+    <string name="tab_posts">Posts</string>
+    <string name="tab_categories">Categories</string>
+    <string name="tab_account">Me</string>
+
+    <string name="about">About</string>
+    <string name="version_update">Version update</string>
+    <string name="current_version">Current version %1$s</string>
+    <string name="based_on_flarent">Built with Flarent</string>
+    <string name="forum_stat_discussions">Discussions</string>
+    <string name="forum_stat_posts">Posts</string>
+    <string name="forum_stat_users">Users</string>
+    <string name="guidelines">Guidelines</string>
+    <string name="user_agreement">User agreement</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="visit_forum">Visit forum</string>
+
+    <string name="settings">Settings</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">Use system setting</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <string name="history">History</string>
+    <string name="following_discussions">Following</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="view_profile">View profile</string>
+    <string name="tap_to_login">Tap to log in</string>
+    <string name="logout">Log out</string>
+
+    <string name="login">Log in</string>
+    <string name="username_or_email">Username or email</string>
+    <string name="password">Password</string>
+    <string name="login_required_error">Username and password cannot be empty</string>
+    <string name="login_failed">Login failed: %1$s</string>
+    <string name="login_failed_fallback">Check your network or password</string>
+
+    <string name="categories">Categories</string>
+    <string name="posts">Posts</string>
+    <string name="notifications">Notifications</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="untitled_discussion">Untitled discussion</string>
+
+    <string name="discussion_badge_pinned">Pinned</string>
+    <string name="discussion_badge_featured">Featured</string>
+    <string name="discussion_badge_locked">Locked</string>
+    <string name="discussion_badge_has_best_answer">Answered</string>
+    <string name="discussion_badge_hidden">Hidden</string>
+
+    <string name="more">More</string>
+    <string name="say_something">Say something</string>
+    <string name="jump_to_floor">Jump to floor</string>
+    <string name="refresh">Refresh</string>
+    <string name="floor_number">Floor number</string>
+    <string name="floor_number_with_range">Floor number (1-%1$d)</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="saved_to_downloads">Saved to Downloads</string>
+    <string name="storage_permission_required">Storage permission is required to save images</string>
+    <string name="share_failed">Share failed: %1$s</string>
+    <string name="operation_failed">Operation failed: %1$s</string>
+
+    <string name="online">Online</string>
+    <string name="last_seen_at">Last seen at %1$s</string>
+    <string name="joined_at">Joined at %1$s</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="likes_received">Likes</string>
+
+    <string name="notification_post_mentioned">replied to you</string>
+    <string name="notification_upvoted">upvoted your post</string>
+    <string name="notification_downvoted">downvoted your post</string>
+    <string name="notification_reacted">reacted with %1$s</string>
+    <string name="notification_new_follower">followed you</string>
+    <string name="notification_new_post_by_user">posted a reply</string>
+    <string name="notification_user_mentioned">mentioned you</string>
+    <string name="notification_new_post">replied to a discussion you follow</string>
+    <string name="notification_post_liked">liked your post</string>
+
+    <string name="edit">Edit</string>
+    <string name="preview">Preview</string>
+    <string name="send">Send</string>
+    <string name="upload">Upload</string>
+    <string name="bold">Bold</string>
+    <string name="italic">Italic</string>
+    <string name="list">List</string>
+    <string name="heading">Heading</string>
+    <string name="code">Code</string>
+    <string name="link">Link</string>
+    <string name="start_writing">Start writing...</string>
+
+    <string name="op_badge">OP</string>
+    <string name="reply">Reply</string>
+    <string name="edited_at">Edited %1$s</string>
+    <string name="discussion_renamed">changed the title to</string>
+    <string name="discussion_tagged">changed tags</string>
+    <string name="unknown_discussion">Unknown discussion</string>
+    <string name="discussion_split_prefix">Split from</string>
+    <string name="discussion_split_suffix">%1$d replies</string>
+    <string name="discussion_merged">Merged %2$s replies from %1$s</string>
+    <string name="discussion_stickied">Pinned this discussion</string>
+    <string name="discussion_unstickied">Unpinned this discussion</string>
+    <string name="discussion_locked">Locked this discussion</string>
+    <string name="discussion_unlocked">Unlocked this discussion</string>
+    <string name="post_share_title">Reply by %1$s in %2$s</string>
+    <string name="share_chooser_title">Share</string>
+
+    <string name="enter_directly">Enter directly</string>
+    <string name="view_original_post">View original post</string>
+    <string name="in_discussion">in</string>
+    <string name="upvotes_tab">Upvotes %1$d</string>
+    <string name="downvotes_tab">Downvotes %1$d</string>
+    <string name="no_data">No data</string>
+    <string name="user_replies_tab">Replies %1$s</string>
+    <string name="user_discussions_tab">Discussions %1$s</string>
+
+    <string name="relative_time_just_now">Just now</string>
+    <plurals name="relative_time_minutes_ago">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
+    <plurals name="relative_time_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+    <plurals name="relative_time_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+
+    <plurals name="reply_count">
+        <item quantity="one">%1$d reply</item>
+        <item quantity="other">%1$d replies</item>
+    </plurals>
+    <plurals name="discussion_split_reply_count">
+        <item quantity="one">with %1$d reply</item>
+        <item quantity="other">with %1$d replies</item>
+    </plurals>
+
+    <string name="file_path_parse_error">Could not resolve the file path</string>
+</resources>

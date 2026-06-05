@@ -28,7 +28,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.pages.account.AccountPage
 import com.bettafish.flarent.ui.pages.discussionList.DiscussionListPage
@@ -73,10 +75,13 @@ fun HomePage(
                                     pagerState.animateScrollToPage(index)
                                 }
                             },
-                            icon = { if(pagerState.currentPage == index)
-                                Icon(tab.selectedIcon, contentDescription = tab.label)
-                            else
-                                Icon(tab.icon, contentDescription = tab.label) },
+                            icon = {
+                                val label = stringResource(tab.labelRes)
+                                if(pagerState.currentPage == index)
+                                    Icon(tab.selectedIcon, contentDescription = label)
+                                else
+                                    Icon(tab.icon, contentDescription = label)
+                            },
                             alwaysShowLabel = false,
                             colors = NavigationBarItemDefaults.colors(
                                 indicatorColor = Color.Transparent,
@@ -106,8 +111,8 @@ fun HomePage(
     }
 }
 
-sealed class HomeTab(val label: String, val icon: ImageVector, val selectedIcon: ImageVector = icon) {
-    data object DiscussionList : HomeTab("帖子", Icons.TwoTone.QuestionAnswer, Icons.Default.QuestionAnswer)
-    data object Tags : HomeTab("分类", Icons.TwoTone.Category, Icons.Default.Category)
-    data object Account : HomeTab("我的", Icons.TwoTone.AccountCircle, Icons.Default.AccountCircle)
+sealed class HomeTab(val labelRes: Int, val icon: ImageVector, val selectedIcon: ImageVector = icon) {
+    data object DiscussionList : HomeTab(R.string.tab_posts, Icons.TwoTone.QuestionAnswer, Icons.Default.QuestionAnswer)
+    data object Tags : HomeTab(R.string.tab_categories, Icons.TwoTone.Category, Icons.Default.Category)
+    data object Account : HomeTab(R.string.tab_account, Icons.TwoTone.AccountCircle, Icons.Default.AccountCircle)
 }

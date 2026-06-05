@@ -3,6 +3,7 @@ package com.bettafish.flarent.data
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.File
 import com.bettafish.flarent.network.FlarumService
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ class FileRepositoryImpl(
     override suspend fun upload(uri: Uri): List<File> {
         return withContext(Dispatchers.IO) {
             val multipartBody = prepareMultipartBody(uri)
-                ?: throw Exception("无法解析文件路径")
+                ?: throw Exception(context.getString(R.string.file_path_parse_error))
 
             service.uploadFile(multipartBody)
         }

@@ -1,6 +1,4 @@
 package com.bettafish.flarent.ui.pages.detail
-
-import android.R
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.background
@@ -57,6 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -77,6 +77,7 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.bettafish.flarent.R
 import com.bettafish.flarent.ui.theme.defaultTypography
 import com.bettafish.flarent.ui.widgets.BackNavigationIcon
 import com.bettafish.flarent.ui.widgets.KnowledgeTopAppBar
@@ -147,7 +148,7 @@ fun DiscussionDetailPage(
                 KnowledgeTopAppBar(
                     topLayout = {
                         Text(
-                            text = discussion?.title ?: "帖子",
+                            text = discussion?.title ?: stringResource(R.string.posts),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             fontSize = 20.sp
@@ -162,7 +163,7 @@ fun DiscussionDetailPage(
                             ), verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = discussion?.title ?: "帖子",
+                                text = discussion?.title ?: stringResource(R.string.posts),
                                 style = defaultTypography.titleLarge
                             )
                             Row(
@@ -174,7 +175,7 @@ fun DiscussionDetailPage(
                                 }
                                 discussion?.commentCount?.let {
                                     Text(
-                                        "$it 条回复",
+                                        pluralStringResource(R.plurals.reply_count, it, it),
                                         color = colorScheme.outline,
                                         style = defaultTypography.bodyMedium
                                     )
@@ -191,7 +192,7 @@ fun DiscussionDetailPage(
                             onClick = { showSheet = true },
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
-                            Icon(Icons.Default.MoreVert, "更多", tint = colorScheme.outline)
+                            Icon(Icons.Default.MoreVert, stringResource(R.string.more), tint = colorScheme.outline)
                         }
                     },
                     scrollBehavior = scrollBehavior
@@ -223,7 +224,7 @@ fun DiscussionDetailPage(
                                 )
                             }) {
                         Text(
-                            text = "说点什么吧",
+                            text = stringResource(R.string.say_something),
                             color = colorScheme.outline,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
@@ -369,7 +370,7 @@ fun DiscussionDetailPage(
             ) {
                 BottomSheetMenuItem(
                     icon = Icons.TwoTone.MoveUp,
-                    text = "跳转到楼层",
+                    text = stringResource(R.string.jump_to_floor),
                     onClick = {
                         jumpInput = ""
                         showJumpDialog = true
@@ -379,7 +380,7 @@ fun DiscussionDetailPage(
 
                 BottomSheetMenuItem(
                     icon = Icons.TwoTone.Refresh,
-                    text = "刷新",
+                    text = stringResource(R.string.refresh),
                     onClick = {
                         viewModel.loadDiscussionCommand.execute()
                         showSheet = false
@@ -394,14 +395,20 @@ fun DiscussionDetailPage(
     if (showJumpDialog) {
         AlertDialog(
             onDismissRequest = { showJumpDialog = false },
-            title = { Text("跳转到楼层") },
+            title = { Text(stringResource(R.string.jump_to_floor)) },
             text = {
                 val totalCount = discussion?.lastPostNumber ?: discussion?.posts?.size
                 TextField(
                     value = jumpInput,
                     onValueChange = { jumpInput = it.filter { char -> char.isDigit() } },
                     label = {
-                        Text(if (totalCount != null) "楼层号 (1–$totalCount)" else "楼层号")
+                        Text(
+                            if (totalCount != null) {
+                                stringResource(R.string.floor_number_with_range, totalCount)
+                            } else {
+                                stringResource(R.string.floor_number)
+                            }
+                        )
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -418,10 +425,10 @@ fun DiscussionDetailPage(
                         }
                         showJumpDialog = false
                     }
-                ) { Text("确认") }
+                ) { Text(stringResource(R.string.confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showJumpDialog = false }) { Text("取消") }
+                TextButton(onClick = { showJumpDialog = false }) { Text(stringResource(R.string.cancel)) }
             }
         )
     }

@@ -1,4 +1,141 @@
 <resources>
+    <string name="back">返回</string>
+
+    <string name="tab_posts">帖子</string>
+    <string name="tab_categories">分类</string>
+    <string name="tab_account">我的</string>
+
+    <string name="about">关于</string>
+    <string name="version_update">版本更新</string>
+    <string name="current_version">当前版本 %1$s</string>
+    <string name="based_on_flarent">基于 Flarent 开发</string>
+    <string name="forum_stat_discussions">讨论</string>
+    <string name="forum_stat_posts">帖子</string>
+    <string name="forum_stat_users">用户</string>
+    <string name="guidelines">导航帖</string>
+    <string name="user_agreement">用户许可</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="visit_forum">访问论坛</string>
+
+    <string name="settings">设置</string>
+    <string name="theme">主题</string>
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">亮色</string>
+    <string name="theme_dark">暗色</string>
+
+    <string name="history">历史记录</string>
+    <string name="following_discussions">关注的主题</string>
+    <string name="not_logged_in">未登录</string>
+    <string name="view_profile">查看个人空间</string>
+    <string name="tap_to_login">点击登录</string>
+    <string name="logout">退出登录</string>
+
+    <string name="login">登录</string>
+    <string name="username_or_email">用户名/邮箱</string>
+    <string name="password">密码</string>
+    <string name="login_required_error">用户名或密码不能为空</string>
+    <string name="login_failed">登录失败: %1$s</string>
+    <string name="login_failed_fallback">请检查网络或密码</string>
+
+    <string name="categories">分类</string>
+    <string name="posts">帖子</string>
+    <string name="notifications">通知</string>
+    <string name="mark_all_as_read">全部标记为已读</string>
+    <string name="untitled_discussion">未命名讨论</string>
+
+    <string name="discussion_badge_pinned">置顶</string>
+    <string name="discussion_badge_featured">精</string>
+    <string name="discussion_badge_locked">已锁定</string>
+    <string name="discussion_badge_has_best_answer">已有最佳回复</string>
+    <string name="discussion_badge_hidden">隐藏</string>
+
+    <string name="more">更多</string>
+    <string name="say_something">说点什么吧</string>
+    <string name="jump_to_floor">跳转到楼层</string>
+    <string name="refresh">刷新</string>
+    <string name="floor_number">楼层号</string>
+    <string name="floor_number_with_range">楼层号 (1-%1$d)</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+
+    <string name="save">保存</string>
+    <string name="share">分享</string>
+    <string name="saved_to_downloads">已保存到下载目录</string>
+    <string name="storage_permission_required">需要存储权限才能保存图片</string>
+    <string name="share_failed">分享失败: %1$s</string>
+    <string name="operation_failed">操作失败: %1$s</string>
+
+    <string name="online">在线</string>
+    <string name="last_seen_at">最后登录于 %1$s</string>
+    <string name="joined_at">注册于 %1$s</string>
+    <string name="followers">粉丝</string>
+    <string name="following">关注</string>
+    <string name="likes_received">获赞</string>
+
+    <string name="notification_post_mentioned">回复了你</string>
+    <string name="notification_upvoted">赞同了你的帖子</string>
+    <string name="notification_downvoted">反对了你的帖子</string>
+    <string name="notification_reacted">戳了一个 %1$s</string>
+    <string name="notification_new_follower">关注了你</string>
+    <string name="notification_new_post_by_user">发表回复</string>
+    <string name="notification_user_mentioned">提及了你</string>
+    <string name="notification_new_post">回复了你关注的主题</string>
+    <string name="notification_post_liked">赞了你</string>
+
+    <string name="edit">编辑</string>
+    <string name="preview">预览</string>
+    <string name="send">发送</string>
+    <string name="upload">上传</string>
+    <string name="bold">加粗</string>
+    <string name="italic">斜体</string>
+    <string name="list">列表</string>
+    <string name="heading">标题</string>
+    <string name="code">代码</string>
+    <string name="link">链接</string>
+    <string name="start_writing">开始书写...</string>
+
     <string name="op_badge">楼主</string>
     <string name="reply">回复</string>
+    <string name="edited_at">编辑于 %1$s</string>
+    <string name="discussion_renamed">更改标题为</string>
+    <string name="discussion_tagged">修改了标签</string>
+    <string name="unknown_discussion">未知主题</string>
+    <string name="discussion_split_prefix">从</string>
+    <string name="discussion_split_suffix">拆分来 %1$d 个回复</string>
+    <string name="discussion_merged">合并主题 %1$s 下的 %2$s 个回复</string>
+    <string name="discussion_stickied">置顶此贴</string>
+    <string name="discussion_unstickied">取消置顶</string>
+    <string name="discussion_locked">锁定此贴</string>
+    <string name="discussion_unlocked">取消锁定</string>
+    <string name="post_share_title">%1$s 在 %2$s 的回复</string>
+    <string name="share_chooser_title">分享</string>
+
+    <string name="enter_directly">直接进入</string>
+    <string name="view_original_post">查看原帖</string>
+    <string name="in_discussion">于</string>
+    <string name="upvotes_tab">赞同 %1$d</string>
+    <string name="downvotes_tab">反对 %1$d</string>
+    <string name="no_data">暂无数据</string>
+    <string name="user_replies_tab">回复 %1$s</string>
+    <string name="user_discussions_tab">主题 %1$s</string>
+
+    <string name="relative_time_just_now">刚刚</string>
+    <plurals name="relative_time_minutes_ago">
+        <item quantity="other">%1$d 分钟前</item>
+    </plurals>
+    <plurals name="relative_time_hours_ago">
+        <item quantity="other">%1$d 小时前</item>
+    </plurals>
+    <plurals name="relative_time_days_ago">
+        <item quantity="other">%1$d 天前</item>
+    </plurals>
+
+    <plurals name="reply_count">
+        <item quantity="other">%1$d 条回复</item>
+    </plurals>
+    <plurals name="discussion_split_reply_count">
+        <item quantity="other">拆分来 %1$d 个回复</item>
+    </plurals>
+
+    <string name="file_path_parse_error">无法解析文件路径</string>
 </resources>

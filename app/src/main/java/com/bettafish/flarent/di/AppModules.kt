@@ -151,7 +151,7 @@ val viewModelModule = module {
         )
     }
     viewModel { (userName: String) -> UserProfileViewModel(userName, get(), get()) }
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), androidContext()) }
     viewModel { FileViewModel(get()) }
     viewModel { (postId: String) -> PostReactionsViewModel(get(), postId) }
     viewModel { WelcomeViewModel(get(), get()) }

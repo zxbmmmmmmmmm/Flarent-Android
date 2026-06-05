@@ -1,10 +1,12 @@
 package com.bettafish.flarent.ui.pages.account.login
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bettafish.flarent.R
 import com.bettafish.flarent.data.UsersRepository
 import com.bettafish.flarent.models.navigation.LoginResult
 import kotlinx.coroutines.channels.Channel
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val repository: UsersRepository
+    private val repository: UsersRepository,
+    private val context: Context
 ): ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
@@ -25,7 +28,7 @@ class LoginViewModel(
 
     fun login(username: String, password: String) {
         if (username.isBlank() || password.isBlank()) {
-            errorMsg = "用户名或密码不能为空"
+            errorMsg = context.getString(R.string.login_required_error)
             return
         }
 
@@ -37,7 +40,10 @@ class LoginViewModel(
                 _loginSuccessEvent.send(result)
             } catch (e: Exception) {
                 e.printStackTrace()
-                errorMsg = "登录失败: ${e.message ?: "请检查网络或密码"}"
+                errorMsg = context.getString(
+                    R.string.login_failed,
+                    e.message ?: context.getString(R.string.login_failed_fallback)
+                )
             } finally {
                 isLoading = false
             }

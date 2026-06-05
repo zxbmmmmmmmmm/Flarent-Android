@@ -36,9 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bettafish.flarent.App
+import com.bettafish.flarent.R
 import com.bettafish.flarent.models.User
 import com.bettafish.flarent.models.navigation.LoginResult
 import com.bettafish.flarent.ui.widgets.Avatar
@@ -88,21 +90,23 @@ fun AccountPage(
                 .padding(16.dp, 48.dp, 16.dp, 32.dp),
             onLogoutClick = { viewModel.logout() })
         user?.let {
+            val historyTitle = stringResource(R.string.history)
+            val followingTitle = stringResource(R.string.following_discussions)
             TextSetting(
-                title = "历史记录",
+                title = historyTitle,
                 minimalHeight = true,
                 leadingIcon = { Icon(Icons.Default.History, contentDescription = null) },
                 onClick = {
                     navigator.navigate(
                         DiscussionListPageDestination(
-                            title = "历史记录",
+                            title = historyTitle,
                             sort = "-lastReadAt"
                         )
                     )
                 }
             )
             TextSetting(
-                title = "关注的主题",
+                title = followingTitle,
                 minimalHeight = true,
                 leadingIcon = { Icon(Icons.Default.Star, contentDescription = null) },
                 onClick = {
@@ -112,7 +116,7 @@ fun AccountPage(
                                 "subscription",
                                 "following"
                             ),
-                            title = "关注的主题"
+                            title = followingTitle
                         )
                     )
                 }
@@ -120,13 +124,13 @@ fun AccountPage(
         }
 
         TextSetting(
-            title = "设置",
+            title = stringResource(R.string.settings),
             minimalHeight = true,
             leadingIcon = { Icon(Icons.Default.Settings, contentDescription = null) },
             onClick = { navigator.navigate(SettingsPageDestination) }
         )
         TextSetting(
-            title = "关于",
+            title = stringResource(R.string.about),
             minimalHeight = true,
             leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
             onClick = { navigator.navigate(AboutPageDestination) }
@@ -150,7 +154,7 @@ fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    user?.displayName ?: user?.username ?: "未登录",
+                    user?.displayName ?: user?.username ?: stringResource(R.string.not_logged_in),
                     style = MaterialTheme.typography.titleLarge
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -158,7 +162,7 @@ fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick
                     val density = LocalDensity.current
                     val textHeightDp = with(density) { textStyle.lineHeight.toDp() }
                     Text(
-                        if (user != null) "查看个人空间" else "点击登录",
+                        if (user != null) stringResource(R.string.view_profile) else stringResource(R.string.tap_to_login),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -178,7 +182,7 @@ fun AccountInfo(modifier: Modifier = Modifier, user: User? = null, onLogoutClick
                 colors = ButtonDefaults.filledTonalButtonColors(),
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onClick = { onLogoutClick() }) {
-                Text("退出登录")
+                Text(stringResource(R.string.logout))
             }
         }
     }
