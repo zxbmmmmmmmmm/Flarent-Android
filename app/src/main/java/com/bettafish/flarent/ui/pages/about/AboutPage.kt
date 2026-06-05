@@ -98,7 +98,7 @@ fun AboutPage() {
                 StandardLargeCard(
                     Icons.TwoTone.Info,
                     stringResource(R.string.based_on_flarent),
-                    "GPL-3  License",
+                    "GPL-3 License",
                     shape = RoundedCornerShape(4.dp, 4.dp, 12.dp, 12.dp)
                 ) {
                     uriHandler.openUri("https://github.com/zxbmmmmmmmmm/Flarent-Android")
