@@ -1,7 +1,7 @@
 <resources>
     <string name="back">返回</string>
 
-    <string name="tab_posts">帖子</string>
+    <string name="tab_discussions">帖子</string>
     <string name="tab_categories">分类</string>
     <string name="tab_account">我的</string>
 

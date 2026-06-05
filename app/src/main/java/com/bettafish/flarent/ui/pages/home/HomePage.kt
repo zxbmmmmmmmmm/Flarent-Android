@@ -23,7 +23,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -112,7 +111,7 @@ fun HomePage(
 }
 
 sealed class HomeTab(val labelRes: Int, val icon: ImageVector, val selectedIcon: ImageVector = icon) {
-    data object DiscussionList : HomeTab(R.string.tab_posts, Icons.TwoTone.QuestionAnswer, Icons.Default.QuestionAnswer)
+    data object DiscussionList : HomeTab(R.string.tab_discussions, Icons.TwoTone.QuestionAnswer, Icons.Default.QuestionAnswer)
     data object Tags : HomeTab(R.string.tab_categories, Icons.TwoTone.Category, Icons.Default.Category)
     data object Account : HomeTab(R.string.tab_account, Icons.TwoTone.AccountCircle, Icons.Default.AccountCircle)
 }

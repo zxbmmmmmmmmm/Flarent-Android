@@ -1,7 +1,7 @@
 <resources>
     <string name="back">Back</string>
 
-    <string name="tab_posts">Posts</string>
+    <string name="tab_discussions">Discussions</string>
     <string name="tab_categories">Categories</string>
     <string name="tab_account">Me</string>
 
