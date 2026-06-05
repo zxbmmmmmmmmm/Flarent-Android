@@ -52,4 +52,4 @@ See [docs/BUILDING.md](docs/BUILDING.md) for the full build guide, including:
 
 ## License
 
-This project is licensed under [GPI-3.0 License](LICENSE).
+This project is licensed under [GPL-3.0 License](LICENSE).
