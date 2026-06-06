@@ -65,7 +65,7 @@ fun LikesBottomSheet(
             items(likers.itemCount) { index ->
                 val user = likers[index]!!
                 UserItem(user = user) {
-                    navigator.navigate(UserProfilePageDestination(user.id))
+                    navigator.navigate(UserProfilePageDestination(user.username!!))
                 }
             }
             item {
