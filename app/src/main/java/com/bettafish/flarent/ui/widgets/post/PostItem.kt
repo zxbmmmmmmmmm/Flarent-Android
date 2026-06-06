@@ -1,10 +1,10 @@
 package com.bettafish.flarent.ui.widgets.post
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallSplit
 import androidx.compose.material.icons.automirrored.filled.Label
@@ -77,31 +76,22 @@ import com.bettafish.flarent.R
 import com.bettafish.flarent.config.ForumConfig
 import com.bettafish.flarent.models.Post
 import com.bettafish.flarent.models.User
+import com.bettafish.flarent.ui.widgets.AppMarkdown
 import com.bettafish.flarent.ui.widgets.Avatar
 import com.bettafish.flarent.ui.widgets.LocalImagePreviewer
 import com.bettafish.flarent.ui.widgets.LongClickableIconButton
 import com.bettafish.flarent.ui.widgets.ReactionList
 import com.bettafish.flarent.ui.widgets.getEmoji
-import com.bettafish.flarent.utils.ClickableCoil3ImageTransformer
 import com.bettafish.flarent.utils.GlobalPostUpdateManager
 import com.bettafish.flarent.utils.appSettings
 import com.bettafish.flarent.utils.relativeTime
-import com.mikepenz.markdown.compose.LazyMarkdownSuccess
-import com.mikepenz.markdown.compose.components.markdownComponents
-import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
-import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
-import com.mikepenz.markdown.m3.Markdown
-import com.mikepenz.markdown.model.MarkdownState
 import com.mikepenz.markdown.model.State
-import com.mikepenz.markdown.model.rememberMarkdownState
 import com.ramcosta.composedestinations.generated.destinations.LikesBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.PostReactionsBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.ReplyBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.UserProfilePageDestination
 import com.ramcosta.composedestinations.generated.destinations.VotesBottomSheetDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import dev.snipme.highlights.Highlights
-import dev.snipme.highlights.model.SyntaxThemes
 import java.time.ZonedDateTime
 
 val allReactions = App.INSTANCE.appSettings.forum?.reactions ?: emptyList()
@@ -182,6 +172,7 @@ fun PostItem(
 
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 private fun PostItem(
     post: Post,
@@ -514,40 +505,13 @@ private fun PostItem(
 
         if (isComment) {
 
-            val isDarkTheme = isSystemInDarkTheme()
-            val markdownState = markdownState
-            val markdownComponents = remember(isDarkTheme) {
-                val highlightsBuilder =
-                    Highlights.Builder().theme(SyntaxThemes.atom(darkMode = isDarkTheme))
-                markdownComponents(
-                    codeBlock = {
-                        MarkdownHighlightedCodeBlock(
-                            content = it.content,
-                            node = it.node,
-                            highlightsBuilder = highlightsBuilder,
-                            showHeader = true,
-                        )
-                    },
-                    codeFence = {
-                        MarkdownHighlightedCodeFence(
-                            content = it.content,
-                            node = it.node,
-                            highlightsBuilder = highlightsBuilder,
-                            showHeader = true,
-                        )
-                    },
-                )
-            }
-            SelectionContainer {
-                Markdown(
-                    state = markdownState,
-                    imageTransformer = ClickableCoil3ImageTransformer(imageClick),
-                    components = markdownComponents,
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth(),
-                )
-            }
+            AppMarkdown(
+                state = markdownState,
+                imageClick = imageClick,
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth(),
+            )
             val reactions = post.reactionCounts?.mapNotNull { (id, value) ->
                 val reaction = allReactionsMap[id]
                 if (reaction != null)

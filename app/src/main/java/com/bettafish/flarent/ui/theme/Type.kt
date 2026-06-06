@@ -11,20 +11,20 @@ val EmojiFontFamily = FontFamily(
 )
 val defaultTypography = Typography()
 val Typography = Typography(
-    displayLarge = defaultTypography.displayLarge.copy(fontFamily = EmojiFontFamily),
-    displayMedium = defaultTypography.displayMedium.copy(fontFamily = EmojiFontFamily),
-    displaySmall = defaultTypography.displaySmall.copy(fontFamily = EmojiFontFamily),
-    headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = EmojiFontFamily),
-    headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = EmojiFontFamily),
-    headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = EmojiFontFamily),
-    titleLarge = defaultTypography.titleLarge.copy(fontFamily = EmojiFontFamily),
-    titleMedium = defaultTypography.titleMedium.copy(fontFamily = EmojiFontFamily),
-    titleSmall = defaultTypography.titleSmall.copy(fontFamily = EmojiFontFamily),
-    bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = EmojiFontFamily),
-    bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = EmojiFontFamily),
-    bodySmall = defaultTypography.bodySmall.copy(fontFamily = EmojiFontFamily),
-    labelLarge = defaultTypography.labelLarge.copy(fontFamily = EmojiFontFamily),
-    labelMedium = defaultTypography.labelMedium.copy(fontFamily = EmojiFontFamily),
-    labelSmall = defaultTypography.labelSmall.copy(fontFamily = EmojiFontFamily)
+    displayLarge = defaultTypography.displayLarge,
+    displayMedium = defaultTypography.displayMedium,
+    displaySmall = defaultTypography.displaySmall,
+    headlineLarge = defaultTypography.headlineLarge,
+    headlineMedium = defaultTypography.headlineMedium,
+    headlineSmall = defaultTypography.headlineSmall,
+    titleLarge = defaultTypography.titleLarge,
+    titleMedium = defaultTypography.titleMedium,
+    titleSmall = defaultTypography.titleSmall,
+    bodyLarge = defaultTypography.bodyLarge,
+    bodyMedium = defaultTypography.bodyMedium,
+    bodySmall = defaultTypography.bodySmall,
+    labelLarge = defaultTypography.labelLarge,
+    labelMedium = defaultTypography.labelMedium,
+    labelSmall = defaultTypography.labelSmall
 )
 
