@@ -55,19 +55,22 @@ import com.bettafish.flarent.ui.widgets.StandardLargeCard
 import com.bettafish.flarent.utils.appSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import retrofit2.http.Url
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination<RootGraph>
-fun AboutPage() {
+fun AboutPage(navigator: DestinationsNavigator) {
     val uriHandler = LocalUriHandler.current
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.about)) },
                 navigationIcon = {
-                    BackNavigationIcon { }
+                    BackNavigationIcon {
+                        navigator.navigateUp()
+                    }
                 },
             )
         },
